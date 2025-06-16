@@ -1,0 +1,424 @@
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, AlertCircle, Globe } from 'lucide-react';
+import { CardContent } from "../../components/ui/card";
+import { useCurrency } from '../../contexts/CurrencyContext';
+import { SearchBar } from './components/SearchBar';
+import { TabSelector } from './components/TabSelector';
+import { CountryGrid } from './components/CountryGrid';
+import { RegionGrid } from './components/RegionGrid';
+import { PlanList } from './components/PlanList';
+import { SyncButton } from './components/SyncButton';
+import { usePlans } from './hooks/usePlans';
+import { useSync } from './hooks/useSync';
+import { useDebounce } from '../../hooks/useDebounce';
+import { supabase, type Category, type Product } from '../../lib/supabase';
+import { IntelligentSearch } from '../../lib/search/searchUtils';
+import { countryUtils } from '../../lib/countries/countryUtils';
+
+export const Plans: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
+  const { selectedCurrency } = useCurrency();
+  const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+  const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
+  const [currentCategoryPage, setCurrentCategoryPage] = useState(1);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true); // Changed to true to load on mount
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [searchEngine, setSearchEngine] = useState<IntelligentSearch | null>(null);
+  
+  const categoriesPerPage = 6;
+  
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  
+  const {
+    products,
+    loading,
+    error,
+    refetch
+  } = usePlans({
+    searchTerm: debouncedSearchTerm,
+    selectedCategory,
+    selectedRegion,
+    currentPage: 1,
+    pageSize: 20
+  });
+
+  const { handleSync, syncing } = useSync();
+
+  // Load data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setCategoriesLoading(true);
+      setCategoriesError(null);
+      
+      try {
+        // Fetch categories
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('wc_categories')
+          .select('*')
+          .order('name');
+        
+        if (categoriesError) throw categoriesError;
+        
+        // Fetch all products for region analysis
+        const { data: productsData, error: productsError } = await supabase
+          .from('wc_products')
+          .select('*')
+          .eq('active', true);
+        
+        if (productsError) throw productsError;
+        
+        setCategories(categoriesData || []);
+        setAllProducts(productsData || []);
+        setFilteredCategories(categoriesData || []);
+        
+        // Initialize search engine
+        if (categoriesData) {
+          const search = new IntelligentSearch(categoriesData);
+          setSearchEngine(search);
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setCategoriesError('Error al cargar los datos. Por favor intente nuevamente.');
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Filter categories based on search term
+  useEffect(() => {
+    if (!searchEngine) return;
+    
+    if (debouncedSearchTerm.trim()) {
+      const filtered = searchEngine.search(debouncedSearchTerm);
+      setFilteredCategories(filtered);
+      
+      // Auto-select if there's an exact match for a country
+      if (filtered.length >= 1) {
+        const exactMatch = filtered[0];
+        const searchLower = debouncedSearchTerm.toLowerCase().trim();
+        const countryNameEs = countryUtils.getCountryName(exactMatch.slug, 'es').toLowerCase();
+        const countryNameEn = countryUtils.getCountryName(exactMatch.slug, 'en').toLowerCase();
+        
+        // Check if the search term closely matches the country name (more strict matching)
+        const isExactMatch = searchLower === countryNameEs || 
+                            searchLower === countryNameEn || 
+                            searchLower === exactMatch.slug.toLowerCase();
+        
+        const isCloseMatch = (countryNameEs.startsWith(searchLower) && searchLower.length >= 3) ||
+                            (countryNameEn.startsWith(searchLower) && searchLower.length >= 3);
+        
+        if (isExactMatch || (isCloseMatch && filtered.length === 1)) {
+          console.log('Auto-selecting country:', exactMatch.name, 'ID:', exactMatch.id);
+          setSelectedCategory(exactMatch.id);
+        } else if (selectedCategory && !isExactMatch && !isCloseMatch) {
+          // Clear selection if search doesn't match current selection
+          setSelectedCategory(undefined);
+        }
+      } else if (selectedCategory) {
+        // Clear selection if no matches found
+        setSelectedCategory(undefined);
+      }
+    } else {
+      setFilteredCategories(categories);
+    }
+  }, [debouncedSearchTerm, searchEngine, categories]);
+
+  // Reset page when search term or category changes
+  useEffect(() => {
+    setCurrentCategoryPage(1);
+  }, [debouncedSearchTerm, selectedCategory, selectedRegion]);
+
+  // Reset selected category/region when switching tabs
+  useEffect(() => {
+    setSelectedCategory(undefined);
+    setSelectedRegion(undefined);
+    setCurrentCategoryPage(1);
+  }, [selectedTab]);
+
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId === selectedCategory ? undefined : categoryId);
+    setSelectedRegion(undefined); // Clear region selection when selecting country
+    
+    // Debug: Log category selection and check for products
+    console.log('Selected category ID:', categoryId);
+    const selectedCat = categories.find(cat => cat.id === categoryId);
+    console.log('Selected category data:', selectedCat);
+    
+    // Check if there are products with this category ID
+    const productsWithCategory = allProducts.filter(product => {
+      const categoryIds = product.category_ids || [];
+      const hasCategory = Array.isArray(categoryIds) && categoryIds.includes(categoryId);
+      console.log(`Product ${product.name} (${product.sku}):`, {
+        categoryIds,
+        hasCategory,
+        planType: product.plan_type,
+        countryCode: product.country_code
+      });
+      return hasCategory;
+    });
+    console.log(`Found ${productsWithCategory.length} products for category ${categoryId}:`, productsWithCategory);
+  };
+
+  const handleRegionSelect = (regionValue: string) => {
+    setSelectedRegion(regionValue === selectedRegion ? undefined : regionValue);
+    setSelectedCategory(undefined); // Clear category selection when selecting region
+  };
+
+  const handleSyncData = async () => {
+    await handleSync();
+    refetch();
+  };
+
+  const handleCategoryPageChange = (page: number) => {
+    setCurrentCategoryPage(page);
+  };
+
+  const handleTabChange = (tab: 'countries' | 'regions') => {
+    setSelectedTab(tab);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  // Calculate pagination for categories
+  const totalCategoryPages = Math.ceil(filteredCategories.length / categoriesPerPage);
+  const paginatedCategories = filteredCategories.slice(
+    (currentCategoryPage - 1) * categoriesPerPage,
+    currentCategoryPage * categoriesPerPage
+  );
+
+  // Generate intelligent suggestions
+  const suggestions = searchEngine && searchTerm.length >= 2 
+    ? searchEngine.getSuggestions(searchTerm)
+    : [];
+
+  // Handle suggestion click - this will trigger auto-selection
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchTerm(suggestion);
+    // The useEffect will handle auto-selection based on the new search term
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    setSelectedCategory(undefined);
+    setSelectedRegion(undefined);
+    setFilteredCategories(categories); // Reset filtered categories
+  };
+
+  const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
+
+  // Get region name for display
+  const getRegionDisplayName = (regionValue: string): string => {
+    const regionNames: Record<string, string> = {
+      'latinoamerica': 'Latinoamérica',
+      'europa': 'Europa',
+      'norteamerica': 'Norteamérica',
+      'balcanes': 'Balcanes',
+      'oriente-medio': 'Oriente Medio',
+      'caribe': 'Caribe',
+      'caucaso': 'Cáucaso',
+      'asia-central': 'Asia Central'
+    };
+    return regionNames[regionValue] || regionValue;
+  };
+
+  // Determine if we should show plans
+  const shouldShowPlans = selectedCategory || selectedRegion || debouncedSearchTerm.trim();
+
+  return (
+    <CardContent className="flex flex-col px-0 py-0 relative self-stretch w-full min-h-screen bg-white">
+      <div className="flex flex-col w-full">
+        {/* Header with Search - Always visible */}
+        <div className="px-6 pt-6 pb-4">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">¿Dónde necesitas conectarte?</h1>
+            <SyncButton onSync={handleSyncData} syncing={syncing} />
+          </div>
+          
+          <SearchBar
+            value={searchTerm}
+            onChange={handleSearchChange}
+            suggestions={suggestions}
+            onSuggestionClick={handleSuggestionClick}
+            onClear={clearSearch}
+            placeholder="Buscar por país o región (ej: España, Europa, Latinoamérica)"
+          />
+        </div>
+
+        {/* Tab Selector - Always visible when no country/region is selected */}
+        {!selectedCategory && !selectedRegion && (
+          <div className="px-6 mb-6">
+            <TabSelector
+              selectedTab={selectedTab}
+              onTabChange={handleTabChange}
+            />
+          </div>
+        )}
+
+        {/* Selected Country/Region Header */}
+        {(selectedCategory || selectedRegion) && (
+          <div className="px-6 mb-6">
+            <button
+              onClick={() => {
+                setSelectedCategory(undefined);
+                setSelectedRegion(undefined);
+              }}
+              className="flex items-center space-x-3 text-blue-600 hover:text-blue-700 transition-colors duration-200"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">
+                Volver a {selectedTab === 'countries' ? 'países' : 'regiones'}
+              </span>
+            </button>
+            
+            {selectedRegion && (
+              <div className="mt-2">
+                <h2 className="text-xl font-bold text-gray-900">
+                  Planes para {getRegionDisplayName(selectedRegion)}
+                </h2>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Error Display */}
+        {(error || categoriesError) && (
+          <div className="mx-6 mb-6 bg-red-50 border border-red-200 rounded-2xl p-4">
+            <div className="flex items-center">
+              <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
+              <span className="text-red-700 font-medium">Error:</span>
+              <span className="text-red-600 ml-1">{error || categoriesError}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {(loading || categoriesLoading) && (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span className="ml-3 text-gray-600">Cargando...</span>
+          </div>
+        )}
+
+        {/* Content Area */}
+        {!loading && !categoriesLoading && (
+          <div className="flex-1 px-6">
+            {/* Currency indicator */}
+            {(selectedCategory || selectedRegion || debouncedSearchTerm.trim()) && (
+              <div className="mb-4 text-sm text-gray-600">
+                Precios mostrados en: <span className="font-semibold">{selectedCurrency}</span>
+              </div>
+            )}
+            
+            {/* Countries/Regions Grid - Show when no country/region is selected and no search */}
+            {!selectedCategory && !selectedRegion && !debouncedSearchTerm.trim() && (
+              <div className="mb-8">
+                {selectedTab === 'countries' ? (
+                  <CountryGrid
+                    categories={paginatedCategories}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={handleCategorySelect}
+                    currentPage={currentCategoryPage}
+                    totalPages={totalCategoryPages}
+                    onPageChange={handleCategoryPageChange}
+                  />
+                ) : (
+                  <RegionGrid
+                    categories={filteredCategories}
+                    products={allProducts}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={handleCategorySelect}
+                    onSelectRegion={handleRegionSelect}
+                    currentPage={currentCategoryPage}
+                    totalPages={totalCategoryPages}
+                    onPageChange={handleCategoryPageChange}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* Plans List - Show when country/region is selected OR when searching */}
+            {shouldShowPlans && (
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">
+                  {debouncedSearchTerm.trim() ? (
+                    `Resultados para "${debouncedSearchTerm}"`
+                  ) : (
+                    <>
+                      Planes Disponibles
+                      {selectedRegion && ` - ${getRegionDisplayName(selectedRegion)}`}
+                      {selectedCategoryData && ` - ${countryUtils.getCountryName(selectedCategoryData.slug)}`}
+                    </>
+                  )}
+                </h2>
+                <PlanList
+                  products={products}
+                  loading={loading}
+                  selectedCategory={selectedCategory}
+                  selectedCategoryData={selectedCategoryData}
+                  categories={categories}
+                />
+              </div>
+            )}
+
+            {/* Search Results for Countries/Regions */}
+            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length > 1 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">
+                  Países encontrados para "{debouncedSearchTerm}"
+                </h2>
+                <CountryGrid
+                  categories={paginatedCategories}
+                  selectedCategory={selectedCategory}
+                  onSelectCategory={handleCategorySelect}
+                  currentPage={currentCategoryPage}
+                  totalPages={totalCategoryPages}
+                  onPageChange={handleCategoryPageChange}
+                />
+              </div>
+            )}
+
+            {/* Welcome Message - Show when no search, no selection, and data is loaded */}
+            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && categories.length > 0 && (
+              <div className="text-center py-8">
+                <div className="max-w-md mx-auto">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
+                    <Globe className="w-10 h-10 text-blue-500" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    Encuentra tu plan perfecto
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Usa el buscador arriba, navega por países o explora nuestras regiones para encontrar el plan ideal
+                  </p>
+                  <div className="space-y-3 text-sm text-gray-500">
+                    <div className="flex items-center justify-center space-x-2">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      <span>Más de 200 países disponibles</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      <span>Planes regionales y por país</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                      <span>Activación instantánea</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </CardContent>
+  );
+};
