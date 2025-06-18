@@ -318,8 +318,8 @@ export const Plans: React.FC = () => {
               </div>
             )}
             
-            {/* Countries/Regions Grid - Show when no country/region is selected and no search */}
-            {!selectedCategory && !selectedRegion && !debouncedSearchTerm.trim() && false && (
+            {/* Countries/Regions Grid - Show when tab is selected but no country/region is selected and no search */}
+            {!selectedCategory && !selectedRegion && !debouncedSearchTerm.trim() && (
               <div className="mb-8">
                 {selectedTab === 'countries' ? (
                   <CountryGrid
@@ -387,7 +387,7 @@ export const Plans: React.FC = () => {
             )}
 
             {/* Welcome Message - Show when no search, no selection, and data is loaded */}
-            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && (
+            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && (
               <div className="text-center py-8">
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
