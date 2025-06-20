@@ -163,9 +163,11 @@ export const Cart = () => {
                             <div className="text-lg font-bold text-gray-900">
                               {formatPrice(subtotal)}
                             </div>
-                            <div className="text-sm text-gray-500">
-                              {formatPrice(price)} c/u
-                            </div>
+                            {item.quantity > 1 && (
+                              <div className="text-sm text-gray-500">
+                                {formatPrice(price)} cada uno
+                              </div>
+                            )}
                           </div>
                           <button
                             onClick={() => removeFromCart(item.id)}
