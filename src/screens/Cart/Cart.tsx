@@ -175,11 +175,9 @@ export const Cart = () => {
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
-                    {item.quantity > 1 && (
-                      <div className="text-sm text-gray-500">
-                        {formatPrice(item.price, selectedCurrency)} cada uno
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               );
