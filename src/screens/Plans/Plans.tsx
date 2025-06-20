@@ -12,7 +12,7 @@ import { usePlans } from './hooks/usePlans';
 import { useSync } from './hooks/useSync';
 import { useDebounce } from '../../hooks/useDebounce';
 import { supabase, type Category, type Product } from '../../lib/supabase';
-import { IntelligentSearch } from '../../lib/search/searchUtils';
+import { IntelligentSearch, type SearchSuggestion } from '../../lib/search/searchUtils';
 import { countryUtils } from '../../lib/countries/countryUtils';
 
 export const Plans: React.FC = () => {
@@ -25,7 +25,7 @@ export const Plans: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true); // Changed to true to load on mount
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [searchEngine, setSearchEngine] = useState<IntelligentSearch | null>(null);
   
@@ -91,7 +91,7 @@ export const Plans: React.FC = () => {
     fetchData();
   }, []);
 
-  // Filter categories based on search term
+  // Filter categories based on search term - REMOVED AUTO-SELECTION
   useEffect(() => {
     if (!searchEngine) return;
     
@@ -99,34 +99,13 @@ export const Plans: React.FC = () => {
       const filtered = searchEngine.search(debouncedSearchTerm);
       setFilteredCategories(filtered);
       
-      // Auto-select if there's an exact match for a country
-      if (filtered.length >= 1) {
-        const exactMatch = filtered[0];
-        const searchLower = debouncedSearchTerm.toLowerCase().trim();
-        const countryNameEs = countryUtils.getCountryName(exactMatch.slug, 'es').toLowerCase();
-        const countryNameEn = countryUtils.getCountryName(exactMatch.slug, 'en').toLowerCase();
-        
-        // Check if the search term closely matches the country name (more strict matching)
-        const isExactMatch = searchLower === countryNameEs || 
-                            searchLower === countryNameEn || 
-                            searchLower === exactMatch.slug.toLowerCase();
-        
-        const isCloseMatch = (countryNameEs.startsWith(searchLower) && searchLower.length >= 3) ||
-                            (countryNameEn.startsWith(searchLower) && searchLower.length >= 3);
-        
-        if (isExactMatch || (isCloseMatch && filtered.length === 1)) {
-          console.log('Auto-selecting country:', exactMatch.name, 'ID:', exactMatch.id);
-          setSelectedCategory(exactMatch.id);
-        } else if (selectedCategory && !isExactMatch && !isCloseMatch) {
-          // Clear selection if search doesn't match current selection
-          setSelectedCategory(undefined);
-        }
-      } else if (selectedCategory) {
-        // Clear selection if no matches found
-        setSelectedCategory(undefined);
-      }
+      // REMOVED: Auto-selection logic that was causing confusion
+      // Users now need to explicitly click on suggestions or countries
     } else {
       setFilteredCategories(categories);
+      // Clear selections when search is empty
+      setSelectedCategory(undefined);
+      setSelectedRegion(undefined);
     }
   }, [debouncedSearchTerm, searchEngine, categories]);
 
@@ -188,6 +167,23 @@ export const Plans: React.FC = () => {
     setSearchTerm(value);
   };
 
+  // NEW: Handle suggestion click with explicit selection
+  const handleSuggestionClick = (suggestion: SearchSuggestion) => {
+    setSearchTerm(suggestion.text);
+    
+    if (suggestion.type === 'country' && suggestion.id) {
+      // Directly select the country
+      setSelectedCategory(suggestion.id);
+      setSelectedRegion(undefined);
+      setSelectedTab('countries');
+    } else if (suggestion.type === 'region' && suggestion.value) {
+      // Directly select the region
+      setSelectedRegion(suggestion.value);
+      setSelectedCategory(undefined);
+      setSelectedTab('regions');
+    }
+  };
+
   // Calculate pagination for categories
   const totalCategoryPages = Math.ceil(filteredCategories.length / categoriesPerPage);
   const paginatedCategories = filteredCategories.slice(
@@ -199,12 +195,6 @@ export const Plans: React.FC = () => {
   const suggestions = searchEngine && searchTerm.length >= 2 
     ? searchEngine.getSuggestions(searchTerm)
     : [];
-
-  // Handle suggestion click - this will trigger auto-selection
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearchTerm(suggestion);
-    // The useEffect will handle auto-selection based on the new search term
-  };
 
   const clearSearch = () => {
     setSearchTerm('');
@@ -231,7 +221,7 @@ export const Plans: React.FC = () => {
   };
 
   // Determine if we should show plans
-  const shouldShowPlans = selectedCategory || selectedRegion || debouncedSearchTerm.trim();
+  const shouldShowPlans = selectedCategory || selectedRegion;
 
   return (
     <CardContent className="flex flex-col px-0 py-0 relative self-stretch w-full min-h-screen bg-white">
@@ -270,6 +260,7 @@ export const Plans: React.FC = () => {
               onClick={() => {
                 setSelectedCategory(undefined);
                 setSelectedRegion(undefined);
+                setSearchTerm(''); // Clear search when going back
               }}
               className="flex items-center space-x-3 text-blue-600 hover:text-blue-700 transition-colors duration-200"
             >
@@ -312,7 +303,7 @@ export const Plans: React.FC = () => {
         {!loading && !categoriesLoading && (
           <div className="flex-1 px-6">
             {/* Currency indicator */}
-            {(selectedCategory || selectedRegion || debouncedSearchTerm.trim()) && (
+            {(selectedCategory || selectedRegion) && (
               <div className="mb-4 text-sm text-gray-600">
                 Precios mostrados en: <span className="font-semibold">{selectedCurrency}</span>
               </div>
@@ -345,19 +336,13 @@ export const Plans: React.FC = () => {
               </div>
             )}
 
-            {/* Plans List - Show when country/region is selected OR when searching */}
+            {/* Plans List - Show when country/region is selected */}
             {shouldShowPlans && (
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-6">
-                  {debouncedSearchTerm.trim() ? (
-                    `Resultados para "${debouncedSearchTerm}"`
-                  ) : (
-                    <>
-                      Planes Disponibles
-                      {selectedRegion && ` - ${getRegionDisplayName(selectedRegion)}`}
-                      {selectedCategoryData && ` - ${countryUtils.getCountryName(selectedCategoryData.slug)}`}
-                    </>
-                  )}
+                  Planes Disponibles
+                  {selectedRegion && ` - ${getRegionDisplayName(selectedRegion)}`}
+                  {selectedCategoryData && ` - ${countryUtils.getCountryName(selectedCategoryData.slug)}`}
                 </h2>
                 <PlanList
                   products={products}
@@ -370,7 +355,7 @@ export const Plans: React.FC = () => {
             )}
 
             {/* Search Results for Countries/Regions */}
-            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length > 1 && (
+            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">
                   Países encontrados para "{debouncedSearchTerm}"
@@ -386,8 +371,27 @@ export const Plans: React.FC = () => {
               </div>
             )}
 
+            {/* No Results Message */}
+            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Globe className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron resultados</h3>
+                <p className="text-gray-500 max-w-sm mb-4">
+                  No encontramos países o regiones que coincidan con "{debouncedSearchTerm}".
+                </p>
+                <button
+                  onClick={clearSearch}
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Limpiar búsqueda
+                </button>
+              </div>
+            )}
+
             {/* Welcome Message - Show when no search, no selection, and data is loaded */}
-            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && (
+            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && (
               <div className="text-center py-8">
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
@@ -413,6 +417,24 @@ export const Plans: React.FC = () => {
                       <span>Activación instantánea</span>
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Empty State - Show when no data is loaded */}
+            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && (
+              <div className="text-center py-8">
+                <div className="max-w-md mx-auto">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Globe className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    No hay datos disponibles
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Parece que no hay países o planes cargados. Intenta sincronizar los datos.
+                  </p>
+                  <SyncButton onSync={handleSyncData} syncing={syncing} />
                 </div>
               </div>
             )}

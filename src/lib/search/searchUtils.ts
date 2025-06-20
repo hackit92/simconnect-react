@@ -113,6 +113,15 @@ interface SearchResult {
   matchedTerm: string;
 }
 
+// Nueva interfaz para sugerencias mejoradas
+export interface SearchSuggestion {
+  text: string;
+  type: 'country' | 'region';
+  id?: number; // Para países (category id)
+  value?: string; // Para regiones (region code)
+  score: number;
+}
+
 export class IntelligentSearch {
   private categories: Category[] = [];
 
@@ -222,14 +231,15 @@ export class IntelligentSearch {
       }
     }
 
-    // 4. Búsqueda fuzzy (similitud)
+    // 4. Búsqueda fuzzy (similitud) - solo para coincidencias muy cercanas
     const slugSimilarity = calculateSimilarity(query, normalizeText(category.slug));
     const nameEsSimilarity = calculateSimilarity(query, normalizeText(countryNameEs));
     const nameEnSimilarity = calculateSimilarity(query, normalizeText(countryNameEn));
 
     const maxSimilarity = Math.max(slugSimilarity, nameEsSimilarity, nameEnSimilarity);
     
-    if (maxSimilarity >= 0.4 && maxSimilarity < 0.8) {
+    // Aumentar el umbral para fuzzy matching para ser más estricto
+    if (maxSimilarity >= 0.7 && maxSimilarity < 0.95) {
       let matchedTerm = category.slug;
       if (nameEsSimilarity === maxSimilarity) matchedTerm = countryNameEs;
       else if (nameEnSimilarity === maxSimilarity) matchedTerm = countryNameEn;
@@ -242,10 +252,10 @@ export class IntelligentSearch {
       });
     }
 
-    // 5. Búsqueda parcial en aliases con fuzzy matching
+    // 5. Búsqueda parcial en aliases con fuzzy matching - más estricto
     for (const alias of aliases) {
       const aliasSimilarity = calculateSimilarity(query, normalizeText(alias));
-      if (aliasSimilarity >= 0.5 && aliasSimilarity < 0.8) {
+      if (aliasSimilarity >= 0.8 && aliasSimilarity < 0.95) {
         results.push({
           category,
           score: aliasSimilarity * 0.7,
@@ -269,49 +279,87 @@ export class IntelligentSearch {
     });
   }
 
-  // Función para obtener sugerencias cuando no hay resultados
-  getSuggestions(query: string): string[] {
+  // Función mejorada para obtener sugerencias más precisas
+  getSuggestions(query: string): SearchSuggestion[] {
     const normalizedQuery = normalizeText(query);
-    const suggestions: Array<{ term: string; score: number }> = [];
+    const suggestions: SearchSuggestion[] = [];
 
-    // Sugerencias de regiones
+    // Sugerencias de regiones - solo coincidencias muy cercanas
     for (const regionName of Object.keys(regionMapping)) {
       const similarity = calculateSimilarity(normalizedQuery, normalizeText(regionName));
-      if (similarity >= 0.3) {
-        suggestions.push({ term: regionName, score: similarity });
+      if (similarity >= 0.6) {
+        suggestions.push({
+          text: regionName.charAt(0).toUpperCase() + regionName.slice(1),
+          type: 'region',
+          value: regionName,
+          score: similarity
+        });
       }
     }
 
-    // Sugerencias de países
+    // Sugerencias de países - más estrictas
     for (const category of this.categories) {
       const countryNameEs = countryUtils.getCountryName(category.slug, 'es');
       const countryNameEn = countryUtils.getCountryName(category.slug, 'en');
       
-      const similarities = [
-        { term: countryNameEs, score: calculateSimilarity(normalizedQuery, normalizeText(countryNameEs)) },
-        { term: countryNameEn, score: calculateSimilarity(normalizedQuery, normalizeText(countryNameEn)) },
-        { term: category.slug, score: calculateSimilarity(normalizedQuery, normalizeText(category.slug)) }
-      ];
-
-      for (const sim of similarities) {
-        if (sim.score >= 0.3) {
-          suggestions.push(sim);
+      // Coincidencias exactas o que empiecen con el término de búsqueda
+      const esStartsWith = normalizeText(countryNameEs).startsWith(normalizedQuery);
+      const enStartsWith = normalizeText(countryNameEn).startsWith(normalizedQuery);
+      const slugStartsWith = normalizeText(category.slug).startsWith(normalizedQuery);
+      
+      if (esStartsWith || enStartsWith || slugStartsWith) {
+        const score = esStartsWith || enStartsWith ? 1.0 : 0.9;
+        const displayName = esStartsWith ? countryNameEs : 
+                           enStartsWith ? countryNameEn : countryNameEs;
+        
+        suggestions.push({
+          text: displayName,
+          type: 'country',
+          id: category.id,
+          score: score
+        });
+      } else {
+        // Similitud alta para nombres
+        const esSimilarity = calculateSimilarity(normalizedQuery, normalizeText(countryNameEs));
+        const enSimilarity = calculateSimilarity(normalizedQuery, normalizeText(countryNameEn));
+        const maxSimilarity = Math.max(esSimilarity, enSimilarity);
+        
+        if (maxSimilarity >= 0.7) {
+          const displayName = esSimilarity >= enSimilarity ? countryNameEs : countryNameEn;
+          suggestions.push({
+            text: displayName,
+            type: 'country',
+            id: category.id,
+            score: maxSimilarity
+          });
         }
       }
 
-      // Sugerencias de aliases
+      // Sugerencias de aliases - solo las más relevantes
       const aliases = countryAliases[category.slug] || [];
       for (const alias of aliases) {
-        const similarity = calculateSimilarity(normalizedQuery, normalizeText(alias));
-        if (similarity >= 0.3) {
-          suggestions.push({ term: alias, score: similarity });
+        if (normalizeText(alias).startsWith(normalizedQuery) && normalizedQuery.length >= 3) {
+          suggestions.push({
+            text: alias.charAt(0).toUpperCase() + alias.slice(1),
+            type: 'country',
+            id: category.id,
+            score: 0.8
+          });
         }
       }
     }
 
-    return suggestions
+    // Remover duplicados y ordenar por score
+    const uniqueSuggestions = suggestions.reduce((acc, current) => {
+      const existing = acc.find(s => s.text === current.text && s.type === current.type);
+      if (!existing || current.score > existing.score) {
+        return [...acc.filter(s => !(s.text === current.text && s.type === current.type)), current];
+      }
+      return acc;
+    }, [] as SearchSuggestion[]);
+
+    return uniqueSuggestions
       .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
-      .map(s => s.term);
+      .slice(0, 5); // Limitar a 5 sugerencias
   }
 }

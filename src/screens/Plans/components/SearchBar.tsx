@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MapPin, X } from 'lucide-react';
+import type { SearchSuggestion } from '../../../lib/search/searchUtils';
 
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
-  suggestions?: string[];
-  onSuggestionClick?: (suggestion: string) => void;
+  suggestions?: SearchSuggestion[];
+  onSuggestionClick?: (suggestion: SearchSuggestion) => void;
   onClear?: () => void;
   placeholder?: string;
 }
@@ -66,8 +67,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    onChange(suggestion);
+  const handleSuggestionClick = (suggestion: SearchSuggestion) => {
+    onChange(suggestion.text);
     setShowSuggestions(false);
     setActiveSuggestionIndex(-1);
     onSuggestionClick?.(suggestion);
@@ -123,7 +124,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <div className="p-2">
             {suggestions.map((suggestion, index) => (
               <button
-                key={index}
+                key={`${suggestion.type}-${suggestion.text}-${index}`}
                 onClick={() => handleSuggestionClick(suggestion)}
                 className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center space-x-3 ${
                   index === activeSuggestionIndex
@@ -131,8 +132,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <MapPin className="w-4 h-4 text-gray-400" />
-                <span className="flex-1">{suggestion}</span>
+                <div className="flex items-center space-x-3 flex-1">
+                  <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <div className="flex-1">
+                    <span className="font-medium">{suggestion.text}</span>
+                    <span className="ml-2 text-xs text-gray-500 capitalize">
+                      {suggestion.type === 'country' ? 'País' : 'Región'}
+                    </span>
+                  </div>
+                </div>
               </button>
             ))}
           </div>
