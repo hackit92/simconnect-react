@@ -160,7 +160,7 @@ export const Cart = () => {
                 const subtotal = price * item.quantity;
 
                 return (
-                  <div key={item.id} className="bg-white border border-gray-200 rounded-2xl p-6">
+                  <div key={item.id} className="bg-white shadow-md rounded-2xl p-6">
                     <div className="flex items-start justify-between">
                       {/* Product Info */}
                       <div className="flex-1">
@@ -186,17 +186,17 @@ export const Cart = () => {
                           {/* Quantity Controls */}
                           <div className="flex items-center space-x-3">
                             <span className="text-sm text-gray-600">Cantidad:</span>
-                            <div className="flex items-center border border-gray-300 rounded-lg">
+                            <div className="flex items-center bg-gray-50 rounded-xl overflow-hidden">
                               <button
                                 onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                                className="p-2 hover:bg-gray-100 transition-colors duration-200"
+                                className="p-2 hover:bg-gray-100 transition-colors duration-200 rounded-l-xl"
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
                               <span className="px-4 py-2 font-medium">{item.quantity}</span>
                               <button
                                 onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                className="p-2 hover:bg-gray-100 transition-colors duration-200"
+                                className="p-2 hover:bg-gray-100 transition-colors duration-200 rounded-r-xl"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -217,7 +217,7 @@ export const Cart = () => {
                             </div>
                             <button
                               onClick={() => removeFromCart(item.id)}
-                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200"
                             >
                               <Trash2 className="w-5 h-5" />
                             </button>
