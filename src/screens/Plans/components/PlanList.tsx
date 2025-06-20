@@ -4,6 +4,7 @@ import { Button } from "../../../components/ui/button";
 import type { Product } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import { useCart } from '../../../contexts/CartContext';
 
 interface PlanListProps {
   products: Product[];
@@ -280,11 +281,14 @@ export const PlanList: React.FC<PlanListProps> = ({
   categories
 }) => {
   const { selectedCurrency, formatPrice } = useCurrency();
+  const { addToCart, isInCart } = useCart();
   const [expandedRegionalPlans, setExpandedRegionalPlans] = React.useState<Set<number>>(new Set());
 
   const handlePurchase = (productId: number) => {
-    console.log('Purchase product:', productId);
-    // TODO: Implement purchase logic
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      addToCart(product);
+    }
   };
 
   const toggleRegionalCoverage = (productId: number) => {
@@ -477,10 +481,14 @@ export const PlanList: React.FC<PlanListProps> = ({
             <div className="flex justify-end">
               <Button
                 onClick={() => handlePurchase(plan.id)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
+                  isInCart(plan.id)
+                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                }`}
                 size="lg"
               >
-                COMPRAR
+                {isInCart(plan.id) ? 'AÑADIDO AL CARRITO' : 'AÑADIR AL CARRITO'}
               </Button>
             </div>
           </div>

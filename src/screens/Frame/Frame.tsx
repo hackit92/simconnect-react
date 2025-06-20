@@ -2,6 +2,7 @@ import { HomeIcon, ShoppingCartIcon, GlobeIcon } from "lucide-react";
 import React, { useState, useCallback } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import { CurrencyProvider, useCurrency } from "../../contexts/CurrencyContext";
+import { CartProvider, useCart } from "../../contexts/CartContext";
 import { Card, CardContent } from "../../components/ui/card";
 import {
   NavigationMenu,
@@ -45,6 +46,7 @@ const regionOptions = [
 
 const FrameContent = (): JSX.Element => {
   const { selectedCurrency, setSelectedCurrency } = useCurrency();
+  const { getTotalItems } = useCart();
   const [selectedLanguage, setSelectedLanguage] = useState<string>("es");
 
   const handleSync = async () => {
@@ -183,7 +185,14 @@ const FrameContent = (): JSX.Element => {
                     to="/cart" 
                     className="flex flex-col items-center gap-1 text-gray-600 hover:text-blue-600 transition-colors duration-200"
                   >
-                    <ShoppingCartIcon className="h-5 w-5" />
+                    <div className="relative">
+                      <ShoppingCartIcon className="h-5 w-5" />
+                      {getTotalItems() > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                          {getTotalItems()}
+                        </span>
+                      )}
+                    </div>
                     <span className="text-[10px] font-medium">Carrito</span>
                   </Link>
                 </div>
@@ -199,7 +208,9 @@ const FrameContent = (): JSX.Element => {
 export const Frame = (): JSX.Element => {
   return (
     <CurrencyProvider>
-      <FrameContent />
+      <CartProvider>
+        <FrameContent />
+      </CartProvider>
     </CurrencyProvider>
   );
 };
