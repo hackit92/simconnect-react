@@ -5,10 +5,30 @@ import { Button } from "../../components/ui/button";
 import { useCart } from "../../contexts/CartContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
 import { countryUtils } from "../../lib/countries/countryUtils";
+import { supabase, type Category } from "../../lib/supabase";
 
 export const Cart = () => {
   const { items, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
   const { selectedCurrency, formatPrice } = useCurrency();
+  const [categories, setCategories] = React.useState<Category[]>([]);
+
+  // Load categories for proper country name display
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data: categoriesData, error } = await supabase
+          .from('wc_categories')
+          .select('*');
+        
+        if (error) throw error;
+        setCategories(categoriesData || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleQuantityChange = (productId: number, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -36,7 +56,8 @@ export const Cart = () => {
     }
   };
 
-  const getDisplayName = (item: any) => {
+  const getDisplayName = (item: any, categories: Category[]) => {
+    // For regional plans, use formatted region names
     if (item.plan_type === 'regional') {
       const regionNames: Record<string, string> = {
         'latinoamerica': 'Latinoamérica',
@@ -54,8 +75,30 @@ export const Cart = () => {
       return regionNames[item.region_code || ''] || 'Plan Regional';
     }
     
-    if (item.country_code) {
-      return countryUtils.getCountryName(item.country_code);
+    // For country-specific plans, try to get the country name from various sources
+    if (item.plan_type === 'country') {
+      // Try to use country_code if available
+      if (item.country_code) {
+        const countryName = countryUtils.getCountryName(item.country_code);
+        // Only return if it's a valid country name (not just the code)
+        if (countryName !== item.country_code) {
+          return countryName;
+        }
+      }
+      
+      // If no country_code or invalid, try to find the country from the product's category_ids
+      if (item.category_ids && Array.isArray(item.category_ids) && categories.length > 0) {
+        for (const categoryId of item.category_ids) {
+          const category = categories.find(cat => cat.id === categoryId);
+          if (category) {
+            const countryName = countryUtils.getCountryName(category.slug);
+            // Only return if it's a valid country name (not just the slug)
+            if (countryName !== category.slug) {
+              return countryName;
+            }
+          }
+        }
+      }
     }
     
     return 'Plan Internacional';
@@ -113,7 +156,7 @@ export const Cart = () => {
             <div className="space-y-4 mb-8">
               {items.map((item) => {
                 const price = getProductPrice(item);
-                const displayName = getDisplayName(item);
+                const displayName = getDisplayName(item, categories);
                 const subtotal = price * item.quantity;
 
                 return (
