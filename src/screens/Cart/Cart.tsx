@@ -118,7 +118,7 @@ export const Cart = () => {
             </p>
             <Button
               onClick={() => window.history.back()}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold"
+              className="bg-[#299ae4] hover:bg-[#299ae4]/90 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Explorar Planes
             </Button>
@@ -140,7 +140,7 @@ export const Cart = () => {
                 onClick={clearCart}
                 variant="outline"
                 size="sm"
-                className="text-red-600 border-red-200 hover:bg-red-50"
+                className="text-red-600 border-red-200 hover:bg-red-50 transition-all duration-200"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Vaciar
@@ -213,11 +213,11 @@ export const Cart = () => {
                                 <div className="text-sm text-gray-500">
                                   {formatPrice(price)} cada uno
                                 </div>
-                              )}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-all duration-200"
                             </div>
                             <button
                               onClick={() => removeFromCart(item.id)}
-                              className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200"
+                              className="p-2 hover:bg-[#299ae4]/10 hover:text-[#299ae4] transition-all duration-200 rounded-r-xl"
                             >
                               <Trash2 className="w-5 h-5" />
                             </button>
@@ -241,7 +241,7 @@ export const Cart = () => {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Activación</span>
-                  <span className="text-green-600 font-medium">Gratis</span>
+                  <span className="text-[#299ae4] font-medium">Gratis</span>
                 </div>
                 <div className="border-t border-gray-200 pt-3">
                   <div className="flex justify-between text-lg font-bold text-gray-900">
@@ -253,7 +253,7 @@ export const Cart = () => {
 
               <Button
                 onClick={handleCheckout}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg"
+                className="w-full bg-[#299ae4] hover:bg-[#299ae4]/90 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
                 size="lg"
               >
                 <CreditCard className="w-5 h-5 mr-2" />
