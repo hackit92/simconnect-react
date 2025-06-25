@@ -432,43 +432,10 @@ export const Plans: React.FC = () => {
                     Encuentra tu plan perfecto
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Usa el buscador arriba o selecciona una categoría para explorar nuestros planes de datos móviles
+                    Usa el buscador arriba o las pestañas de "Países" y "Regiones" para explorar nuestros planes de datos móviles
                   </p>
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <button
-                      onClick={() => {
-                        setSelectedTab('countries');
-                        setShowGrids(true);
-                      }}
-                      className="group p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-[#299ae4] hover:shadow-lg transition-all duration-300"
-                    >
-                      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-50 group-hover:bg-[#299ae4] flex items-center justify-center transition-colors duration-300">
-                        <Globe className="w-6 h-6 text-[#299ae4] group-hover:text-white transition-colors duration-300" />
-                      </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Explorar Países</h4>
-                      <p className="text-sm text-gray-500">Planes específicos por país</p>
-                    </button>
-                    
-                    <button
-                      onClick={() => {
-                        setSelectedTab('regions');
-                        setShowGrids(true);
-                      }}
-                      className="group p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-[#299ae4] hover:shadow-lg transition-all duration-300"
-                    >
-                      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-50 group-hover:bg-[#299ae4] flex items-center justify-center transition-colors duration-300">
-                        <div className="w-6 h-6 text-[#299ae4] group-hover:text-white transition-colors duration-300 flex items-center justify-center">
-                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                          </svg>
-                        </div>
-                      </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Explorar Regiones</h4>
-                      <p className="text-sm text-gray-500">Planes que cubren múltiples países</p>
-                    </button>
-                  </div>
                   
-                  <div className="space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-6">
+                  <div className="space-y-3 text-sm text-gray-500">
                     <div className="flex items-center justify-center space-x-2">
                       <span className="w-2 h-2 bg-[#299ae4] rounded-full"></span>
                       <span>Más de 200 países disponibles</span>
