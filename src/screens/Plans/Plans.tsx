@@ -18,6 +18,7 @@ import { countryUtils } from '../../lib/countries/countryUtils';
 export const Plans: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
+  const [showGrids, setShowGrids] = useState(false);
   const { selectedCurrency } = useCurrency();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
@@ -98,6 +99,7 @@ export const Plans: React.FC = () => {
     if (debouncedSearchTerm.trim()) {
       const filtered = searchEngine.search(debouncedSearchTerm);
       setFilteredCategories(filtered);
+      setShowGrids(true); // Show grids when user searches
       
       // REMOVED: Auto-selection logic that was causing confusion
       // Users now need to explicitly click on suggestions or countries
@@ -106,6 +108,7 @@ export const Plans: React.FC = () => {
       // Clear selections when search is empty
       setSelectedCategory(undefined);
       setSelectedRegion(undefined);
+      setShowGrids(false); // Hide grids when search is cleared
     }
   }, [debouncedSearchTerm, searchEngine, categories]);
 
@@ -119,6 +122,10 @@ export const Plans: React.FC = () => {
     setSelectedCategory(undefined);
     setSelectedRegion(undefined);
     setCurrentCategoryPage(1);
+    // Show grids when user explicitly selects a tab
+    if (selectedTab) {
+      setShowGrids(true);
+    }
   }, [selectedTab]);
 
   const handleCategorySelect = (categoryId: number) => {
@@ -161,10 +168,15 @@ export const Plans: React.FC = () => {
 
   const handleTabChange = (tab: 'countries' | 'regions') => {
     setSelectedTab(tab);
+    setShowGrids(true); // Show grids when user selects a tab
   };
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+    // Show grids immediately when user starts typing
+    if (value.trim()) {
+      setShowGrids(true);
+    }
   };
 
   // NEW: Handle suggestion click with explicit selection
@@ -201,6 +213,7 @@ export const Plans: React.FC = () => {
     setSelectedCategory(undefined);
     setSelectedRegion(undefined);
     setFilteredCategories(categories); // Reset filtered categories
+    setShowGrids(false); // Hide grids when clearing search
   };
 
   const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
@@ -244,12 +257,30 @@ export const Plans: React.FC = () => {
         </div>
 
         {/* Tab Selector - Always visible when no country/region is selected */}
-        {!selectedCategory && !selectedRegion && (
+        {!selectedCategory && !selectedRegion && !showGrids && (
           <div className="px-6 mb-6">
             <TabSelector
               selectedTab={selectedTab}
               onTabChange={handleTabChange}
             />
+          </div>
+        )}
+
+        {/* Tab Selector - Show when grids are visible but no selection made */}
+        {!selectedCategory && !selectedRegion && showGrids && (
+          <div className="px-6 mb-6">
+            <div className="flex items-center justify-between">
+              <TabSelector
+                selectedTab={selectedTab}
+                onTabChange={handleTabChange}
+              />
+              <button
+                onClick={() => setShowGrids(false)}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
+              >
+                Ocultar lista
+              </button>
+            </div>
           </div>
         )}
 
@@ -310,7 +341,7 @@ export const Plans: React.FC = () => {
             )}
             
             {/* Countries/Regions Grid - Show when tab is selected but no country/region is selected and no search */}
-            {!selectedCategory && !selectedRegion && !debouncedSearchTerm.trim() && (
+            {!selectedCategory && !selectedRegion && !debouncedSearchTerm.trim() && showGrids && (
               <div className="mb-8">
                 {selectedTab === 'countries' ? (
                   <CountryGrid
@@ -355,7 +386,7 @@ export const Plans: React.FC = () => {
             )}
 
             {/* Search Results for Countries/Regions */}
-            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length > 0 && (
+            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length > 0 && showGrids && (
               <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">
                   Países encontrados para "{debouncedSearchTerm}"
@@ -372,7 +403,7 @@ export const Plans: React.FC = () => {
             )}
 
             {/* No Results Message */}
-            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length === 0 && (
+            {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length === 0 && showGrids && (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                   <Globe className="w-8 h-8 text-gray-400" />
@@ -391,21 +422,55 @@ export const Plans: React.FC = () => {
             )}
 
             {/* Welcome Message - Show when no search, no selection, and data is loaded */}
-            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && (
+            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
               <div className="text-center py-8">
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
-                    <Globe className="w-10 h-10 text-blue-500" />
+                    <Globe className="w-10 h-10 text-[#299ae4]" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     Encuentra tu plan perfecto
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Usa el buscador arriba, navega por países o explora nuestras regiones para encontrar el plan ideal
+                    Usa el buscador arriba o selecciona una categoría para explorar nuestros planes de datos móviles
                   </p>
-                  <div className="space-y-3 text-sm text-gray-500">
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <button
+                      onClick={() => {
+                        setSelectedTab('countries');
+                        setShowGrids(true);
+                      }}
+                      className="group p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-[#299ae4] hover:shadow-lg transition-all duration-300"
+                    >
+                      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-50 group-hover:bg-[#299ae4] flex items-center justify-center transition-colors duration-300">
+                        <Globe className="w-6 h-6 text-[#299ae4] group-hover:text-white transition-colors duration-300" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-2">Explorar Países</h4>
+                      <p className="text-sm text-gray-500">Planes específicos por país</p>
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setSelectedTab('regions');
+                        setShowGrids(true);
+                      }}
+                      className="group p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-[#299ae4] hover:shadow-lg transition-all duration-300"
+                    >
+                      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-50 group-hover:bg-[#299ae4] flex items-center justify-center transition-colors duration-300">
+                        <div className="w-6 h-6 text-[#299ae4] group-hover:text-white transition-colors duration-300 flex items-center justify-center">
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                          </svg>
+                        </div>
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-2">Explorar Regiones</h4>
+                      <p className="text-sm text-gray-500">Planes que cubren múltiples países</p>
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-6">
                     <div className="flex items-center justify-center space-x-2">
-                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      <span className="w-2 h-2 bg-[#299ae4] rounded-full"></span>
                       <span>Más de 200 países disponibles</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2">
@@ -422,7 +487,7 @@ export const Plans: React.FC = () => {
             )}
 
             {/* Empty State - Show when no data is loaded */}
-            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && (
+            {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
               <div className="text-center py-8">
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
