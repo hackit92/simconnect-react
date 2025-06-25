@@ -213,7 +213,7 @@ export const Cart = () => {
                                 <div className="text-sm text-gray-500">
                                   {formatPrice(price)} cada uno
                                 </div>
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-all duration-200"
+                              )}
                             </div>
                             <button
                               onClick={() => removeFromCart(item.id)}
