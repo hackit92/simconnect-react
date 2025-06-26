@@ -40,7 +40,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const categoriesPerPage = 6;
   
   // Adjust categories per page for desktop
-  const effectiveCategoriesPerPage = isDesktop && !isEmbedded ? 24 : categoriesPerPage;
+  const effectiveCategoriesPerPage = isDesktop && !isEmbedded ? 28 : categoriesPerPage;
   
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   

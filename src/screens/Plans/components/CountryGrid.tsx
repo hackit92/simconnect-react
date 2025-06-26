@@ -42,7 +42,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
       {/* Country List */}
       <div className={`${
         isDesktop 
-          ? 'grid grid-cols-4 gap-3' 
+          ? 'grid grid-cols-7 gap-3' 
           : 'space-y-3'
       }`}>
         {categories.map((category) => {
