@@ -471,6 +471,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       </div>
                     </div>
                   </div>
+                )}
 
                 {/* Empty State - Show when no data is loaded */}
                 {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
@@ -489,6 +490,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     </div>
                   </div>
                 )}
+              </div>
               
               {/* Right Column - Plans List */}
               <div className={`${
