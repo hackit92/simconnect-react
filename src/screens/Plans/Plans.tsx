@@ -440,7 +440,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     </button>
                   </div>
                 )}
-                )}
 
                 {/* Welcome Message - Show when no search, no selection, and data is loaded */}
                 {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
@@ -472,9 +471,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       </div>
                     </div>
                   </div>
-                )}
 
-                    />
                 {/* Empty State - Show when no data is loaded */}
                 {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
@@ -492,9 +489,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     </div>
                   </div>
                 )}
-              </div>
               
-                  </div>
               {/* Right Column - Plans List */}
               <div className={`${
                 isDesktop && !isEmbedded 
@@ -524,8 +519,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       categories={categories}
                     />
                   </div>
-                 )}
-                 
                 )}
                 {/* Empty state for right column when no plans are selected */}
                 {!shouldShowPlans && !loading && !categoriesLoading && (
