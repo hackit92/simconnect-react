@@ -16,7 +16,11 @@ import { supabase, type Category, type Product } from '../../lib/supabase';
 import { IntelligentSearch, type SearchSuggestion } from '../../lib/search/searchUtils';
 import { countryUtils } from '../../lib/countries/countryUtils';
 
-export const Plans: React.FC = () => {
+interface PlansProps {
+  isEmbedded?: boolean;
+}
+
+export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
   const [showGrids, setShowGrids] = useState(false);
@@ -238,14 +242,24 @@ export const Plans: React.FC = () => {
   const shouldShowPlans = selectedCategory || selectedRegion;
 
   return (
-    <CardContent className="flex flex-col px-0 py-0 relative self-stretch w-full min-h-screen bg-white">
+    <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
+      isEmbedded ? 'min-h-0' : 'min-h-screen'
+    }`}>
       <div className="flex flex-col w-full">
-        {/* Header with Search - Always visible */}
-        <div className="px-6 pt-6 pb-4">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">¿Dónde necesitas conectarte?</h1>
-            <SyncButton onSync={handleSyncData} syncing={syncing} />
-          </div>
+        {/* Header with Search - Hide title when embedded */}
+        <div className={isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'}>
+          {!isEmbedded && (
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">¿Dónde necesitas conectarte?</h1>
+              <SyncButton onSync={handleSyncData} syncing={syncing} />
+            </div>
+          )}
+          
+          {isEmbedded && (
+            <div className="flex justify-end mb-6">
+              <SyncButton onSync={handleSyncData} syncing={syncing} />
+            </div>
+          )}
           
           <SearchBar
             value={searchTerm}
@@ -259,7 +273,7 @@ export const Plans: React.FC = () => {
 
         {/* Tab Selector - Always visible when no country/region is selected */}
         {!selectedCategory && !selectedRegion && !showGrids && (
-          <div className="px-6 mb-6">
+          <div className={`mb-6 ${isEmbedded ? 'px-0' : 'px-6'}`}>
             <TabSelector
               selectedTab={selectedTab}
               onTabChange={handleTabChange}
@@ -269,7 +283,7 @@ export const Plans: React.FC = () => {
 
         {/* Tab Selector - Show when grids are visible but no selection made */}
         {!selectedCategory && !selectedRegion && showGrids && (
-          <div className="px-6 mb-6">
+          <div className={`mb-6 ${isEmbedded ? 'px-0' : 'px-6'}`}>
             <div className="flex items-center justify-between">
               <TabSelector
                 selectedTab={selectedTab}
@@ -287,7 +301,7 @@ export const Plans: React.FC = () => {
 
         {/* Selected Country/Region Header */}
         {(selectedCategory || selectedRegion) && (
-          <div className="px-6 mb-6">
+          <div className={`mb-6 ${isEmbedded ? 'px-0' : 'px-6'}`}>
             <button
               onClick={() => {
                 setSelectedCategory(undefined);
@@ -314,7 +328,9 @@ export const Plans: React.FC = () => {
 
         {/* Error Display */}
         {(error || categoriesError) && (
-          <div className="mx-6 mb-6 bg-red-50 border border-red-200 rounded-2xl p-4">
+          <div className={`mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 ${
+            isEmbedded ? 'mx-0' : 'mx-6'
+          }`}>
             <div className="flex items-center">
               <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
               <span className="text-red-700 font-medium">Error:</span>
@@ -325,7 +341,7 @@ export const Plans: React.FC = () => {
 
         {/* Loading State */}
         {(loading || categoriesLoading) && (
-          <div className="flex items-center justify-center py-12">
+          <div className={`flex items-center justify-center ${isEmbedded ? 'py-8' : 'py-12'}`}>
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
             <span className="ml-3 text-gray-600">Cargando...</span>
           </div>
@@ -333,7 +349,7 @@ export const Plans: React.FC = () => {
 
         {/* Content Area */}
         {!loading && !categoriesLoading && (
-          <div className="flex-1 px-6">
+          <div className={`flex-1 ${isEmbedded ? 'px-0' : 'px-6'}`}>
             {/* Currency indicator */}
             {(selectedCategory || selectedRegion) && (
               <div className="mb-4 text-sm text-gray-600">
@@ -424,7 +440,7 @@ export const Plans: React.FC = () => {
 
             {/* Welcome Message - Show when no search, no selection, and data is loaded */}
             {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
-              <div className="text-center py-8">
+              <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
                     <Globe className="w-10 h-10 text-[#299ae4]" />
@@ -456,7 +472,7 @@ export const Plans: React.FC = () => {
 
             {/* Empty State - Show when no data is loaded */}
             {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
-              <div className="text-center py-8">
+              <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
                     <Globe className="w-10 h-10 text-gray-400" />

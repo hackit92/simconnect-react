@@ -130,8 +130,8 @@ export const Cart = () => {
 
   return (
     <>
-      <CardContent className="flex flex-col px-0 py-0 relative self-stretch w-full min-h-screen bg-white">
-        <div className="flex flex-col w-full">
+      <CardContent className="flex flex-col px-0 py-0 relative self-stretch w-full min-h-screen bg-white max-w-6xl mx-auto">
+        <div className="text-center max-w-md mx-auto">
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
@@ -153,14 +153,16 @@ export const Cart = () => {
 
           {/* Cart Items */}
           <div className="flex-1 px-6 py-6">
-            <div className="space-y-4 mb-8">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Cart Items - Takes 2 columns on large screens */}
+              <div className="lg:col-span-2 space-y-4">
               {items.map((item) => {
                 const price = getProductPrice(item);
                 const displayName = getDisplayName(item, categories);
                 const subtotal = price * item.quantity;
 
                 return (
-                  <div key={item.id} className="bg-white shadow-md rounded-2xl p-6">
+                  <div key={item.id} className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                     <div className="flex items-start justify-between">
                       {/* Product Info */}
                       <div className="flex-1">
@@ -228,41 +230,44 @@ export const Cart = () => {
                   </div>
                 );
               })}
-            </div>
-
-            {/* Order Summary */}
-            <div className="bg-gray-50 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen del Pedido</h3>
-              
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-gray-600">
-                  <span>Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} productos)</span>
-                  <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Activación</span>
-                  <span className="text-[#299ae4] font-medium">Gratis</span>
-                </div>
-                <div className="border-t border-gray-200 pt-3">
-                  <div className="flex justify-between text-lg font-bold text-gray-900">
-                    <span>Total</span>
-                    <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
-                  </div>
-                </div>
               </div>
 
-              <Button
-                onClick={handleCheckout}
-                className="w-full bg-[#299ae4] hover:bg-[#299ae4]/90 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-                size="lg"
-              >
-                <CreditCard className="w-5 h-5 mr-2" />
-                Proceder al Pago
-              </Button>
+              {/* Order Summary - Takes 1 column on large screens, full width on smaller */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 sticky top-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen del Pedido</h3>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} productos)</span>
+                      <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Activación</span>
+                      <span className="text-[#299ae4] font-medium">Gratis</span>
+                    </div>
+                    <div className="border-t border-gray-200 pt-3">
+                      <div className="flex justify-between text-lg font-bold text-gray-900">
+                        <span>Total</span>
+                        <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
+                      </div>
+                    </div>
+                  </div>
 
-              <p className="text-xs text-gray-500 text-center mt-4">
-                Activación instantánea • Soporte 24/7 • Garantía de satisfacción
-              </p>
+                  <Button
+                    onClick={handleCheckout}
+                    className="w-full bg-[#299ae4] hover:bg-[#299ae4]/90 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                    size="lg"
+                  >
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Proceder al Pago
+                  </Button>
+
+                  <p className="text-xs text-gray-500 text-center mt-4">
+                    Activación instantánea • Soporte 24/7 • Garantía de satisfacción
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
