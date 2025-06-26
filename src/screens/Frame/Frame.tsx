@@ -130,7 +130,7 @@ const FrameContent = (): JSX.Element => {
                     <NavigationMenuItem>
                       <Popover>
                         <PopoverTrigger className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all">
-                          <span>{languages.find(l => l.value === selectedLanguage)?.flag}</span>
+                          <span>{languages.find(l => l.value === i18n.language)?.flag}</span>
                           <span className="text-gray-600">{i18n.language.toUpperCase()}</span>
                         </PopoverTrigger>
                         <PopoverContent className="w-48 p-1 rounded-xl">
