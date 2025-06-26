@@ -16,9 +16,13 @@ export const Home = () => {
       <CardContent className={`flex flex-col items-center p-0 relative self-stretch w-full overflow-hidden ${
         isDesktop ? 'min-h-[600px]' : 'h-[730px]'
       }`}>
-        <div className="relative w-full h-full flex flex-col items-center">
-          <div className={`relative z-10 flex flex-col items-center text-center ${
-            isDesktop ? 'px-8 pt-20 pb-20' : 'px-6 pt-12 pb-16'
+        <div className={`relative w-full h-full flex items-center ${
+          isDesktop ? 'lg:flex-row lg:justify-center lg:items-center lg:px-8' : 'flex-col'
+        }`}>
+          <div className={`relative z-10 flex flex-col text-center ${
+            isDesktop 
+              ? 'lg:w-1/2 lg:text-left lg:pr-8 lg:items-start px-8 pt-20 pb-20' 
+              : 'items-center px-6 pt-12 pb-16'
           }`}>
             <h1 className={`leading-[1.1] font-normal text-text-heading mb-6 ${
               isDesktop ? 'text-[60px] max-w-4xl' : 'text-[40px]'
@@ -56,13 +60,17 @@ export const Home = () => {
             )}
           </div>
 
-          <div className="relative w-full flex-1 mt-8">
+          <div className={`relative flex-1 ${
+            isDesktop ? 'lg:w-1/2 lg:mt-0' : 'w-full mt-8'
+          }`}>
             <img
               className="w-full h-full object-cover"
               alt="People using mobile phones internationally"
               src="/image-2.png"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
+            <div className={`absolute inset-0 bg-gradient-to-t from-white/60 to-transparent ${
+              isDesktop ? 'lg:hidden' : ''
+            }`} />
           </div>
         </div>
       </CardContent>
