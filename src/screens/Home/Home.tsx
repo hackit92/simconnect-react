@@ -83,19 +83,13 @@ export const Home = () => {
       {isDesktop && (
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                {t('plans.title')}
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Encuentra el plan perfecto para tu próximo viaje. Ofrecemos cobertura en más de 200 países con activación instantánea.
-              </p>
-            </div>
-            
             <Plans isEmbedded={true} />
           </div>
         </div>
       )}
+
+      {/* Why Choose Us Section - Desktop Only */}
+      {isDesktop && <WhyChooseUs />}
     </>
   );
 };
