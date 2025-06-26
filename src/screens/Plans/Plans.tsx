@@ -251,7 +251,19 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         <div className={isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'}>
           {!isEmbedded && (
             <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">¿Dónde necesitas conectarte?</h1>
+              <div className="text-center w-full">
+                <h1 className="text-4xl font-normal text-gray-800 mb-3">
+                  ¿Dónde necesitas <span className="text-primary font-semibold">Conectarte</span>?
+                </h1>
+                <p className="text-lg text-gray-600 mb-8">
+                  Te ayudamos a conectarte desde cualquier parte del mundo.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          {!isEmbedded && (
+            <div className="flex justify-end mb-6">
               <SyncButton onSync={handleSyncData} syncing={syncing} />
             </div>
           )}
@@ -268,7 +280,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             suggestions={suggestions}
             onSuggestionClick={handleSuggestionClick}
             onClear={clearSearch}
-            placeholder="Buscar por país o región (ej: España, Europa, Latinoamérica)"
+            placeholder="Buscar país..."
           />
         </div>
 
@@ -277,22 +289,26 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
         {/* Tab Selector - Always visible when no country/region is selected */}
         {!selectedCategory && !selectedRegion && !showGrids && (
-          <div className={`mb-6 ${isEmbedded ? 'px-0' : 'px-6'}`}>
+          <div className={`mb-6 ${isEmbedded ? 'px-0' : 'px-6'} flex justify-center`}>
+            <div className="w-full max-w-md">
             <TabSelector
               selectedTab={selectedTab}
               onTabChange={handleTabChange}
             />
+            </div>
           </div>
         )}
 
         {/* Tab Selector - Show when grids are visible but no selection made */}
         {!selectedCategory && !selectedRegion && showGrids && (
-          <div className={`mb-6 ${isEmbedded ? 'px-0' : 'px-6'}`}>
+          <div className={`mb-6 ${isEmbedded ? 'px-0' : 'px-6'} flex justify-center`}>
             <div className="flex items-center justify-between">
+              <div className="w-full max-w-md">
               <TabSelector
                 selectedTab={selectedTab}
                 onTabChange={handleTabChange}
               />
+              </div>
               <button
                 onClick={() => setShowGrids(false)}
                 className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
