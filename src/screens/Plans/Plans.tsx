@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, AlertCircle, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CardContent } from "../../components/ui/card";
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { SearchBar } from './components/SearchBar';

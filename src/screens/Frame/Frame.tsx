@@ -1,8 +1,10 @@
 import { HomeIcon, ShoppingCartIcon, GlobeIcon } from "lucide-react";
 import React, { useState, useCallback } from "react";
 import { Link, Route, Routes } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { CurrencyProvider, useCurrency } from "../../contexts/CurrencyContext";
 import { CartProvider, useCart } from "../../contexts/CartContext";
+import { LanguageProvider } from "../../contexts/LanguageContext";
 import { Card, CardContent } from "../../components/ui/card";
 import {
   NavigationMenu,
@@ -47,7 +49,7 @@ const regionOptions = [
 const FrameContent = (): JSX.Element => {
   const { selectedCurrency, setSelectedCurrency } = useCurrency();
   const { getTotalItems } = useCart();
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("es");
+  const { i18n, t } = useTranslation();
 
   const handleSync = async () => {
     try {
@@ -79,8 +81,8 @@ const FrameContent = (): JSX.Element => {
     setSelectedCurrency(value);
   }, []);
 
-  const handleLanguageChange = useCallback((value: string) => {
-    setSelectedLanguage(value);
+  const handleLanguageChange = useCallback((language: string) => {
+    i18n.changeLanguage(language);
   }, []);
 
   return (
@@ -129,7 +131,7 @@ const FrameContent = (): JSX.Element => {
                       <Popover>
                         <PopoverTrigger className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all">
                           <span>{languages.find(l => l.value === selectedLanguage)?.flag}</span>
-                          <span className="text-gray-600">{selectedLanguage.toUpperCase()}</span>
+                          <span className="text-gray-600">{i18n.language.toUpperCase()}</span>
                         </PopoverTrigger>
                         <PopoverContent className="w-48 p-1 rounded-xl">
                           <div className="space-y-0.5">
@@ -138,7 +140,7 @@ const FrameContent = (): JSX.Element => {
                                 key={language.value}
                                 onClick={() => handleLanguageChange(language.value)}
                                 className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all
-                                  ${selectedLanguage === language.value
+                                  ${i18n.language === language.value
                                     ? 'bg-blue-50 text-blue-600 font-medium'
                                     : 'text-gray-600 hover:bg-gray-50'
                                   }`}
@@ -170,7 +172,7 @@ const FrameContent = (): JSX.Element => {
                     className="flex flex-col items-center gap-1 text-gray-600 hover:text-blue-600 transition-colors duration-200"
                   >
                     <HomeIcon className="h-5 w-5" />
-                    <span className="text-[10px] font-medium">Inicio</span>
+                    <span className="text-[10px] font-medium">{t('nav.home')}</span>
                   </Link>
 
                   <Link 
@@ -178,7 +180,7 @@ const FrameContent = (): JSX.Element => {
                     className="flex flex-col items-center gap-1 text-gray-600 hover:text-blue-600 transition-colors duration-200"
                   >
                     <GlobeIcon className="h-5 w-5" />
-                    <span className="text-[10px] font-medium">Planes</span>
+                    <span className="text-[10px] font-medium">{t('nav.plans')}</span>
                   </Link>
 
                   <Link 
@@ -193,7 +195,7 @@ const FrameContent = (): JSX.Element => {
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] font-medium">Carrito</span>
+                    <span className="text-[10px] font-medium">{t('nav.cart')}</span>
                   </Link>
                 </div>
               </div>
@@ -208,9 +210,11 @@ const FrameContent = (): JSX.Element => {
 export const Frame = (): JSX.Element => {
   return (
     <CurrencyProvider>
-      <CartProvider>
-        <FrameContent />
-      </CartProvider>
+      <LanguageProvider>
+        <CartProvider>
+          <FrameContent />
+        </CartProvider>
+      </LanguageProvider>
     </CurrencyProvider>
   );
 };
