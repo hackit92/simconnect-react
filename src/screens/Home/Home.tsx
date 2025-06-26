@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { CardContent } from "../../components/ui/card";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
+import { WhyChooseUs } from "../../components/WhyChooseUs";
 import { Plans } from "../Plans";
 
 export const Home = () => {
@@ -74,6 +75,9 @@ export const Home = () => {
           </div>
         </div>
       </CardContent>
+
+      {/* Why Choose Us Section - Mobile Only */}
+      {!isDesktop && <WhyChooseUs />}
 
       {/* Embedded Plans Section - Desktop Only */}
       {isDesktop && (

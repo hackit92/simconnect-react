@@ -15,6 +15,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { supabase, type Category, type Product } from '../../lib/supabase';
 import { IntelligentSearch, type SearchSuggestion } from '../../lib/search/searchUtils';
 import { countryUtils } from '../../lib/countries/countryUtils';
+import { WhyChooseUs } from '../../components/WhyChooseUs';
 
 interface PlansProps {
   isEmbedded?: boolean;
@@ -270,6 +271,9 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             placeholder="Buscar por país o región (ej: España, Europa, Latinoamérica)"
           />
         </div>
+
+        {/* Why Choose Us Section - Desktop Embedded Only */}
+        {isEmbedded && <WhyChooseUs />}
 
         {/* Tab Selector - Always visible when no country/region is selected */}
         {!selectedCategory && !selectedRegion && !showGrids && (
