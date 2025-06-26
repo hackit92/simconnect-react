@@ -417,6 +417,11 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       onSelectCategory={handleCategorySelect}
                       currentPage={currentCategoryPage}
                       totalPages={totalCategoryPages}
+                      onPageChange={handleCategoryPageChange}
+                    />
+                  </div>
+                )}
+
                 {/* No Results Message */}
                 {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length === 0 && showGrids && (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -435,7 +440,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     </button>
                   </div>
                 )}
-                      onPageChange={handleCategoryPageChange}
+                )}
+
                 {/* Welcome Message - Show when no search, no selection, and data is loaded */}
                 {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
@@ -467,6 +473,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     </div>
                   </div>
                 )}
+
                     />
                 {/* Empty State - Show when no data is loaded */}
                 {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
@@ -486,6 +493,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   </div>
                 )}
               </div>
+              
                   </div>
               {/* Right Column - Plans List */}
               <div className={`${
@@ -516,7 +524,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       categories={categories}
                     />
                   </div>
-                )}
+                 )}
+                 
                 )}
                 {/* Empty state for right column when no plans are selected */}
                 {!shouldShowPlans && !loading && !categoriesLoading && (
