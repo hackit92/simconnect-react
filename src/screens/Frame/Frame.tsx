@@ -227,7 +227,6 @@ const FrameContent = (): JSX.Element => {
           <DesktopAppLayout />
         </div>
       )}
-      </div>
     </div>
   );
 };
