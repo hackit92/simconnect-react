@@ -37,7 +37,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [searchEngine, setSearchEngine] = useState<IntelligentSearch | null>(null);
   const isDesktop = useIsDesktop();
   
-  const categoriesPerPage = isDesktop && !isEmbedded ? 30 : 6;
+  const categoriesPerPage = isDesktop ? 30 : 6;
   
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
@@ -252,7 +252,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         <div className={`${
           isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'
         } ${
-          isDesktop && !isEmbedded ? 'max-w-2xl mx-auto' : ''
+          isDesktop ? 'max-w-2xl mx-auto' : ''
         }`}>
           {!isEmbedded && (
             <div className="mb-6">
@@ -318,21 +318,21 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             
             {/* Two-column layout for desktop */}
             <div className={`${
-              isDesktop && !isEmbedded 
+              isDesktop && !isEmbedded
                 ? 'max-w-7xl mx-auto px-8 flex flex-row gap-8' 
                 : isEmbedded ? 'px-0 flex flex-col' : 'px-6 flex flex-col'
             }`}>
               
               {/* Left Column - Filters and Selection */}
               <div className={`${
-                isDesktop && !isEmbedded 
+                isDesktop && !isEmbedded
                   ? 'w-1/3' 
                   : 'w-full'
               }`}>
                 {/* Tab Selector - Always visible when no country/region is selected */}
                 {!selectedCategory && !selectedRegion && !showGrids && (
                   <div className={`mb-6 ${
-                    isDesktop && !isEmbedded ? '' : ''
+                    isDesktop ? '' : ''
                   }`}>
                     <TabSelector
                       selectedTab={selectedTab}
@@ -344,7 +344,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {/* Tab Selector - Show when grids are visible but no selection made */}
                 {!selectedCategory && !selectedRegion && showGrids && (
                   <div className={`mb-6 ${
-                    isDesktop && !isEmbedded ? '' : ''
+                    isDesktop ? '' : ''
                   }`}>
                     <div className="flex items-center justify-center relative">
                       {/* Back button positioned absolutely to the left */}
@@ -508,7 +508,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
               
               {/* Right Column - Plans List */}
               <div className={`${
-                isDesktop && !isEmbedded 
+                isDesktop && !isEmbedded
                   ? 'w-2/3 pl-8 border-l border-gray-100' 
                   : 'w-full mt-6'
               }`}>
