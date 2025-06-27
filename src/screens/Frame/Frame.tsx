@@ -150,6 +150,14 @@ const FrameContent = (): JSX.Element => {
                           </div>
                         </PopoverContent>
                       </Popover>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </header>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
