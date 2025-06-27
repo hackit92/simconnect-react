@@ -252,7 +252,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         <div className={`${
           isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'
         } ${
-          isDesktop ? 'max-w-2xl mx-auto' : ''
+          isDesktop ? 'max-w-4xl mx-auto' : ''
         }`}>
           {!isEmbedded && (
             <div className="mb-6">
@@ -267,7 +267,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             </div>
           )}
           
-          <div className={`${isDesktop ? 'max-w-md mx-auto' : ''}`}>
+          <div className={`${isDesktop ? 'max-w-2xl mx-auto' : ''}`}>
             <SearchBar
               value={searchTerm}
               onChange={handleSearchChange}
