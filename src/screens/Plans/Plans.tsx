@@ -251,8 +251,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         {/* Header with Search - Hide title when embedded */}
         <div className={`${
           isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'
-        } ${
-          isDesktop ? 'max-w-4xl mx-auto' : ''
         }`}>
           {!isEmbedded && (
             <div className="mb-6">
@@ -267,7 +265,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             </div>
           )}
           
-          <div className={`${isDesktop ? 'max-w-5xl mx-auto' : ''}`}>
+          <div className={`${isDesktop ? 'w-full max-w-none flex justify-center' : ''}`}>
+            <div className={`${isDesktop ? 'w-3/5' : 'w-full'}`}>
             <SearchBar
               value={searchTerm}
               onChange={handleSearchChange}
@@ -276,6 +275,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
               onClear={clearSearch}
               placeholder="Buscar país..."
             />
+            </div>
           </div>
         </div>
 
