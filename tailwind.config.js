@@ -14,6 +14,9 @@ export default {
         'text-heading': '#1A1A1A',
         'text-body': '#333333',
       },
+      fontSize: {
+        '6xl': ['3.75rem', { lineHeight: '1.1' }],
+      },
     },
   },
   plugins: [],
