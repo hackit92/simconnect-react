@@ -533,17 +533,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     />
                   </div>
                 )}
-                {/* Empty state for right column when no plans are selected */}
-                {!shouldShowPlans && !loading && !categoriesLoading && (
-                  <div className="flex items-center justify-center h-64 text-center">
-                    <div>
-                      <Globe className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">
-                        Selecciona un país o región para ver los planes disponibles
-                      </p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
