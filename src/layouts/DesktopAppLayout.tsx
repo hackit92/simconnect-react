@@ -3,13 +3,47 @@ import { ShoppingCartIcon } from "lucide-react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
+import { useCurrency } from "../contexts/CurrencyContext";
 import { Home } from "../screens/Home";
 import { Cart } from "../screens/Cart";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+
+interface CurrencyOption {
+  value: string;
+  label: string;
+  symbol: string;
+}
+
+interface LanguageOption {
+  value: string;
+  label: string;
+  flag: string;
+}
+
+const currencies: CurrencyOption[] = [
+  { value: "USD", label: "US Dollar", symbol: "$" },
+  { value: "EUR", label: "Euro", symbol: "€" },
+  { value: "MXN", label: "Peso Mexicano", symbol: "$" },
+];
+
+const languages: LanguageOption[] = [
+  { value: "es", label: "Español", flag: "🇪🇸" },
+  { value: "en", label: "English", flag: "🇺🇸" },
+];
 
 export const DesktopAppLayout: React.FC = () => {
   const { getTotalItems } = useCart();
-  const { t } = useTranslation();
+  const { selectedCurrency, setSelectedCurrency } = useCurrency();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
+
+  const handleCurrencyChange = (value: string) => {
+    setSelectedCurrency(value);
+  };
+
+  const handleLanguageChange = (language: string) => {
+    i18n.changeLanguage(language);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -38,6 +72,58 @@ export const DesktopAppLayout: React.FC = () => {
               >
                 {t('nav.home')}
               </Link>
+              
+              {/* Currency Selector */}
+              <Popover>
+                <PopoverTrigger className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all">
+                  <span className="text-gray-900">{currencies.find(c => c.value === selectedCurrency)?.symbol}</span>
+                  <span className="text-gray-600">{selectedCurrency}</span>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-1 rounded-xl">
+                  <div className="space-y-0.5">
+                    {currencies.map((currency) => (
+                      <button
+                        key={currency.value}
+                        onClick={() => handleCurrencyChange(currency.value)}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all
+                          ${selectedCurrency === currency.value
+                            ? 'bg-blue-50 text-blue-600 font-medium'
+                            : 'text-gray-600 hover:bg-gray-50'
+                          }`}
+                      >
+                        <span className="text-lg">{currency.symbol}</span>
+                        <span>{currency.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Language Selector */}
+              <Popover>
+                <PopoverTrigger className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all">
+                  <span>{languages.find(l => l.value === i18n.language)?.flag}</span>
+                  <span className="text-gray-600">{i18n.language.toUpperCase()}</span>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-1 rounded-xl">
+                  <div className="space-y-0.5">
+                    {languages.map((language) => (
+                      <button
+                        key={language.value}
+                        onClick={() => handleLanguageChange(language.value)}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all
+                          ${i18n.language === language.value
+                            ? 'bg-blue-50 text-blue-600 font-medium'
+                            : 'text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                        <span className="text-lg">{language.flag}</span>
+                        <span>{language.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
               
               <Link 
                 to="/cart" 
