@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MapPin, X } from 'lucide-react';
 import type { SearchSuggestion } from '../../../lib/search/searchUtils';
+import { useIsDesktop } from '../../../hooks/useIsDesktop';
 
 interface SearchBarProps {
   value: string;
@@ -22,6 +23,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isDesktop = useIsDesktop();
 
   const clearSearch = () => {
     onChange('');
@@ -104,7 +106,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onKeyDown={handleKeyDown}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          className="w-full pl-12 pr-12 py-4 text-base bg-gray-50 border-0 rounded-2xl focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200 placeholder-gray-500"
+          className={`w-full pl-12 pr-12 text-base bg-gray-50 border-0 rounded-2xl focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200 placeholder-gray-500 ${
+            isDesktop ? 'py-5 text-lg' : 'py-4'
+          }`}
           autoComplete="off"
         />
         

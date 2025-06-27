@@ -267,7 +267,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             </div>
           )}
           
-          <div className={`${isDesktop ? 'max-w-2xl mx-auto' : ''}`}>
+          <div className={`${isDesktop ? 'max-w-5xl mx-auto' : ''}`}>
             <SearchBar
               value={searchTerm}
               onChange={handleSearchChange}
