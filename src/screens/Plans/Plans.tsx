@@ -255,7 +255,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         <div className={`${
           isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'
         } ${
-          isDesktop && !isEmbedded ? 'max-w-3xl mx-auto' : ''
+          isDesktop && !isEmbedded ? 'max-w-2xl mx-auto' : ''
         }`}>
           {!isEmbedded && (
             <div className="mb-6">
@@ -270,14 +270,16 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             </div>
           )}
           
-          <SearchBar
-            value={searchTerm}
-            onChange={handleSearchChange}
-            suggestions={suggestions}
-            onSuggestionClick={handleSuggestionClick}
-            onClear={clearSearch}
-            placeholder="Buscar país..."
-          />
+          <div className={`${isDesktop ? 'max-w-md mx-auto' : ''}`}>
+            <SearchBar
+              value={searchTerm}
+              onChange={handleSearchChange}
+              suggestions={suggestions}
+              onSuggestionClick={handleSuggestionClick}
+              onClear={clearSearch}
+              placeholder="Buscar país..."
+            />
+          </div>
         </div>
 
         {/* Error Display */}
@@ -333,7 +335,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {/* Tab Selector - Always visible when no country/region is selected */}
                 {!selectedCategory && !selectedRegion && !showGrids && (
                   <div className={`mb-6 ${
-                    isDesktop && !isEmbedded ? 'max-w-3xl mx-auto' : ''
+                    isDesktop && !isEmbedded ? '' : ''
                   }`}>
                     <TabSelector
                       selectedTab={selectedTab}
@@ -345,7 +347,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {/* Tab Selector - Show when grids are visible but no selection made */}
                 {!selectedCategory && !selectedRegion && showGrids && (
                   <div className={`mb-6 ${
-                    isDesktop && !isEmbedded ? 'max-w-3xl mx-auto' : ''
+                    isDesktop && !isEmbedded ? '' : ''
                   }`}>
                     <div className="flex items-center justify-between">
                       <TabSelector
@@ -354,7 +356,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       />
                       <button
                         onClick={() => setShowGrids(false)}
-                        className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 ml-4"
+                        className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 ml-4 border border-gray-200"
                       >
                         Ocultar lista
                       </button>

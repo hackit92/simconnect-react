@@ -7,10 +7,10 @@ interface TabSelectorProps {
 
 export const TabSelector: React.FC<TabSelectorProps> = ({ selectedTab, onTabChange }) => {
   return (
-    <div className="flex border-b border-gray-200 justify-center">
+    <div className="flex border-b border-gray-200 justify-center max-w-md mx-auto">
       <button
         onClick={() => onTabChange('countries')}
-        className={`py-3 px-8 text-sm font-semibold text-center pb-2 transition-all duration-200 ${
+        className={`py-3 px-8 text-sm font-semibold text-center transition-all duration-200 ${
           selectedTab === 'countries'
             ? 'text-primary border-b-2 border-primary'
             : 'text-gray-500 hover:text-gray-700'
@@ -20,7 +20,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({ selectedTab, onTabChan
       </button>
       <button
         onClick={() => onTabChange('regions')}
-        className={`py-3 px-8 text-sm font-semibold text-center pb-2 transition-all duration-200 ${
+        className={`py-3 px-8 text-sm font-semibold text-center transition-all duration-200 ${
           selectedTab === 'regions'
             ? 'text-primary border-b-2 border-primary'
             : 'text-gray-500 hover:text-gray-700'

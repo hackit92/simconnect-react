@@ -23,6 +23,12 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
 }) => {
   const isDesktop = useIsDesktop();
 
+  // Adjust grid columns based on screen size
+  const getGridCols = () => {
+    if (!isDesktop) return '';
+    // For desktop, use responsive grid that shows more countries
+    return 'grid grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7 gap-3';
+  };
   if (categories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -42,7 +48,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
       {/* Country List */}
       <div className={`${
         isDesktop 
-          ? 'grid grid-cols-7 gap-3' 
+          ? getGridCols()
           : 'space-y-3'
       }`}>
         {categories.map((category) => {
@@ -61,19 +67,20 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                     ? 'bg-blue-50 border-2 border-blue-200'
                     : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
                 }`}
+                title={countryName}
               >
                 <div className="flex items-center space-x-3">
                   {/* Flag Container */}
-                  <div className="relative w-6 h-4 rounded overflow-hidden flex items-center justify-center bg-white shadow-sm flex-shrink-0">
+                  <div className="relative w-8 h-5 rounded overflow-hidden flex items-center justify-center bg-white shadow-sm flex-shrink-0">
                     <span 
                       className={countryCode} 
-                      style={{ transform: 'scale(1.2)' }} 
+                      style={{ transform: 'scale(1.5)' }} 
                     />
                   </div>
                   
                   {/* Country Name */}
                   <div className="flex-1 min-w-0">
-                    <h3 className={`text-sm font-medium transition-colors duration-200 truncate ${
+                    <h3 className={`text-xs font-medium transition-colors duration-200 truncate ${
                       isSelected ? 'text-blue-700' : 'text-gray-900'
                     }`}>
                       {countryName}
@@ -82,8 +89,8 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                   
                   {/* Selection indicator */}
                   {isSelected && (
-                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3 h-3 text-white" />
+                    <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check className="w-2 h-2 text-white" />
                     </div>
                   )}
                 </div>
