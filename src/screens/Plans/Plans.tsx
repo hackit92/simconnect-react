@@ -37,10 +37,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [searchEngine, setSearchEngine] = useState<IntelligentSearch | null>(null);
   const isDesktop = useIsDesktop();
   
-  const categoriesPerPage = 6;
-  
-  // Adjust categories per page for desktop
-  const effectiveCategoriesPerPage = isDesktop && !isEmbedded ? 28 : categoriesPerPage;
+  const categoriesPerPage = isDesktop && !isEmbedded ? 30 : 6;
   
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
@@ -207,10 +204,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   };
 
   // Calculate pagination for categories
-  const totalCategoryPages = Math.ceil(filteredCategories.length / effectiveCategoriesPerPage);
+  const totalCategoryPages = Math.ceil(filteredCategories.length / categoriesPerPage);
   const paginatedCategories = filteredCategories.slice(
-    (currentCategoryPage - 1) * effectiveCategoriesPerPage,
-    currentCategoryPage * effectiveCategoriesPerPage
+    (currentCategoryPage - 1) * categoriesPerPage,
+    currentCategoryPage * categoriesPerPage
   );
 
   // Generate intelligent suggestions
