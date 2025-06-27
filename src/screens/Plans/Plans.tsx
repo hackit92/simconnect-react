@@ -453,7 +453,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Welcome Message - Show when no search, no selection, and data is loaded */}
-                {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
+                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
@@ -485,7 +485,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Empty State - Show when no data is loaded */}
-                {!debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
+                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
