@@ -349,17 +349,21 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   <div className={`mb-6 ${
                     isDesktop && !isEmbedded ? '' : ''
                   }`}>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-center relative">
+                      {/* Back button positioned absolutely to the left */}
+                      <button
+                        onClick={() => setShowGrids(false)}
+                        className="absolute left-0 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                        title="Volver"
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                      </button>
+                      
+                      {/* Centered tabs */}
                       <TabSelector
                         selectedTab={selectedTab}
                         onTabChange={handleTabChange}
                       />
-                      <button
-                        onClick={() => setShowGrids(false)}
-                        className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 ml-4 border border-gray-200"
-                      >
-                        Ocultar lista
-                      </button>
                     </div>
                   </div>
                 )}
