@@ -252,10 +252,14 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     }`}>
       <div className="flex flex-col w-full">
         {/* Header with Search - Hide title when embedded */}
-        <div className={isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'}>
+        <div className={`${
+          isEmbedded ? 'px-0 pt-0 pb-4' : 'px-6 pt-6 pb-4'
+        } ${
+          isDesktop && !isEmbedded ? 'max-w-3xl mx-auto' : ''
+        }`}>
           {!isEmbedded && (
             <div className="mb-6">
-              <div className="text-center w-full">
+              <div className="text-center w-full mb-8">
                 <h1 className="text-4xl font-normal text-gray-800 mb-3">
                   ¿Dónde necesitas <span className="text-primary font-semibold">Conectarte</span>?
                 </h1>
@@ -263,15 +267,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   Te ayudamos a conectarte desde cualquier parte del mundo.
                 </p>
               </div>
-              <div className="flex justify-end">
-              <SyncButton onSync={handleSyncData} syncing={syncing} />
-              </div>
-            </div>
-          )}
-          
-          {isEmbedded && (
-            <div className="flex justify-end mb-6">
-              <SyncButton onSync={handleSyncData} syncing={syncing} />
             </div>
           )}
           
@@ -308,16 +303,25 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
         {/* Content Area */}
         {!loading && !categoriesLoading && (
-          <div className={`flex-1 ${
-            isDesktop && !isEmbedded 
-              ? 'max-w-7xl mx-auto px-8' 
-              : isEmbedded ? 'px-0' : 'px-6'
-          }`}>
+          <div className="flex-1">
+            {/* Sync Button - Positioned absolutely in top right */}
+            {!isEmbedded && (
+              <div className="absolute top-6 right-6">
+                <SyncButton onSync={handleSyncData} syncing={syncing} />
+              </div>
+            )}
+            
+            {isEmbedded && (
+              <div className="flex justify-end mb-6 px-6">
+                <SyncButton onSync={handleSyncData} syncing={syncing} />
+              </div>
+            )}
+            
             {/* Two-column layout for desktop */}
             <div className={`${
               isDesktop && !isEmbedded 
-                ? 'flex flex-row gap-8' 
-                : 'flex flex-col'
+                ? 'max-w-7xl mx-auto px-8 flex flex-row gap-8' 
+                : isEmbedded ? 'px-0 flex flex-col' : 'px-6 flex flex-col'
             }`}>
               
               {/* Left Column - Filters and Selection */}
@@ -328,7 +332,9 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
               }`}>
                 {/* Tab Selector - Always visible when no country/region is selected */}
                 {!selectedCategory && !selectedRegion && !showGrids && (
-                  <div className="mb-6">
+                  <div className={`mb-6 ${
+                    isDesktop && !isEmbedded ? 'max-w-3xl mx-auto' : ''
+                  }`}>
                     <TabSelector
                       selectedTab={selectedTab}
                       onTabChange={handleTabChange}
@@ -338,7 +344,9 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
                 {/* Tab Selector - Show when grids are visible but no selection made */}
                 {!selectedCategory && !selectedRegion && showGrids && (
-                  <div className="mb-6">
+                  <div className={`mb-6 ${
+                    isDesktop && !isEmbedded ? 'max-w-3xl mx-auto' : ''
+                  }`}>
                     <div className="flex items-center justify-between">
                       <TabSelector
                         selectedTab={selectedTab}
