@@ -23,16 +23,16 @@ export const Home = () => {
           {/* Content */}
           <div className={`relative z-10 flex flex-col ${
             isDesktop 
-              ? 'lg:w-1/2 lg:text-left lg:items-start px-16 py-20' 
+              ? 'lg:w-3/5 lg:text-left lg:items-start px-16 py-24' 
               : 'items-center px-6 pt-12 pb-16 text-center'
           }`}>
-            <h1 className={`leading-tight font-normal text-gray-800 mb-6 ${
-              isDesktop ? 'text-6xl max-w-4xl' : 'text-[40px]'
+            <h1 className={`leading-[0.9] font-light text-gray-800 ${
+              isDesktop ? 'text-7xl mb-8 max-w-5xl' : 'text-[40px] mb-6'
             }`}>
               {isDesktop ? (
                 <>
-                  TE CONECTAMOS EN <br />
-                  <span className="font-bold text-gray-900">+ 200 PAÍSES</span>
+                  <span className="font-light">TE CONECTAMOS EN</span><br />
+                  <span className="font-black text-gray-900 text-8xl">+ 200 PAÍSES</span>
                 </>
               ) : (
                 <>
@@ -41,36 +41,42 @@ export const Home = () => {
               )}
             </h1>
 
-            <p className={`font-light text-gray-600 uppercase tracking-wide mb-8 ${
-              isDesktop ? 'text-xl max-w-2xl' : 'text-base max-w-[361px]'
+            <p className={`font-normal text-gray-700 uppercase tracking-[0.15em] ${
+              isDesktop ? 'text-2xl mb-10 max-w-3xl' : 'text-base mb-8 max-w-[361px]'
             }`}>
               {isDesktop ? 'CON NUESTROS SERVICIOS DE DATOS MÓVILES INTERNACIONALES' : t('home.subtitle')}
             </p>
 
-            <p className={`text-gray-700 mb-12 leading-relaxed ${
-              isDesktop ? 'text-2xl max-w-3xl' : 'text-xl max-w-[361px]'
+            <div className={`text-gray-700 leading-relaxed space-y-2 ${
+              isDesktop ? 'text-2xl mb-16 max-w-4xl' : 'text-xl mb-12 max-w-[361px]'
             }`}>
               {isDesktop ? (
                 <>
-                  YA SEA POR <span className="font-bold">TURISMO</span> O <span className="font-bold">NEGOCIOS</span>, CONÉCTATE CON LA<br />
-                  MAYOR VELOCIDAD Y DISPONIBILIDAD DEL MERCADO.<br />
-                  COMO EN CASA, A <span className="font-style-italic">PRECIOS LOCALES</span> EN <span className="font-bold">TODO EL MUNDO</span>.
+                  <p className="mb-3">
+                    YA SEA POR <span className="font-bold text-gray-900">TURISMO</span> O <span className="font-bold text-gray-900">NEGOCIOS</span>, CONÉCTATE CON LA
+                  </p>
+                  <p className="mb-3">
+                    MAYOR VELOCIDAD Y DISPONIBILIDAD DEL MERCADO.
+                  </p>
+                  <p>
+                    COMO EN CASA, A <span className="italic font-medium text-primary">PRECIOS LOCALES</span> EN <span className="font-bold text-gray-900">TODO EL MUNDO</span>.
+                  </p>
                 </>
               ) : (
-                <>
+                <p>
                   <span className="font-light">{t('home.description_light')} </span>
                   <span className="font-bold">{t('home.description_tourism')}</span>
                   <span className="font-light"> {t('home.description_or')} </span>
                   <span className="font-bold">{t('home.description_business')}</span>
-                </>
+                </p>
               )}
-            </p>
+            </div>
 
             {/* CTA Button */}
             <Button
               variant="outline"
-              className={`border-2 border-gray-800 rounded-none bg-transparent hover:bg-gray-800 hover:text-white transition-all duration-300 font-semibold tracking-wide ${
-                isDesktop ? 'px-8 py-4 text-lg' : 'w-[278px] h-12 text-lg'
+              className={`border-2 border-gray-900 rounded-none bg-transparent hover:bg-gray-900 hover:text-white transition-all duration-300 font-bold tracking-[0.1em] ${
+                isDesktop ? 'px-12 py-5 text-xl' : 'w-[278px] h-12 text-lg'
               }`}
               onClick={() => {
                 if (isDesktop) {
@@ -91,7 +97,7 @@ export const Home = () => {
 
           {/* Image */}
           <div className={`relative flex-1 ${
-            isDesktop ? 'lg:w-1/2 lg:mt-0' : 'w-full mt-8'
+            isDesktop ? 'lg:w-2/5 lg:mt-0' : 'w-full mt-8'
           }`}>
             <img
               className="w-full h-full object-cover"
