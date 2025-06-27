@@ -35,10 +35,22 @@ export interface ApiResponse<T> {
 
 class ExternalApiService {
   private baseUrl = 'https://api-iot.ucc.systems/api';
+  private bearerToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiY2I5ZTAxYmU4MGU4NjZiMjAwYTY4NjU5Y2E5N2QyODQ4MjkzZDA0MzMzMWZmZjVmNjA5ODdjZDg2MWQwMDAxNDFmYzNhODIyYjc3N2FlMTUiLCJpYXQiOjE3NTA5OTQyMTQuNzk5MzY3LCJuYmYiOjE3NTA5OTQyMTQuNzk5MzY5LCJleHAiOjE3ODI1MzAyMTQuNzk1ODg4LCJzdWIiOiIyMzgiLCJzY29wZXMiOltdfQ.RRkj61h1S-eiQ4B6cfgSoGAmDzfQALXp2oXsw6-QD0pHuFqe7g81Ix2b4LoVLQZoAUXV4kn7YXXX-307cPKdv7BwgSUANjDAaVDPi9YDE4eHQdzCAx6afa4jnbZ7RfxfJKC6vyXxEKe3Ne4d9SReZxoE8TRdlR2WLbfkme58dSR55oKqFfbdMYdbxtM7Hqb356fIanC4xbOTq3MGN1SvlV1C5DjWm8gae7jSeyCCXsuP3urzlngyiKG_iia4hBQPFJr_mIPhCSrjLWh9F0RMDF-fYl8kpOWknJbcnXRQqKRTOJE_QJc0q1Onp88v8OOvtv2MSW1aAZtu6giPelQtI-lystg97B2kKEI8bdy5sV1A6glgEeJXvw54S8r8B5YX79PH_eXkLwJqstk7_47ouz5KNLH6iS-KG0XSJXCUOJDyhiL3KTKxeYLT7UgW_M1t-fJo8-5ukoWpmQ4VOIwxUT9VKU6rjSfUYGymYBhc2zB2YkbDc1Owwj3RBHSK4VNvF9Tm0hx17ahoZ7DmzQT9Nh4tQOvwQHsdLA0wgt9405JqrO3wYa8A4bS_KGIbt1ZBZCoaHodcC-2aKkuUMkdOd_rDHLeU3BjVF6veiV2bDiF2H1qqP9KR4hwcvjRoUJ7dpFugoH1vTrShuUJsSuSGpAwEMPjrrwX88x3fPxyUvDY';
+
+  private getHeaders(): HeadersInit {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.bearerToken}`,
+      'Accept': 'application/json'
+    };
+  }
 
   async getPlans(): Promise<ExternalPlan[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/plans/public/yes`);
+      const response = await fetch(`${this.baseUrl}/plans/public/yes`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -65,7 +77,10 @@ class ExternalApiService {
 
   async getCategories(): Promise<ExternalCategory[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/categories/public/yes`);
+      const response = await fetch(`${this.baseUrl}/categories/public/yes`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
       
       if (!response.ok) {
         // If categories endpoint doesn't exist, extract from plans
