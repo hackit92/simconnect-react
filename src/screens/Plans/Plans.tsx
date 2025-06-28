@@ -5,14 +5,16 @@ import { CardContent } from "../../components/ui/card";
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useCart } from '../../contexts/CartContext';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
-import { useExternalPlans } from '../../hooks/useExternalPlans';
-import { ExternalPlanCard } from '../../components/ExternalPlanCard';
-import type { ExternalPlan } from '../../lib/api';
 import { SearchBar } from './components/SearchBar';
 import { TabSelector } from './components/TabSelector';
 import { CountryGrid } from './components/CountryGrid';
 import { RegionGrid } from './components/RegionGrid';
+import { PlanList } from './components/PlanList';
+import { SyncButton } from './components/SyncButton';
+import { usePlans } from './hooks/usePlans';
+import { useSync } from './hooks/useSync';
 import { useDebounce } from '../../hooks/useDebounce';
+import { supabase, type Category, type Product } from '../../lib/supabase';
 import { IntelligentSearch, type SearchSuggestion } from '../../lib/search/searchUtils';
 import { countryUtils } from '../../lib/countries/countryUtils';
 
@@ -25,11 +27,14 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
   const [showGrids, setShowGrids] = useState(false);
   const { selectedCurrency } = useCurrency();
-  const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
   const [currentCategoryPage, setCurrentCategoryPage] = useState(1);
-  const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [searchEngine, setSearchEngine] = useState<IntelligentSearch | null>(null);
   const isDesktop = useIsDesktop();
   
@@ -37,28 +42,63 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
-  // Use external API instead of local database
   const {
     plans,
-    categories,
     loading,
     error,
-    refetch,
-    getPlansByCountry,
-    getPlansByRegion
-  } = useExternalPlans({
+    refetch
+  } = usePlans({
     searchTerm: debouncedSearchTerm,
-    autoFetch: true
+    selectedCategory,
+    selectedRegion,
+    currentPage: 1,
+    pageSize: 20
   });
 
-  // Initialize search engine when categories are loaded
+  const { handleSync, syncing } = useSync();
+
+  // Load data on component mount
   useEffect(() => {
-    if (categories.length > 0) {
-      const search = new IntelligentSearch(categories);
-      setSearchEngine(search);
-      setFilteredCategories(categories);
-    }
-  }, [categories]);
+    const fetchData = async () => {
+      setCategoriesLoading(true);
+      setCategoriesError(null);
+      
+      try {
+        // Fetch categories
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('wc_categories')
+          .select('*')
+          .order('name');
+        
+        if (categoriesError) throw categoriesError;
+        
+        // Fetch all products for region analysis
+        const { data: productsData, error: productsError } = await supabase
+          .from('wc_products')
+          .select('*')
+          .eq('active', true);
+        
+        if (productsError) throw productsError;
+        
+        setCategories(categoriesData || []);
+        setAllProducts(productsData || []);
+        setFilteredCategories(categoriesData || []);
+        
+        // Initialize search engine
+        if (categoriesData) {
+          const search = new IntelligentSearch(categoriesData);
+          setSearchEngine(search);
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setCategoriesError('Error al cargar los datos. Por favor intente nuevamente.');
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Filter categories based on search term - REMOVED AUTO-SELECTION
   useEffect(() => {
@@ -99,50 +139,16 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const handleCategorySelect = (categoryId: number) => {
     setSelectedCategory(categoryId === selectedCategory ? undefined : categoryId);
     setSelectedRegion(undefined); // Clear region selection when selecting country
-    
-    // Get country code from selected category and fetch plans
-    const selectedCat = categories.find(cat => cat.id === categoryId);
-    if (selectedCat) {
-      getPlansByCountry(selectedCat.slug);
-    }
   };
 
   const handleRegionSelect = (regionValue: string) => {
     setSelectedRegion(regionValue === selectedRegion ? undefined : regionValue);
     setSelectedCategory(undefined); // Clear category selection when selecting region
-    
-    // Fetch plans for the selected region
-    getPlansByRegion(regionValue);
   };
 
-  const handleAddToCart = (plan: ExternalPlan) => {
-    // Convert ExternalPlan to Product format for cart
-    const cartProduct = {
-      id: plan.id,
-      name: plan.name,
-      description: plan.description || '',
-      price: plan.price.toString(),
-      regular_price: plan.price.toString(),
-      sale_price: plan.price.toString(),
-      images: plan.images || [],
-      sku: plan.sku,
-      metadata: plan.metadata || {},
-      category_ids: [],
-      data_gb: plan.data_gb,
-      validity_days: plan.validity_days,
-      technology: plan.technology,
-      has_5g: plan.has_5g,
-      has_lte: plan.has_lte,
-      regular_price_usd: plan.currency === 'USD' ? plan.price : undefined,
-      regular_price_eur: plan.currency === 'EUR' ? plan.price : undefined,
-      regular_price_mxn: plan.currency === 'MXN' ? plan.price : undefined,
-      plan_type: plan.plan_type,
-      region_code: plan.region_code,
-      country_code: plan.country_code,
-      active: plan.active
-    };
-    
-    addToCart(cartProduct);
+  const handleSyncData = async () => {
+    await handleSync();
+    refetch();
   };
 
   const handleCategoryPageChange = (page: number) => {
@@ -217,7 +223,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   };
 
   // Determine if we should show plans
-  const shouldShowPlans = (selectedCategory || selectedRegion) && plans.length > 0;
+  const shouldShowPlans = selectedCategory || selectedRegion;
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -256,20 +262,20 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         </div>
 
         {/* Error Display */}
-        {error && (
+        {(error || categoriesError) && (
           <div className={`mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 ${
             isEmbedded ? 'mx-0' : 'mx-6'
           }`}>
             <div className="flex items-center">
               <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
               <span className="text-red-700 font-medium">Error:</span>
-              <span className="text-red-600 ml-1">{error}</span>
+              <span className="text-red-600 ml-1">{error || categoriesError}</span>
             </div>
           </div>
         )}
 
         {/* Loading State */}
-        {loading && (
+        {(loading || categoriesLoading) && (
           <div className={`flex items-center justify-center ${isEmbedded ? 'py-8' : 'py-12'}`}>
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
             <span className="ml-3 text-gray-600">Cargando...</span>
@@ -277,28 +283,18 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         )}
 
         {/* Content Area */}
-        {!loading && (
+        {!loading && !categoriesLoading && (
           <div className="flex-1">
-            {/* Refresh Button - Positioned absolutely in top right */}
+            {/* Sync Button - Positioned absolutely in top right */}
             {!isEmbedded && (
               <div className="absolute top-6 right-6">
-                <button
-                  onClick={refetch}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-200 hover:border-gray-300 rounded-xl bg-white hover:bg-gray-50 transition-all duration-200"
-                >
-                  <span>Actualizar</span>
-                </button>
+                <SyncButton onSync={handleSyncData} syncing={syncing} />
               </div>
             )}
             
             {isEmbedded && (
               <div className="flex justify-end mb-6 px-6">
-                <button
-                  onClick={refetch}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-200 hover:border-gray-300 rounded-xl bg-white hover:bg-gray-50 transition-all duration-200"
-                >
-                  <span>Actualizar</span>
-                </button>
+                <SyncButton onSync={handleSyncData} syncing={syncing} />
               </div>
             )}
             
@@ -393,7 +389,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     ) : (
                       <RegionGrid
                         categories={filteredCategories}
-                        products={plans}
+                        products={allProducts}
                         selectedCategory={selectedCategory}
                         onSelectCategory={handleCategorySelect}
                         onSelectRegion={handleRegionSelect}
@@ -442,7 +438,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Welcome Message - Show when no search, no selection, and data is loaded */}
-                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !loading && categories.length > 0 && !showGrids && (
+                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
@@ -474,7 +470,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Empty State - Show when no data is loaded */}
-                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !loading && categories.length === 0 && !showGrids && (
+                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
@@ -486,7 +482,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       <p className="text-gray-600 mb-6">
                         Parece que no hay países o planes cargados. Intenta sincronizar los datos.
                       </p>
-                      <button onClick={refetch} className="px-4 py-2 bg-blue-500 text-white rounded-lg">Actualizar</button>
+                      <SyncButton onSync={handleSyncData} syncing={syncing} />
                     </div>
                   </div>
                 )}
@@ -513,33 +509,13 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       {selectedRegion && ` - ${getRegionDisplayName(selectedRegion)}`}
                       {selectedCategoryData && ` - ${countryUtils.getCountryName(selectedCategoryData.slug)}`}
                     </h2>
-                    
-                    {loading ? (
-                      <div className="flex items-center justify-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                        <span className="ml-3 text-gray-600">Cargando planes...</span>
-                      </div>
-                    ) : plans.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                          <Globe className="w-8 h-8 text-gray-400" />
-                        </div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron planes</h3>
-                        <p className="text-gray-500 max-w-sm">
-                          No hay planes disponibles para la selección actual.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {plans.map((plan) => (
-                          <ExternalPlanCard
-                            key={plan.id}
-                            plan={plan}
-                            onAddToCart={handleAddToCart}
-                          />
-                        ))}
-                      </div>
-                    )}
+                    <PlanList
+                      products={plans}
+                      loading={loading}
+                      selectedCategory={selectedCategory}
+                      selectedCategoryData={selectedCategoryData}
+                      categories={categories}
+                    />
                   </div>
                 )}
               </div>

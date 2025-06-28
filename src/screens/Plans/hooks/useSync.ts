@@ -10,7 +10,7 @@ export function useSync() {
     setError(null);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-woocommerce`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-external-plans`,
         {
           method: 'POST',
           headers: {
@@ -25,10 +25,7 @@ export function useSync() {
         
         if (response.status === 503) {
           errorMessage += 'La función de sincronización no está disponible. ' +
-            'Por favor, asegúrese de que las siguientes variables de entorno estén configuradas en Supabase:\n\n' +
-            '- WC_URL: URL de su tienda WooCommerce\n' +
-            '- WC_CONSUMER_KEY: Clave de consumidor de la API de WooCommerce\n' +
-            '- WC_CONSUMER_SECRET: Secreto de consumidor de la API de WooCommerce\n\n' +
+            'Por favor, asegúrese de que la variable de entorno EXTERNAL_API_TOKEN esté configurada en Supabase.\n\n' +
             'Si el problema persiste, contacte al administrador del sistema.';
         } else {
           errorMessage += `Error ${response.status}. Por favor, verifique que la función esté correctamente configurada en Supabase.`;
