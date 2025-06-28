@@ -354,14 +354,16 @@ export const PlanList: React.FC<PlanListProps> = ({
         const flagClass = getProductFlag(plan, selectedCategoryData, categories);
         const isExpanded = expandedRegionalPlans.has(plan.id);
         
-        // Safely get coverage countries with proper null checks
-        let coverageCountries: string[] = [];
-        if (isRegional && plan.region_code) {
-          const rawCoverage = regionalCoverage[plan.region_code];
-          if (Array.isArray(rawCoverage)) {
-            coverageCountries = rawCoverage;
+        // Safely get coverage countries with proper null checks - always ensure it's an array
+        const coverageCountries: string[] = (() => {
+          if (isRegional && plan.region_code) {
+            const rawCoverage = regionalCoverage[plan.region_code];
+            if (Array.isArray(rawCoverage)) {
+              return rawCoverage;
+            }
           }
-        }
+          return [];
+        })();
         
         return (
           <div key={plan.id} className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all duration-200">
