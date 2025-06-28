@@ -73,7 +73,7 @@ function transformExternalPlans(rawPlans: any[]): any[] {
 
     // Determine plan type and codes
     const planType = determinePlanType(plan);
-    const regionCode = planType === 'regional' ? (plan.region_code || plan.region) : null;
+    const regionCode = planType === 'regional' ? normalizeRegionCode(plan.region_code || plan.region || '') : null;
     const countryCode = planType === 'country' ? (plan.country_code || plan.country) : null;
 
     // Extract category IDs (we'll populate this after syncing categories)
@@ -142,11 +142,11 @@ function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
 
     // Extract region categories
     if (plan.plan_type === 'regional' && plan.region_code) {
-      const slug = plan.region_code;
+      const slug = normalizeRegionCode(plan.region_code);
       if (!categories.has(slug)) {
         categories.set(slug, {
           id: categoryId++,
-          name: getRegionName(plan.region_code),
+          name: getRegionName(slug),
           slug: slug,
           parent: null
         });
@@ -254,6 +254,69 @@ function getRegionName(regionCode: string): string {
   };
   
   return regionNames[regionCode] || regionCode;
+}
+
+function normalizeRegionCode(regionInput: string): string {
+  if (!regionInput) return '';
+  
+  const normalized = regionInput.toLowerCase().trim();
+  
+  // Map various input formats to canonical region codes
+  const regionMappings: Record<string, string> = {
+    // Latin America variations
+    'latin america': 'latinoamerica',
+    'latin-america': 'latinoamerica',
+    'latinamerica': 'latinoamerica',
+    'latino america': 'latinoamerica',
+    'latino-america': 'latinoamerica',
+    'south america': 'latinoamerica',
+    'central america': 'latinoamerica',
+    
+    // Europe variations
+    'europe': 'europa',
+    'european union': 'europa',
+    'eu': 'europa',
+    
+    // North America variations
+    'north america': 'norteamerica',
+    'north-america': 'norteamerica',
+    'northamerica': 'norteamerica',
+    
+    // Middle East variations
+    'middle east': 'oriente-medio',
+    'middle-east': 'oriente-medio',
+    'middleeast': 'oriente-medio',
+    'oriente medio': 'oriente-medio',
+    'orientemedio': 'oriente-medio',
+    
+    // Caribbean variations
+    'caribbean': 'caribe',
+    
+    // Balkans variations
+    'balkans': 'balcanes',
+    'balkan': 'balcanes',
+    
+    // Caucasus variations
+    'caucasus': 'caucaso',
+    
+    // Central Asia variations
+    'central asia': 'asia-central',
+    'central-asia': 'asia-central',
+    'centralasia': 'asia-central',
+    
+    // Africa variations
+    'africa': 'africa',
+    
+    // Asia variations
+    'asia': 'asia',
+    
+    // Oceania variations
+    'oceania': 'oceania',
+    'pacific': 'oceania'
+  };
+  
+  // Return mapped value or original normalized input
+  return regionMappings[normalized] || normalized;
 }
 
 async function syncCategories(categories: any[]): Promise<Map<string, number>> {
