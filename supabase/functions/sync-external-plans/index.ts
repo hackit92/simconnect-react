@@ -948,7 +948,7 @@ async function syncProducts(products: any[], categoryMap: Map<string, number>): 
     try {
       const { error } = await supabase
         .from('wc_products')
-        .upsert(batch, { onConflict: 'id' });
+        .upsert(batch, { onConflict: 'sku' });
 
       if (error) {
         console.error(`Error upserting products batch ${i/batchSize + 1}:`, error);
