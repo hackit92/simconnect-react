@@ -465,8 +465,13 @@ Deno.serve(async (req) => {
     let rawPlans: any[] = [];
     if (Array.isArray(plansResponse)) {
       rawPlans = plansResponse;
-    } else if (plansResponse.data && Array.isArray(plansResponse.data)) {
-      rawPlans = plansResponse.data;
+    } else if (plansResponse.data) {
+      // Handle nested data structure: data.records
+      if (plansResponse.data.records && Array.isArray(plansResponse.data.records)) {
+        rawPlans = plansResponse.data.records;
+      } else if (Array.isArray(plansResponse.data)) {
+        rawPlans = plansResponse.data;
+      }
     } else if (plansResponse.plans && Array.isArray(plansResponse.plans)) {
       rawPlans = plansResponse.plans;
     } else {
