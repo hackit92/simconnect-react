@@ -1,24 +1,36 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 interface ExternalPlan {
-  id: number;
-  name: string;
-  description?: string;
-  price: number;
-  currency: string;
-  data_gb: number;
+  plan_type_id: number;
+  identifier: string;
+  name: { es: string; en: string };
+  description: { es: string; en: string };
+  coverage: 'country' | 'regional';
+  status: string;
+  created_at: string;
+  updated_at: string;
+  data_quota_mb: number;
   validity_days: number;
-  technology: string;
-  has_5g: boolean;
-  has_lte: boolean;
-  plan_type: 'country' | 'regional';
-  region_code?: string;
-  country_code?: string;
-  coverage_countries?: string[];
-  active: boolean;
-  sku: string;
-  images?: Array<{ src: string }>;
-  metadata?: Record<string, any>;
+  countries_enabled: number;
+  prices: Array<{
+    currency: string;
+    amount: number;
+    [key: string]: any;
+  }>;
+  countries: string[]; // ISO3 codes like ["ABW"]
+  connectivity: {
+    "5g": "yes" | "no";
+    lte: "yes" | "no";
+  };
+  provider_details: {
+    plan_type_id: number;
+    data_quota_mb: number;
+    validity_days: number;
+    countries_enabled: string;
+    uid: string;
+    policy_id: number;
+    policy_description: string;
+  };
 }
 
 interface ExternalCategory {
@@ -43,6 +55,264 @@ const supabase = createClient(
 const EXTERNAL_API_URL = "https://api-iot.ucc.systems/api";
 const EXTERNAL_API_TOKEN = Deno.env.get("EXTERNAL_API_TOKEN") || "";
 
+// Function to convert ISO3 country codes to ISO2
+function iso3ToIso2(iso3Code: string): string {
+  const iso3ToIso2Map: Record<string, string> = {
+    'ABW': 'aw', // Aruba
+    'AFG': 'af', // Afghanistan
+    'AGO': 'ao', // Angola
+    'AIA': 'ai', // Anguilla
+    'ALA': 'ax', // Åland Islands
+    'ALB': 'al', // Albania
+    'AND': 'ad', // Andorra
+    'ARE': 'ae', // United Arab Emirates
+    'ARG': 'ar', // Argentina
+    'ARM': 'am', // Armenia
+    'ASM': 'as', // American Samoa
+    'ATA': 'aq', // Antarctica
+    'ATF': 'tf', // French Southern Territories
+    'ATG': 'ag', // Antigua and Barbuda
+    'AUS': 'au', // Australia
+    'AUT': 'at', // Austria
+    'AZE': 'az', // Azerbaijan
+    'BDI': 'bi', // Burundi
+    'BEL': 'be', // Belgium
+    'BEN': 'bj', // Benin
+    'BES': 'bq', // Bonaire, Sint Eustatius and Saba
+    'BFA': 'bf', // Burkina Faso
+    'BGD': 'bd', // Bangladesh
+    'BGR': 'bg', // Bulgaria
+    'BHR': 'bh', // Bahrain
+    'BHS': 'bs', // Bahamas
+    'BIH': 'ba', // Bosnia and Herzegovina
+    'BLM': 'bl', // Saint Barthélemy
+    'BLR': 'by', // Belarus
+    'BLZ': 'bz', // Belize
+    'BMU': 'bm', // Bermuda
+    'BOL': 'bo', // Bolivia
+    'BRA': 'br', // Brazil
+    'BRB': 'bb', // Barbados
+    'BRN': 'bn', // Brunei Darussalam
+    'BTN': 'bt', // Bhutan
+    'BVT': 'bv', // Bouvet Island
+    'BWA': 'bw', // Botswana
+    'CAF': 'cf', // Central African Republic
+    'CAN': 'ca', // Canada
+    'CCK': 'cc', // Cocos (Keeling) Islands
+    'CHE': 'ch', // Switzerland
+    'CHL': 'cl', // Chile
+    'CHN': 'cn', // China
+    'CIV': 'ci', // Côte d'Ivoire
+    'CMR': 'cm', // Cameroon
+    'COD': 'cd', // Congo (Democratic Republic)
+    'COG': 'cg', // Congo
+    'COK': 'ck', // Cook Islands
+    'COL': 'co', // Colombia
+    'COM': 'km', // Comoros
+    'CPV': 'cv', // Cabo Verde
+    'CRI': 'cr', // Costa Rica
+    'CUB': 'cu', // Cuba
+    'CUW': 'cw', // Curaçao
+    'CXR': 'cx', // Christmas Island
+    'CYM': 'ky', // Cayman Islands
+    'CYP': 'cy', // Cyprus
+    'CZE': 'cz', // Czechia
+    'DEU': 'de', // Germany
+    'DJI': 'dj', // Djibouti
+    'DMA': 'dm', // Dominica
+    'DNK': 'dk', // Denmark
+    'DOM': 'do', // Dominican Republic
+    'DZA': 'dz', // Algeria
+    'ECU': 'ec', // Ecuador
+    'EGY': 'eg', // Egypt
+    'ERI': 'er', // Eritrea
+    'ESH': 'eh', // Western Sahara
+    'ESP': 'es', // Spain
+    'EST': 'ee', // Estonia
+    'ETH': 'et', // Ethiopia
+    'FIN': 'fi', // Finland
+    'FJI': 'fj', // Fiji
+    'FLK': 'fk', // Falkland Islands
+    'FRA': 'fr', // France
+    'FRO': 'fo', // Faroe Islands
+    'FSM': 'fm', // Micronesia
+    'GAB': 'ga', // Gabon
+    'GBR': 'gb', // United Kingdom
+    'GEO': 'ge', // Georgia
+    'GGY': 'gg', // Guernsey
+    'GHA': 'gh', // Ghana
+    'GIB': 'gi', // Gibraltar
+    'GIN': 'gn', // Guinea
+    'GLP': 'gp', // Guadeloupe
+    'GMB': 'gm', // Gambia
+    'GNB': 'gw', // Guinea-Bissau
+    'GNQ': 'gq', // Equatorial Guinea
+    'GRC': 'gr', // Greece
+    'GRD': 'gd', // Grenada
+    'GRL': 'gl', // Greenland
+    'GTM': 'gt', // Guatemala
+    'GUF': 'gf', // French Guiana
+    'GUM': 'gu', // Guam
+    'GUY': 'gy', // Guyana
+    'HKG': 'hk', // Hong Kong
+    'HMD': 'hm', // Heard Island and McDonald Islands
+    'HND': 'hn', // Honduras
+    'HRV': 'hr', // Croatia
+    'HTI': 'ht', // Haiti
+    'HUN': 'hu', // Hungary
+    'IDN': 'id', // Indonesia
+    'IMN': 'im', // Isle of Man
+    'IND': 'in', // India
+    'IOT': 'io', // British Indian Ocean Territory
+    'IRL': 'ie', // Ireland
+    'IRN': 'ir', // Iran
+    'IRQ': 'iq', // Iraq
+    'ISL': 'is', // Iceland
+    'ISR': 'il', // Israel
+    'ITA': 'it', // Italy
+    'JAM': 'jm', // Jamaica
+    'JEY': 'je', // Jersey
+    'JOR': 'jo', // Jordan
+    'JPN': 'jp', // Japan
+    'KAZ': 'kz', // Kazakhstan
+    'KEN': 'ke', // Kenya
+    'KGZ': 'kg', // Kyrgyzstan
+    'KHM': 'kh', // Cambodia
+    'KIR': 'ki', // Kiribati
+    'KNA': 'kn', // Saint Kitts and Nevis
+    'KOR': 'kr', // Korea (Republic of)
+    'KWT': 'kw', // Kuwait
+    'LAO': 'la', // Lao People's Democratic Republic
+    'LBN': 'lb', // Lebanon
+    'LBR': 'lr', // Liberia
+    'LBY': 'ly', // Libya
+    'LCA': 'lc', // Saint Lucia
+    'LIE': 'li', // Liechtenstein
+    'LKA': 'lk', // Sri Lanka
+    'LSO': 'ls', // Lesotho
+    'LTU': 'lt', // Lithuania
+    'LUX': 'lu', // Luxembourg
+    'LVA': 'lv', // Latvia
+    'MAC': 'mo', // Macao
+    'MAF': 'mf', // Saint Martin (French part)
+    'MAR': 'ma', // Morocco
+    'MCO': 'mc', // Monaco
+    'MDA': 'md', // Moldova
+    'MDG': 'mg', // Madagascar
+    'MDV': 'mv', // Maldives
+    'MEX': 'mx', // Mexico
+    'MHL': 'mh', // Marshall Islands
+    'MKD': 'mk', // North Macedonia
+    'MLI': 'ml', // Mali
+    'MLT': 'mt', // Malta
+    'MMR': 'mm', // Myanmar
+    'MNE': 'me', // Montenegro
+    'MNG': 'mn', // Mongolia
+    'MNP': 'mp', // Northern Mariana Islands
+    'MOZ': 'mz', // Mozambique
+    'MRT': 'mr', // Mauritania
+    'MSR': 'ms', // Montserrat
+    'MTQ': 'mq', // Martinique
+    'MUS': 'mu', // Mauritius
+    'MWI': 'mw', // Malawi
+    'MYS': 'my', // Malaysia
+    'MYT': 'yt', // Mayotte
+    'NAM': 'na', // Namibia
+    'NCL': 'nc', // New Caledonia
+    'NER': 'ne', // Niger
+    'NFK': 'nf', // Norfolk Island
+    'NGA': 'ng', // Nigeria
+    'NIC': 'ni', // Nicaragua
+    'NIU': 'nu', // Niue
+    'NLD': 'nl', // Netherlands
+    'NOR': 'no', // Norway
+    'NPL': 'np', // Nepal
+    'NRU': 'nr', // Nauru
+    'NZL': 'nz', // New Zealand
+    'OMN': 'om', // Oman
+    'PAK': 'pk', // Pakistan
+    'PAN': 'pa', // Panama
+    'PCN': 'pn', // Pitcairn
+    'PER': 'pe', // Peru
+    'PHL': 'ph', // Philippines
+    'PLW': 'pw', // Palau
+    'PNG': 'pg', // Papua New Guinea
+    'POL': 'pl', // Poland
+    'PRI': 'pr', // Puerto Rico
+    'PRK': 'kp', // Korea (Democratic People's Republic of)
+    'PRT': 'pt', // Portugal
+    'PRY': 'py', // Paraguay
+    'PSE': 'ps', // Palestine, State of
+    'PYF': 'pf', // French Polynesia
+    'QAT': 'qa', // Qatar
+    'REU': 're', // Réunion
+    'ROU': 'ro', // Romania
+    'RUS': 'ru', // Russian Federation
+    'RWA': 'rw', // Rwanda
+    'SAU': 'sa', // Saudi Arabia
+    'SDN': 'sd', // Sudan
+    'SEN': 'sn', // Senegal
+    'SGP': 'sg', // Singapore
+    'SGS': 'gs', // South Georgia and the South Sandwich Islands
+    'SHN': 'sh', // Saint Helena, Ascension and Tristan da Cunha
+    'SJM': 'sj', // Svalbard and Jan Mayen
+    'SLB': 'sb', // Solomon Islands
+    'SLE': 'sl', // Sierra Leone
+    'SLV': 'sv', // El Salvador
+    'SMR': 'sm', // San Marino
+    'SOM': 'so', // Somalia
+    'SPM': 'pm', // Saint Pierre and Miquelon
+    'SRB': 'rs', // Serbia
+    'SSD': 'ss', // South Sudan
+    'STP': 'st', // Sao Tome and Principe
+    'SUR': 'sr', // Suriname
+    'SVK': 'sk', // Slovakia
+    'SVN': 'si', // Slovenia
+    'SWE': 'se', // Sweden
+    'SWZ': 'sz', // Eswatini
+    'SXM': 'sx', // Sint Maarten (Dutch part)
+    'SYC': 'sc', // Seychelles
+    'SYR': 'sy', // Syrian Arab Republic
+    'TCA': 'tc', // Turks and Caicos Islands
+    'TCD': 'td', // Chad
+    'TGO': 'tg', // Togo
+    'THA': 'th', // Thailand
+    'TJK': 'tj', // Tajikistan
+    'TKL': 'tk', // Tokelau
+    'TKM': 'tm', // Turkmenistan
+    'TLS': 'tl', // Timor-Leste
+    'TON': 'to', // Tonga
+    'TTO': 'tt', // Trinidad and Tobago
+    'TUN': 'tn', // Tunisia
+    'TUR': 'tr', // Turkey
+    'TUV': 'tv', // Tuvalu
+    'TWN': 'tw', // Taiwan
+    'TZA': 'tz', // Tanzania
+    'UGA': 'ug', // Uganda
+    'UKR': 'ua', // Ukraine
+    'UMI': 'um', // United States Minor Outlying Islands
+    'URY': 'uy', // Uruguay
+    'USA': 'us', // United States of America
+    'UZB': 'uz', // Uzbekistan
+    'VAT': 'va', // Holy See
+    'VCT': 'vc', // Saint Vincent and the Grenadines
+    'VEN': 've', // Venezuela
+    'VGB': 'vg', // Virgin Islands (British)
+    'VIR': 'vi', // Virgin Islands (U.S.)
+    'VNM': 'vn', // Viet Nam
+    'VUT': 'vu', // Vanuatu
+    'WLF': 'wf', // Wallis and Futuna
+    'WSM': 'ws', // Samoa
+    'XKX': 'xk', // Kosovo
+    'YEM': 'ye', // Yemen
+    'ZAF': 'za', // South Africa
+    'ZMB': 'zm', // Zambia
+    'ZWE': 'zw', // Zimbabwe
+  };
+
+  return iso3ToIso2Map[iso3Code.toUpperCase()] || iso3Code.toLowerCase();
+}
+
 async function fetchExternalData(endpoint: string): Promise<any> {
   const response = await fetch(`${EXTERNAL_API_URL}${endpoint}`, {
     method: 'GET',
@@ -62,47 +332,82 @@ async function fetchExternalData(endpoint: string): Promise<any> {
 
 function transformExternalPlans(rawPlans: any[]): any[] {
   return rawPlans.map(plan => {
-    // Parse price and determine currency-specific prices
-    const price = parsePrice(plan.price || plan.regular_price || 0);
-    const currency = plan.currency || 'USD';
-    
-    // Set currency-specific prices
-    const regular_price_usd = currency === 'USD' ? price : null;
-    const regular_price_eur = currency === 'EUR' ? price : null;
-    const regular_price_mxn = currency === 'MXN' ? price : null;
+    // Extract prices from the prices array
+    const prices = plan.prices || [];
+    let regular_price_usd: number | null = null;
+    let regular_price_eur: number | null = null;
+    let regular_price_mxn: number | null = null;
+
+    prices.forEach((price: any) => {
+      if (price.currency === 'USD') {
+        regular_price_usd = parseFloat(price.amount) || null;
+      } else if (price.currency === 'EUR') {
+        regular_price_eur = parseFloat(price.amount) || null;
+      } else if (price.currency === 'MXN') {
+        regular_price_mxn = parseFloat(price.amount) || null;
+      }
+    });
 
     // Determine plan type and codes
     const planType = determinePlanType(plan);
     const regionCode = planType === 'regional' ? normalizeRegionCode(plan.region_code || plan.region || '') : null;
-    const countryCode = planType === 'country' ? (plan.country_code || plan.country) : null;
+    
+    // Get country code from the first country in the countries array
+    let countryCode: string | null = null;
+    if (planType === 'country' && plan.countries && Array.isArray(plan.countries) && plan.countries.length > 0) {
+      countryCode = iso3ToIso2(plan.countries[0]);
+    }
 
     // Extract category IDs (we'll populate this after syncing categories)
     const categoryIds: number[] = [];
 
+    // Convert data from MB to GB
+    const dataGb = plan.data_quota_mb ? plan.data_quota_mb / 1024 : null;
+
+    // Extract technology information
+    const connectivity = plan.connectivity || {};
+    const has5g = connectivity["5g"] === "yes";
+    const hasLte = connectivity.lte === "yes";
+    let technology = '4G';
+    
+    if (has5g) {
+      technology = '5G';
+    } else if (hasLte) {
+      technology = '4G/LTE';
+    } else {
+      technology = '3G';
+    }
+
+    // Use the first available price as the main price
+    const mainPrice = regular_price_usd || regular_price_eur || regular_price_mxn || 0;
+
     return {
-      id: plan.id,
-      name: plan.name || plan.title || 'Plan sin nombre',
-      description: plan.description || '',
-      price: price.toString(),
-      regular_price: price.toString(),
-      sale_price: plan.sale_price || price.toString(),
-      images: plan.images || [],
-      sku: plan.sku || `external-plan-${plan.id}`,
+      id: plan.plan_type_id,
+      name: plan.name?.es || plan.name?.en || 'Plan sin nombre',
+      description: plan.description?.es || plan.description?.en || '',
+      price: mainPrice.toString(),
+      regular_price: mainPrice.toString(),
+      sale_price: mainPrice.toString(),
+      images: [],
+      sku: plan.identifier || `external-plan-${plan.plan_type_id}`,
       metadata: {
-        ...plan.metadata,
-        external_id: plan.id,
-        original_currency: currency,
+        external_id: plan.plan_type_id,
+        identifier: plan.identifier,
+        name_en: plan.name?.en,
+        description_en: plan.description?.en,
+        provider_details: plan.provider_details,
+        countries_iso3: plan.countries,
         sync_date: new Date().toISOString()
       },
-      active: plan.active !== false,
+      active: plan.status === 'active',
       categories: [],
       category_ids: categoryIds,
       // Structured fields
-      data_gb: parseDataAmount(plan.data_gb || plan.gb || plan.data || 0),
-      validity_days: parseInt(plan.validity_days || plan.days || plan.validity || 30),
-      technology: plan.technology || '4G',
-      has_5g: Boolean(plan.has_5g || plan.technology?.includes('5G')),
-      has_lte: Boolean(plan.has_lte !== false),
+      data_gb: dataGb,
+      validity_days: plan.validity_days || null,
+      technology,
+      has_5g: has5g,
+      has_lte: hasLte,
       regular_price_usd,
       regular_price_eur,
       regular_price_mxn,
@@ -127,27 +432,53 @@ function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
   let categoryId = 10000; // Start with high ID to avoid conflicts
 
   plans.forEach(plan => {
-    // Extract country categories
-    if (plan.plan_type === 'country' && plan.country_code) {
-      const slug = plan.country_code;
-      if (!categories.has(slug)) {
-        categories.set(slug, {
-          id: categoryId++,
-          name: getCountryName(plan.country_code),
-          slug: slug,
-          parent: null
-        });
-      }
+    // Extract country categories from ISO3 codes
+    if (plan.coverage === 'country' && plan.countries && Array.isArray(plan.countries)) {
+      plan.countries.forEach(iso3Code => {
+        const iso2Code = iso3ToIso2(iso3Code);
+        const slug = iso2Code;
+        
+        if (!categories.has(slug)) {
+          categories.set(slug, {
+            id: categoryId++,
+            name: getCountryNameFromIso3(iso3Code),
+            slug: slug,
+            parent: null
+          });
+        }
+      });
     }
 
     // Extract region categories
-    if (plan.plan_type === 'regional' && plan.region_code) {
-      const slug = normalizeRegionCode(plan.region_code);
-      if (!categories.has(slug)) {
-        categories.set(slug, {
+    if (plan.coverage === 'regional') {
+      // Try to determine region from plan name or identifier
+      const planName = (plan.name?.es || plan.name?.en || '').toLowerCase();
+      const identifier = (plan.identifier || '').toLowerCase();
+      
+      let regionCode = '';
+      if (planName.includes('latin') || planName.includes('latam') || identifier.includes('latam')) {
+        regionCode = 'latinoamerica';
+      } else if (planName.includes('europ') || identifier.includes('europe')) {
+        regionCode = 'europa';
+      } else if (planName.includes('asia') || identifier.includes('asia')) {
+        regionCode = 'asia';
+      } else if (planName.includes('africa') || identifier.includes('africa')) {
+        regionCode = 'africa';
+      } else if (planName.includes('middle') || planName.includes('medio') || identifier.includes('middle')) {
+        regionCode = 'oriente-medio';
+      } else if (planName.includes('carib') || identifier.includes('carib')) {
+        regionCode = 'caribe';
+      } else if (planName.includes('north') || planName.includes('norte') || identifier.includes('north')) {
+        regionCode = 'norteamerica';
+      } else if (planName.includes('ocean') || identifier.includes('ocean')) {
+        regionCode = 'oceania';
+      }
+      
+      if (regionCode && !categories.has(regionCode)) {
+        categories.set(regionCode, {
           id: categoryId++,
-          name: getRegionName(slug),
-          slug: slug,
+          name: getRegionName(regionCode),
+          slug: regionCode,
           parent: null
         });
       }
@@ -176,12 +507,17 @@ function parseDataAmount(data: any): number {
 }
 
 function determinePlanType(plan: any): 'country' | 'regional' {
+  if (plan.coverage) {
+    return plan.coverage === 'country' ? 'country' : 'regional';
+  }
+  
   if (plan.plan_type) return plan.plan_type;
   if (plan.region_code || plan.region) return 'regional';
   if (plan.country_code || plan.country) return 'country';
   
-  // Analyze plan name for regional indicators
-  const name = (plan.name || '').toLowerCase();
+  // Analyze plan name for regional indicators - handle object structure
+  const planName = plan.name?.es || plan.name?.en || '';
+  const name = (typeof planName === 'string' ? planName : '').toLowerCase();
   const regionalKeywords = [
     'europa', 'europe', 'latinoamerica', 'latin america', 'asia', 'africa',
     'oriente medio', 'middle east', 'caribe', 'caribbean', 'regional'
@@ -194,48 +530,261 @@ function determinePlanType(plan: any): 'country' | 'regional' {
   return 'country';
 }
 
-function getCountryName(countryCode: string): string {
+function getCountryNameFromIso3(iso3Code: string): string {
   const countryNames: Record<string, string> = {
-    'us': 'Estados Unidos',
-    'es': 'España',
-    'fr': 'Francia',
-    'de': 'Alemania',
-    'it': 'Italia',
-    'gb': 'Reino Unido',
-    'mx': 'México',
-    'br': 'Brasil',
-    'ar': 'Argentina',
-    'cl': 'Chile',
-    'co': 'Colombia',
-    'pe': 'Perú',
-    've': 'Venezuela',
-    'ca': 'Canadá',
-    'au': 'Australia',
-    'jp': 'Japón',
-    'cn': 'China',
-    'kr': 'Corea del Sur',
-    'in': 'India',
-    'th': 'Tailandia',
-    'sg': 'Singapur',
-    'my': 'Malasia',
-    'id': 'Indonesia',
-    'ph': 'Filipinas',
-    'vn': 'Vietnam',
-    'tr': 'Turquía',
-    'il': 'Israel',
-    'ae': 'Emiratos Árabes Unidos',
-    'sa': 'Arabia Saudita',
-    'za': 'Sudáfrica',
-    'eg': 'Egipto',
-    'ma': 'Marruecos',
-    'ng': 'Nigeria',
-    'ke': 'Kenia',
-    'gh': 'Ghana',
-    'nz': 'Nueva Zelanda',
-    'fj': 'Fiyi'
+    'ABW': 'Aruba',
+    'AFG': 'Afganistán',
+    'AGO': 'Angola',
+    'AIA': 'Anguila',
+    'ALA': 'Islas Åland',
+    'ALB': 'Albania',
+    'AND': 'Andorra',
+    'ARE': 'Emiratos Árabes Unidos',
+    'ARG': 'Argentina',
+    'ARM': 'Armenia',
+    'ASM': 'Samoa Americana',
+    'ATA': 'Antártida',
+    'ATF': 'Territorios Franceses del Sur',
+    'ATG': 'Antigua y Barbuda',
+    'AUS': 'Australia',
+    'AUT': 'Austria',
+    'AZE': 'Azerbaiyán',
+    'BDI': 'Burundi',
+    'BEL': 'Bélgica',
+    'BEN': 'Benín',
+    'BES': 'Bonaire, San Eustaquio y Saba',
+    'BFA': 'Burkina Faso',
+    'BGD': 'Bangladés',
+    'BGR': 'Bulgaria',
+    'BHR': 'Baréin',
+    'BHS': 'Bahamas',
+    'BIH': 'Bosnia y Herzegovina',
+    'BLM': 'San Bartolomé',
+    'BLR': 'Bielorrusia',
+    'BLZ': 'Belice',
+    'BMU': 'Bermudas',
+    'BOL': 'Bolivia',
+    'BRA': 'Brasil',
+    'BRB': 'Barbados',
+    'BRN': 'Brunéi',
+    'BTN': 'Bután',
+    'BVT': 'Isla Bouvet',
+    'BWA': 'Botsuana',
+    'CAF': 'República Centroafricana',
+    'CAN': 'Canadá',
+    'CCK': 'Islas Cocos',
+    'CHE': 'Suiza',
+    'CHL': 'Chile',
+    'CHN': 'China',
+    'CIV': 'Costa de Marfil',
+    'CMR': 'Camerún',
+    'COD': 'República Democrática del Congo',
+    'COG': 'Congo',
+    'COK': 'Islas Cook',
+    'COL': 'Colombia',
+    'COM': 'Comoras',
+    'CPV': 'Cabo Verde',
+    'CRI': 'Costa Rica',
+    'CUB': 'Cuba',
+    'CUW': 'Curazao',
+    'CXR': 'Isla de Navidad',
+    'CYM': 'Islas Caimán',
+    'CYP': 'Chipre',
+    'CZE': 'Chequia',
+    'DEU': 'Alemania',
+    'DJI': 'Yibuti',
+    'DMA': 'Dominica',
+    'DNK': 'Dinamarca',
+    'DOM': 'República Dominicana',
+    'DZA': 'Argelia',
+    'ECU': 'Ecuador',
+    'EGY': 'Egipto',
+    'ERI': 'Eritrea',
+    'ESH': 'Sahara Occidental',
+    'ESP': 'España',
+    'EST': 'Estonia',
+    'ETH': 'Etiopía',
+    'FIN': 'Finlandia',
+    'FJI': 'Fiyi',
+    'FLK': 'Islas Malvinas',
+    'FRA': 'Francia',
+    'FRO': 'Islas Feroe',
+    'FSM': 'Micronesia',
+    'GAB': 'Gabón',
+    'GBR': 'Reino Unido',
+    'GEO': 'Georgia',
+    'GGY': 'Guernesey',
+    'GHA': 'Ghana',
+    'GIB': 'Gibraltar',
+    'GIN': 'Guinea',
+    'GLP': 'Guadalupe',
+    'GMB': 'Gambia',
+    'GNB': 'Guinea-Bisáu',
+    'GNQ': 'Guinea Ecuatorial',
+    'GRC': 'Grecia',
+    'GRD': 'Granada',
+    'GRL': 'Groenlandia',
+    'GTM': 'Guatemala',
+    'GUF': 'Guayana Francesa',
+    'GUM': 'Guam',
+    'GUY': 'Guyana',
+    'HKG': 'Hong Kong',
+    'HMD': 'Isla Heard y Islas McDonald',
+    'HND': 'Honduras',
+    'HRV': 'Croacia',
+    'HTI': 'Haití',
+    'HUN': 'Hungría',
+    'IDN': 'Indonesia',
+    'IMN': 'Isla de Man',
+    'IND': 'India',
+    'IOT': 'Territorio Británico del Océano Índico',
+    'IRL': 'Irlanda',
+    'IRN': 'Irán',
+    'IRQ': 'Irak',
+    'ISL': 'Islandia',
+    'ISR': 'Israel',
+    'ITA': 'Italia',
+    'JAM': 'Jamaica',
+    'JEY': 'Jersey',
+    'JOR': 'Jordania',
+    'JPN': 'Japón',
+    'KAZ': 'Kazajistán',
+    'KEN': 'Kenia',
+    'KGZ': 'Kirguistán',
+    'KHM': 'Camboya',
+    'KIR': 'Kiribati',
+    'KNA': 'San Cristóbal y Nieves',
+    'KOR': 'Corea del Sur',
+    'KWT': 'Kuwait',
+    'LAO': 'Laos',
+    'LBN': 'Líbano',
+    'LBR': 'Liberia',
+    'LBY': 'Libia',
+    'LCA': 'Santa Lucía',
+    'LIE': 'Liechtenstein',
+    'LKA': 'Sri Lanka',
+    'LSO': 'Lesoto',
+    'LTU': 'Lituania',
+    'LUX': 'Luxemburgo',
+    'LVA': 'Letonia',
+    'MAC': 'Macao',
+    'MAF': 'San Martín',
+    'MAR': 'Marruecos',
+    'MCO': 'Mónaco',
+    'MDA': 'Moldavia',
+    'MDG': 'Madagascar',
+    'MDV': 'Maldivas',
+    'MEX': 'México',
+    'MHL': 'Islas Marshall',
+    'MKD': 'Macedonia del Norte',
+    'MLI': 'Malí',
+    'MLT': 'Malta',
+    'MMR': 'Myanmar',
+    'MNE': 'Montenegro',
+    'MNG': 'Mongolia',
+    'MNP': 'Islas Marianas del Norte',
+    'MOZ': 'Mozambique',
+    'MRT': 'Mauritania',
+    'MSR': 'Montserrat',
+    'MTQ': 'Martinica',
+    'MUS': 'Mauricio',
+    'MWI': 'Malaui',
+    'MYS': 'Malasia',
+    'MYT': 'Mayotte',
+    'NAM': 'Namibia',
+    'NCL': 'Nueva Caledonia',
+    'NER': 'Níger',
+    'NFK': 'Isla Norfolk',
+    'NGA': 'Nigeria',
+    'NIC': 'Nicaragua',
+    'NIU': 'Niue',
+    'NLD': 'Países Bajos',
+    'NOR': 'Noruega',
+    'NPL': 'Nepal',
+    'NRU': 'Nauru',
+    'NZL': 'Nueva Zelanda',
+    'OMN': 'Omán',
+    'PAK': 'Pakistán',
+    'PAN': 'Panamá',
+    'PCN': 'Islas Pitcairn',
+    'PER': 'Perú',
+    'PHL': 'Filipinas',
+    'PLW': 'Palaos',
+    'PNG': 'Papúa Nueva Guinea',
+    'POL': 'Polonia',
+    'PRI': 'Puerto Rico',
+    'PRK': 'Corea del Norte',
+    'PRT': 'Portugal',
+    'PRY': 'Paraguay',
+    'PSE': 'Palestina',
+    'PYF': 'Polinesia Francesa',
+    'QAT': 'Catar',
+    'REU': 'Reunión',
+    'ROU': 'Rumanía',
+    'RUS': 'Rusia',
+    'RWA': 'Ruanda',
+    'SAU': 'Arabia Saudita',
+    'SDN': 'Sudán',
+    'SEN': 'Senegal',
+    'SGP': 'Singapur',
+    'SGS': 'Georgia del Sur e Islas Sandwich del Sur',
+    'SHN': 'Santa Elena',
+    'SJM': 'Svalbard y Jan Mayen',
+    'SLB': 'Islas Salomón',
+    'SLE': 'Sierra Leona',
+    'SLV': 'El Salvador',
+    'SMR': 'San Marino',
+    'SOM': 'Somalia',
+    'SPM': 'San Pedro y Miquelón',
+    'SRB': 'Serbia',
+    'SSD': 'Sudán del Sur',
+    'STP': 'Santo Tomé y Príncipe',
+    'SUR': 'Surinam',
+    'SVK': 'Eslovaquia',
+    'SVN': 'Eslovenia',
+    'SWE': 'Suecia',
+    'SWZ': 'Esuatini',
+    'SXM': 'San Martín',
+    'SYC': 'Seychelles',
+    'SYR': 'Siria',
+    'TCA': 'Islas Turcas y Caicos',
+    'TCD': 'Chad',
+    'TGO': 'Togo',
+    'THA': 'Tailandia',
+    'TJK': 'Tayikistán',
+    'TKL': 'Tokelau',
+    'TKM': 'Turkmenistán',
+    'TLS': 'Timor Oriental',
+    'TON': 'Tonga',
+    'TTO': 'Trinidad y Tobago',
+    'TUN': 'Túnez',
+    'TUR': 'Turquía',
+    'TUV': 'Tuvalu',
+    'TWN': 'Taiwán',
+    'TZA': 'Tanzania',
+    'UGA': 'Uganda',
+    'UKR': 'Ucrania',
+    'UMI': 'Islas Ultramarinas de Estados Unidos',
+    'URY': 'Uruguay',
+    'USA': 'Estados Unidos',
+    'UZB': 'Uzbekistán',
+    'VAT': 'Ciudad del Vaticano',
+    'VCT': 'San Vicente y las Granadinas',
+    'VEN': 'Venezuela',
+    'VGB': 'Islas Vírgenes Británicas',
+    'VIR': 'Islas Vírgenes de los Estados Unidos',
+    'VNM': 'Vietnam',
+    'VUT': 'Vanuatu',
+    'WLF': 'Wallis y Futuna',
+    'WSM': 'Samoa',
+    'XKX': 'Kosovo',
+    'YEM': 'Yemen',
+    'ZAF': 'Sudáfrica',
+    'ZMB': 'Zambia',
+    'ZWE': 'Zimbabue'
   };
   
-  return countryNames[countryCode.toLowerCase()] || countryCode.toUpperCase();
+  return countryNames[iso3Code.toUpperCase()] || iso3Code;
 }
 
 function getRegionName(regionCode: string): string {
