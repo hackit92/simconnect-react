@@ -66,11 +66,14 @@ export function usePlans({
       const { data: fetchedProducts, error: productsError } = await productsQuery;
       if (productsError) throw productsError;
       
-      setProducts(fetchedProducts || []);
+      // Ensure we always set an array, never null or undefined
+      setProducts(Array.isArray(fetchedProducts) ? fetchedProducts : []);
       
     } catch (err) {
       console.error('Fetch error:', err);
       setError('Error al cargar los datos. Por favor intente nuevamente.');
+      // Set empty array on error to prevent undefined issues
+      setProducts([]);
     } finally {
       setLoading(false);
     }

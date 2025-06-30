@@ -1146,7 +1146,7 @@ async function syncCategories(categories: any[]): Promise<Map<string, number>> {
     
     const { error } = await supabase
       .from('wc_categories')
-      .upsert(batch, { onConflict: 'id' });
+      .upsert(batch, { onConflict: 'slug' }); // Use slug for conflict resolution
 
     if (error) {
       console.error(`Error upserting categories batch ${i/batchSize + 1}:`, error);
