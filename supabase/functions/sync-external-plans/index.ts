@@ -365,12 +365,12 @@ function transformExternalPlans(rawPlans: any[]): any[] {
     let regular_price_mxn: number | null = null;
 
     prices.forEach((price: any) => {
-      if (price.currency === 'USD') {
-        regular_price_usd = parseFloat(price.amount) || null;
-      } else if (price.currency === 'EUR') {
-        regular_price_eur = parseFloat(price.amount) || null;
-      } else if (price.currency === 'MXN') {
-        regular_price_mxn = parseFloat(price.amount) || null;
+      if (price.code === 'USD') {
+        regular_price_usd = parseFloat(price.price) || null;
+      } else if (price.code === 'EUR') {
+        regular_price_eur = parseFloat(price.price) || null;
+      } else if (price.code === 'MXN') {
+        regular_price_mxn = parseFloat(price.price) || null;
       }
     });
 
@@ -388,7 +388,7 @@ function transformExternalPlans(rawPlans: any[]): any[] {
     const categoryIds: number[] = [];
 
     // Convert data from MB to GB
-    const dataGb = plan.data_quota_mb ? plan.data_quota_mb / 1024 : null;
+    const dataGb = plan.data_quota_mb ? Number((plan.data_quota_mb / 1024).toFixed(2)) : null;
 
     // Extract technology information
     const connectivity = plan.connectivity || {};
@@ -421,6 +421,7 @@ function transformExternalPlans(rawPlans: any[]): any[] {
         identifier: plan.identifier,
         name_en: plan.name?.en,
         description_en: plan.description?.en,
+        coverage: plan.coverage,
         provider_details: plan.provider_details,
         countries_iso3: plan.countries,
         sync_date: new Date().toISOString()
@@ -950,6 +951,18 @@ async function syncProducts(products: any[], categoryMap: Map<string, number>): 
         categoryIds.push(categoryId);
       }
     }
+    
+    // For country plans, also try to find category by ISO3 codes from metadata
+    if (product.plan_type === 'country' && categoryIds.length === 0 && product.metadata?.countries_iso3) {
+      const iso3Codes = product.metadata.countries_iso3;
+      if (Array.isArray(iso3Codes) && iso3Codes.length > 0) {
+        const iso2Code = iso3ToIso2(iso3Codes[0]);
+        const categoryId = categoryMap.get(iso2Code);
+        if (categoryId) {
+          categoryIds.push(categoryId);
+        }
+      }
+    }
 
     return {
       ...product,
@@ -1021,6 +1034,24 @@ async function syncProducts(products: any[], categoryMap: Map<string, number>): 
   }
 
   console.log(`Sync completed: ${successCount} success, ${errorCount} errors, ${idsToDeactivate.length} deactivated`);
+}
+
+// Helper function to normalize region code from plan data
+function normalizeRegionCode(regionInput: string): string {
+  if (!regionInput) return '';
+  
+  const normalized = regionInput.toLowerCase().trim();
+  
+  // Map various input formats to canonical region codes
+  const regionMappings: Record<string, string> = {
+    'latin america': 'latinoamerica',
+    'europe': 'europa',
+    'middle east': 'oriente-medio',
+    'north america': 'norteamerica',
+    'caribbean': 'caribe'
+  };
+  
+  return regionMappings[normalized] || normalized;
 }
 
 Deno.serve(async (req) => {
