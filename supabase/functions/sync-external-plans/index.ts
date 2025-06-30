@@ -1010,14 +1010,69 @@ Deno.serve(async (req) => {
 
     // Validate required environment variables
     if (!EXTERNAL_API_TOKEN) {
-      throw new Error("EXTERNAL_API_TOKEN environment variable is required");
+      console.error("EXTERNAL_API_TOKEN environment variable is missing");
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: "EXTERNAL_API_TOKEN environment variable is required. Please configure it in your Supabase Edge Function settings.",
+          code: "MISSING_API_TOKEN"
+        }),
+        { 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          },
+          status: 400
+        }
+      );
+    }
+
+    // Validate Supabase configuration
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("Supabase environment variables are missing");
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: "Supabase configuration is incomplete. Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.",
+          code: "MISSING_SUPABASE_CONFIG"
+        }),
+        { 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          },
+          status: 500
+        }
+      );
     }
 
     console.log("Starting external API synchronization...");
 
     // Fetch data from external API
     console.log("Fetching plans from external API...");
-    const plansResponse = await fetchExternalData("/plans/public/yes");
+    let plansResponse;
+    try {
+      plansResponse = await fetchExternalData("/plans/public/yes");
+    } catch (apiError) {
+      console.error("Failed to fetch data from external API:", apiError);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: `Failed to connect to external API: ${apiError.message}`,
+          code: "EXTERNAL_API_ERROR"
+        }),
+        { 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          },
+          status: 502
+        }
+      );
+    }
     
     // Handle different response formats
     let rawPlans: any[] = [];
@@ -1063,11 +1118,48 @@ Deno.serve(async (req) => {
     console.log(`Processing ${categories.length} categories`);
 
     // Sync categories first
-    const categoryMap = await syncCategories(categories);
+    let categoryMap;
+    try {
+      categoryMap = await syncCategories(categories);
+    } catch (dbError) {
+      console.error("Failed to sync categories:", dbError);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: `Database error while syncing categories: ${dbError.message}`,
+          code: "DATABASE_ERROR"
+        }),
+        { 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          },
+          status: 500
+        }
+      );
+    }
     console.log("Categories synchronized successfully");
 
     // Sync products
-    await syncProducts(transformedPlans, categoryMap);
+    try {
+      await syncProducts(transformedPlans, categoryMap);
+    } catch (dbError) {
+      console.error("Failed to sync products:", dbError);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: `Database error while syncing products: ${dbError.message}`,
+          code: "DATABASE_ERROR"
+        }),
+        { 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          },
+          status: 500
+        }
+      );
+    }
     console.log("Products synchronized successfully");
 
     const stats = {
@@ -1095,7 +1187,8 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: error.message 
+        error: error.message,
+        code: "UNKNOWN_ERROR"
       }),
       { 
         headers: { 
@@ -1107,3 +1200,25 @@ Deno.serve(async (req) => {
     );
   }
 });
+
+// Helper function to validate environment variables on startup
+function validateEnvironment(): { isValid: boolean; missingVars: string[] } {
+  const requiredVars = [
+    'EXTERNAL_API_TOKEN',
+    'SUPABASE_URL', 
+    'SUPABASE_SERVICE_ROLE_KEY'
+  ];
+  
+  const missingVars = requiredVars.filter(varName => !Deno.env.get(varName));
+  
+  return {
+    isValid: missingVars.length === 0,
+    missingVars
+  };
+}
+
+// Log environment validation on startup
+const envValidation = validateEnvironment();
+if (!envValidation.isValid) {
+  console.warn(`Missing environment variables: ${envValidation.missingVars.join(', ')}`);
+}
