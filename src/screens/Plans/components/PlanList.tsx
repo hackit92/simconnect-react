@@ -359,8 +359,9 @@ export const PlanList: React.FC<PlanListProps> = ({
           if (isRegional && plan.region_code && typeof plan.region_code === 'string') {
             try {
               const rawCoverage = regionalCoverage?.[plan.region_code];
-              if (Array.isArray(rawCoverage) && rawCoverage.length > 0) {
-                return rawCoverage.filter(country => 
+              const safeCoverage = Array.isArray(rawCoverage) ? rawCoverage : [];
+              if (safeCoverage.length > 0) {
+                return safeCoverage.filter(country => 
                   country && typeof country === 'string' && country.trim().length > 0
                 );
               }
