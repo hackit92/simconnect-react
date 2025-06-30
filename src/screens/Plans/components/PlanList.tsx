@@ -330,7 +330,7 @@ export const PlanList: React.FC<PlanListProps> = ({
 
   return (
     <div className="space-y-4">
-      {products.map((plan) => {
+      {products.filter(Boolean).map((plan) => {
         // Use structured data from database fields
         const technology = plan.technology || '4G';
         
