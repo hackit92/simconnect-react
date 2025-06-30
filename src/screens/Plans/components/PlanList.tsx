@@ -354,6 +354,14 @@ export const PlanList: React.FC<PlanListProps> = ({
         const flagClass = getProductFlag(plan, selectedCategoryData, categories);
         const isExpanded = expandedRegionalPlans.has(plan.id);
         
+        // Debug logs to identify the error
+        console.log('=== DEBUG: Plan processing ===');
+        console.log('Plan ID:', plan.id);
+        console.log('Plan name:', plan.name);
+        console.log('Plan type:', plan.plan_type);
+        console.log('Region code:', plan.region_code);
+        console.log('Is regional:', isRegional);
+        
         // Initialize coverage countries as empty array and populate if conditions are met
         let coverageCountries: string[] = [];
         
@@ -361,16 +369,27 @@ export const PlanList: React.FC<PlanListProps> = ({
         if (isRegional && plan.region_code && typeof plan.region_code === 'string') {
           try {
             const rawCoverage = regionalCoverage?.[plan.region_code] || [];
+            console.log('Raw coverage for', plan.region_code, ':', rawCoverage);
+            console.log('Is rawCoverage an array?', Array.isArray(rawCoverage));
+            
             if (Array.isArray(rawCoverage) && rawCoverage.length > 0) {
               coverageCountries = rawCoverage.filter(country => 
                 country && typeof country === 'string' && country.trim().length > 0
               );
+              console.log('Filtered coverage countries:', coverageCountries);
             }
           } catch (error) {
             console.warn('Error accessing regional coverage for', plan.region_code, ':', error);
             coverageCountries = [];
           }
         }
+        
+        // Final debug check before using coverageCountries
+        console.log('Final coverageCountries:', coverageCountries);
+        console.log('coverageCountries type:', typeof coverageCountries);
+        console.log('Is coverageCountries an array?', Array.isArray(coverageCountries));
+        console.log('coverageCountries length:', coverageCountries?.length);
+        console.log('=== END DEBUG ===');
         
         return (
           <div key={plan.id} className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all duration-200">
