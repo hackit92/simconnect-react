@@ -137,13 +137,25 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   }, [selectedTab]);
 
   const handleCategorySelect = (categoryId: number) => {
-    setSelectedCategory(categoryId === selectedCategory ? undefined : categoryId);
+    const newSelectedCategory = categoryId === selectedCategory ? undefined : categoryId;
+    setSelectedCategory(newSelectedCategory);
     setSelectedRegion(undefined); // Clear region selection when selecting country
+    
+    // Clear search term when explicitly selecting a category to avoid conflicts
+    if (newSelectedCategory !== undefined) {
+      setSearchTerm('');
+    }
   };
 
   const handleRegionSelect = (regionValue: string) => {
-    setSelectedRegion(regionValue === selectedRegion ? undefined : regionValue);
+    const newSelectedRegion = regionValue === selectedRegion ? undefined : regionValue;
+    setSelectedRegion(newSelectedRegion);
     setSelectedCategory(undefined); // Clear category selection when selecting region
+    
+    // Clear search term when explicitly selecting a region to avoid conflicts
+    if (newSelectedRegion !== undefined) {
+      setSearchTerm('');
+    }
   };
 
   const handleSyncData = async () => {
@@ -170,7 +182,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
   // NEW: Handle suggestion click with explicit selection
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
-    setSearchTerm(suggestion.text);
+    // Don't set search term to suggestion text to avoid conflicts
+    setSearchTerm(''); // Clear search term for clean filtering
     
     if (suggestion.type === 'country' && suggestion.id) {
       // Directly select the country
