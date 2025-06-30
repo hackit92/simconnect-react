@@ -354,24 +354,23 @@ export const PlanList: React.FC<PlanListProps> = ({
         const flagClass = getProductFlag(plan, selectedCategoryData, categories);
         const isExpanded = expandedRegionalPlans.has(plan.id);
         
-        // Safely get coverage countries with comprehensive null checks
-        const coverageCountries: string[] = (() => {
+        // Initialize coverage countries as empty array and populate if conditions are met
+        let coverageCountries: string[] = [];
+        
+        // Only populate if this is a regional plan with valid region code
+        if (isRegional && plan.region_code && typeof plan.region_code === 'string') {
           try {
-            if (isRegional && 
-                plan.region_code && 
-                typeof plan.region_code === 'string' && 
-                plan.region_code in regionalCoverage) {
-              const rawCoverage = regionalCoverage[plan.region_code];
-              if (Array.isArray(rawCoverage) && rawCoverage.length > 0) {
-                return rawCoverage;
-              }
+            const rawCoverage = regionalCoverage[plan.region_code];
+            if (Array.isArray(rawCoverage) && rawCoverage.length > 0) {
+              coverageCountries = rawCoverage.filter(country => 
+                country && typeof country === 'string' && country.trim().length > 0
+              );
             }
-            return [];
           } catch (error) {
-            console.warn('Error accessing regional coverage:', error);
-            return [];
+            console.warn('Error accessing regional coverage for', plan.region_code, ':', error);
+            coverageCountries = [];
           }
-        })();
+        }
         
         return (
           <div key={plan.id} className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all duration-200">
@@ -400,7 +399,7 @@ export const PlanList: React.FC<PlanListProps> = ({
               </div>
               
               {/* Regional Button - Positioned absolutely to align with card edge */}
-              {isRegional && Array.isArray(coverageCountries) && coverageCountries.length > 0 && (
+              {isRegional && coverageCountries.length > 0 && (
                 <button
                   onClick={() => toggleRegionalCoverage(plan.id)}
                   className="absolute -top-2 -right-2 flex items-center space-x-1 px-4 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition-colors duration-200 shadow-lg z-10"
@@ -423,11 +422,11 @@ export const PlanList: React.FC<PlanListProps> = ({
             </div>
             
             {/* Regional Coverage Dropdown */}
-            {isRegional && isExpanded && Array.isArray(coverageCountries) && coverageCountries.length > 0 && (
+            {isRegional && isExpanded && coverageCountries.length > 0 && (
               <div className="mb-6 p-4 bg-gray-50 rounded-xl">
                 <h4 className="text-sm font-semibold text-gray-700 mb-3">Cobertura Regional:</h4>
                 <div className="grid grid-cols-2 gap-2">
-                  {coverageCountries.filter(country => country && typeof country === 'string').map((country, index) => (
+                  {coverageCountries.map((country, index) => (
                     <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
                       <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
                       <span>{country}</span>
