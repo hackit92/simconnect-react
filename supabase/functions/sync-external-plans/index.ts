@@ -55,6 +55,273 @@ const supabase = createClient(
 const EXTERNAL_API_URL = "https://api-iot.ucc.systems/api";
 const EXTERNAL_API_TOKEN = Deno.env.get("EXTERNAL_API_TOKEN") || "";
 
+// Function to convert ISO3 country codes to frontend-compatible slugs
+function iso3ToFrontendSlug(iso3Code: string): string {
+  const iso3ToSlugMap: Record<string, string> = {
+    // Europe
+    'ESP': 'spain',
+    'FRA': 'france',
+    'DEU': 'germany',
+    'ITA': 'italy',
+    'GBR': 'united-kingdom',
+    'NLD': 'netherlands',
+    'PRT': 'portugal',
+    'GRC': 'greece',
+    'CHE': 'switzerland',
+    'AUT': 'austria',
+    'BEL': 'belgium',
+    'DNK': 'denmark',
+    'FIN': 'finland',
+    'IRL': 'ireland',
+    'NOR': 'norway',
+    'SWE': 'sweden',
+    'POL': 'poland',
+    'CZE': 'czechia',
+    'HUN': 'hungary',
+    'ROU': 'romania',
+    'BGR': 'bulgaria',
+    'HRV': 'croatia',
+    'SVN': 'slovenia',
+    'SVK': 'slovakia',
+    'LTU': 'lithuania',
+    'LVA': 'latvia',
+    'EST': 'estonia',
+    'ISL': 'iceland',
+    'LUX': 'luxembourg',
+    'MLT': 'malta',
+    'CYP': 'cyprus',
+    'ALB': 'albania',
+    'BIH': 'bosnia-and-herzegovina',
+    'MNE': 'montenegro',
+    'SRB': 'serbia',
+    'MKD': 'north-macedonia',
+    'XKX': 'kosovo',
+    
+    // Americas
+    'USA': 'united-states',
+    'CAN': 'canada',
+    'MEX': 'mexico',
+    'BRA': 'brazil',
+    'ARG': 'argentina',
+    'CHL': 'chile',
+    'COL': 'colombia',
+    'PER': 'peru',
+    'VEN': 'venezuela',
+    'ECU': 'ecuador',
+    'BOL': 'bolivia',
+    'PRY': 'paraguay',
+    'URY': 'uruguay',
+    'CRI': 'costa-rica',
+    'PAN': 'panama',
+    'GTM': 'guatemala',
+    'HND': 'honduras',
+    'SLV': 'el-salvador',
+    'NIC': 'nicaragua',
+    'CUB': 'cuba',
+    'DOM': 'dominican-republic',
+    'JAM': 'jamaica',
+    'HTI': 'haiti',
+    'BHS': 'bahamas',
+    'BRB': 'barbados',
+    'TTO': 'trinidad-and-tobago',
+    'ATG': 'antigua-and-barbuda',
+    'LCA': 'saint-lucia',
+    'GRD': 'grenada',
+    'VCT': 'saint-vincent-and-the-grenadines',
+    'KNA': 'saint-kitts-and-nevis',
+    'DMA': 'dominica',
+    'BLZ': 'belize',
+    'GUY': 'guyana',
+    'SUR': 'suriname',
+    'GUF': 'french-guiana',
+    'PRI': 'puerto-rico',
+    'ABW': 'aruba',
+    'CUW': 'curacao',
+    'SXM': 'sint-maarten',
+    
+    // Asia
+    'CHN': 'china',
+    'JPN': 'japan',
+    'KOR': 'south-korea',
+    'PRK': 'north-korea',
+    'IND': 'india',
+    'THA': 'thailand',
+    'SGP': 'singapore',
+    'MYS': 'malaysia',
+    'IDN': 'indonesia',
+    'PHL': 'philippines',
+    'VNM': 'vietnam',
+    'KHM': 'cambodia',
+    'LAO': 'laos',
+    'MMR': 'myanmar',
+    'BGD': 'bangladesh',
+    'PAK': 'pakistan',
+    'LKA': 'sri-lanka',
+    'AFG': 'afghanistan',
+    'NPL': 'nepal',
+    'BTN': 'bhutan',
+    'MDV': 'maldives',
+    'BRN': 'brunei-darussalam',
+    'TLS': 'east-timor',
+    'MNG': 'mongolia',
+    
+    // Central Asia
+    'KAZ': 'kazakhstan',
+    'UZB': 'uzbekistan',
+    'KGZ': 'kyrgyzstan',
+    'TJK': 'tajikistan',
+    'TKM': 'turkmenistan',
+    
+    // Caucasus
+    'GEO': 'georgia',
+    'ARM': 'armenia',
+    'AZE': 'azerbaijan',
+    
+    // Middle East
+    'ISR': 'israel',
+    'TUR': 'turkey',
+    'ARE': 'united-arab-emirates',
+    'SAU': 'saudi-arabia',
+    'QAT': 'qatar',
+    'KWT': 'kuwait',
+    'BHR': 'bahrain',
+    'OMN': 'oman',
+    'JOR': 'jordan',
+    'LBN': 'lebanon',
+    'SYR': 'syria',
+    'IRQ': 'iraq',
+    'IRN': 'iran',
+    'PSE': 'palestine',
+    
+    // Africa
+    'ZAF': 'south-africa',
+    'EGY': 'egypt',
+    'MAR': 'morocco',
+    'NGA': 'nigeria',
+    'KEN': 'kenya',
+    'GHA': 'ghana',
+    'ETH': 'ethiopia',
+    'TZA': 'tanzania',
+    'UGA': 'uganda',
+    'ZWE': 'zimbabwe',
+    'ZMB': 'zambia',
+    'BWA': 'botswana',
+    'NAM': 'namibia',
+    'DZA': 'algeria',
+    'TUN': 'tunisia',
+    'LBY': 'libya',
+    'SDN': 'sudan',
+    'SSD': 'south-sudan',
+    'AGO': 'angola',
+    'MOZ': 'mozambique',
+    'MDG': 'madagascar',
+    'MUS': 'mauritius',
+    'SYC': 'seychelles',
+    'COM': 'comoros',
+    'DJI': 'djibouti',
+    'ERI': 'eritrea',
+    'SOM': 'somalia',
+    'RWA': 'rwanda',
+    'BDI': 'burundi',
+    'COG': 'congo',
+    'COD': 'congo-democratic-republic',
+    'CAF': 'central-african-republic',
+    'TCD': 'chad',
+    'CMR': 'cameroon',
+    'GNQ': 'equatorial-guinea',
+    'GAB': 'gabon',
+    'STP': 'sao-tome-and-principe',
+    'CPV': 'cape-verde',
+    'GIN': 'guinea',
+    'GNB': 'guinea-bissau',
+    'SLE': 'sierra-leone',
+    'LBR': 'liberia',
+    'CIV': 'cote-divoire',
+    'BFA': 'burkina-faso',
+    'MLI': 'mali',
+    'NER': 'niger',
+    'SEN': 'senegal',
+    'GMB': 'gambia',
+    'MRT': 'mauritania',
+    'ESH': 'western-sahara',
+    'BEN': 'benin',
+    'TGO': 'togo',
+    'MWI': 'malawi',
+    'LSO': 'lesotho',
+    'SWZ': 'eswatini',
+    
+    // Oceania
+    'AUS': 'australia',
+    'NZL': 'new-zealand',
+    'FJI': 'fiji',
+    'PNG': 'papua-new-guinea',
+    'WSM': 'samoa',
+    'TON': 'tonga',
+    'VUT': 'vanuatu',
+    'SLB': 'solomon-islands',
+    'PLW': 'palau',
+    'FSM': 'micronesia',
+    'MHL': 'marshall-islands',
+    'KIR': 'kiribati',
+    'NRU': 'nauru',
+    'TUV': 'tuvalu',
+    'COK': 'cook-islands',
+    'NIU': 'niue',
+    'TKL': 'tokelau',
+    'NCL': 'new-caledonia',
+    'PYF': 'french-polynesia',
+    'WLF': 'wallis-and-futuna',
+    'PCN': 'pitcairn',
+    'NFK': 'norfolk-island',
+    
+    // Eastern Europe and Russia
+    'RUS': 'russia',
+    'UKR': 'ukraine',
+    'BLR': 'belarus',
+    'MDA': 'moldova',
+    
+    // Additional territories and dependencies
+    'AND': 'andorra',
+    'MCO': 'monaco',
+    'SMR': 'san-marino',
+    'VAT': 'vatican-city',
+    'LIE': 'liechtenstein',
+    'FRO': 'faroe-islands',
+    'GRL': 'greenland',
+    'SJM': 'svalbard',
+    'IMN': 'isle-of-man',
+    'JEY': 'jersey',
+    'GGY': 'guernsey',
+    'GIB': 'gibraltar',
+    'BMU': 'bermuda',
+    'FLK': 'falkland-islands',
+    'SGS': 'south-georgia',
+    'SHN': 'saint-helena',
+    'BLM': 'saint-barthelemy',
+    'MAF': 'saint-martin',
+    'SPM': 'saint-pierre-and-miquelon',
+    'GLP': 'guadeloupe',
+    'MTQ': 'martinique',
+    'MYT': 'mayotte',
+    'REU': 'reunion',
+    'GUM': 'guam',
+    'MNP': 'northern-mariana-islands',
+    'ASM': 'american-samoa',
+    'VIR': 'virgin-islands-us',
+    'VGB': 'virgin-islands-british',
+    'TCA': 'turks-and-caicos',
+    'CYM': 'cayman-islands',
+    'AIA': 'anguilla',
+    'MSR': 'montserrat',
+    'HMD': 'heard-island',
+    'BVT': 'bouvet-island',
+    'CXR': 'christmas-island',
+    'CCK': 'cocos-islands'
+  };
+
+  return iso3ToSlugMap[iso3Code.toUpperCase()] || iso3Code.toLowerCase();
+}
+
 // Function to convert ISO3 country codes to ISO2
 function iso3ToIso2(iso3Code: string): string {
   const iso3ToIso2Map: Record<string, string> = {
@@ -352,10 +619,10 @@ function transformExternalPlans(rawPlans: any[]): any[] {
     const planType = determinePlanType(plan);
     const regionCode = planType === 'regional' ? normalizeRegionCode(plan.region_code || plan.region || '') : null;
     
-    // Get country code from the first country in the countries array
+    // Get country code from the first country in the countries array - use frontend slug format
     let countryCode: string | null = null;
     if (planType === 'country' && plan.countries && Array.isArray(plan.countries) && plan.countries.length > 0) {
-      countryCode = iso3ToIso2(plan.countries[0]);
+      countryCode = iso3ToFrontendSlug(plan.countries[0]);
     }
 
     // Extract category IDs (we'll populate this after syncing categories)
@@ -435,14 +702,13 @@ function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
     // Extract country categories from ISO3 codes
     if (plan.coverage === 'country' && plan.countries && Array.isArray(plan.countries)) {
       plan.countries.forEach(iso3Code => {
-        const iso2Code = iso3ToIso2(iso3Code);
-        const slug = iso2Code;
+        const frontendSlug = iso3ToFrontendSlug(iso3Code);
         
-        if (!categories.has(slug)) {
-          categories.set(slug, {
+        if (!categories.has(frontendSlug)) {
+          categories.set(frontendSlug, {
             id: categoryId++,
             name: getCountryNameFromIso3(iso3Code),
-            slug: slug,
+            slug: frontendSlug, // Use frontend-compatible slug
             parent: null
           });
         }
