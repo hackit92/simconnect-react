@@ -360,7 +360,7 @@ export const PlanList: React.FC<PlanListProps> = ({
         // Only populate if this is a regional plan with valid region code
         if (isRegional && plan.region_code && typeof plan.region_code === 'string') {
           try {
-            const rawCoverage = regionalCoverage[plan.region_code] || [];
+            const rawCoverage = regionalCoverage?.[plan.region_code] || [];
             if (Array.isArray(rawCoverage) && rawCoverage.length > 0) {
               coverageCountries = rawCoverage.filter(country => 
                 country && typeof country === 'string' && country.trim().length > 0
