@@ -55,6 +55,32 @@ const supabase = createClient(
 const EXTERNAL_API_URL = "https://api-iot.ucc.systems/api";
 const EXTERNAL_API_TOKEN = Deno.env.get("EXTERNAL_API_TOKEN") || "";
 
+// Function to fetch existing categories from database
+async function fetchExistingCategories(): Promise<Map<string, number>> {
+  const slugToIdMap = new Map<string, number>();
+  
+  try {
+    const { data: categories, error } = await supabase
+      .from('wc_categories')
+      .select('id, slug');
+
+    if (error) {
+      console.error('Error fetching existing categories:', error);
+      throw error;
+    }
+
+    categories?.forEach(category => {
+      slugToIdMap.set(category.slug, category.id);
+    });
+
+    console.log(`Loaded ${slugToIdMap.size} existing categories`);
+    return slugToIdMap;
+  } catch (error) {
+    console.error('Failed to fetch existing categories:', error);
+    throw error;
+  }
+}
+
 // Function to convert ISO3 country codes to ISO2
 function iso3ToIso2(iso3Code: string): string {
   const iso3ToIso2Map: Record<string, string> = {
@@ -427,9 +453,15 @@ function transformExternalCategories(rawCategories: any[]): any[] {
   }));
 }
 
-function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
+function extractCategoriesFromPlans(plans: ExternalPlan[], existingCategoriesMap: Map<string, number>): any[] {
   const categories = new Map<string, any>();
-  let categoryId = 1000000; // Start with high ID to avoid conflicts with existing categories
+  let nextCategoryId = 1000000; // Start with high ID to avoid conflicts with existing categories
+
+  // Find the highest existing ID to avoid conflicts
+  const existingIds = Array.from(existingCategoriesMap.values());
+  if (existingIds.length > 0) {
+    nextCategoryId = Math.max(...existingIds, nextCategoryId) + 1;
+  }
 
   plans.forEach(plan => {
     // Extract country categories from ISO3 codes
@@ -438,8 +470,11 @@ function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
         const iso2Code = iso3ToIso2(iso3Code);
         
         if (!categories.has(iso2Code)) {
+          // Check if this category already exists in the database
+          const existingId = existingCategoriesMap.get(iso2Code);
+          
           categories.set(iso2Code, {
-            id: categoryId++,
+            id: existingId || nextCategoryId++, // Use existing ID or create new one
             name: getCountryNameFromIso3(iso3Code),
             slug: iso2Code, // Use ISO2 code as slug to match existing structure
             parent: null
@@ -474,8 +509,11 @@ function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
       }
       
       if (regionCode && !categories.has(regionCode)) {
+        // Check if this region category already exists in the database
+        const existingId = existingCategoriesMap.get(regionCode);
+        
         categories.set(regionCode, {
-          id: categoryId++,
+          id: existingId || nextCategoryId++, // Use existing ID or create new one
           name: getRegionName(regionCode),
           slug: regionCode,
           parent: null
@@ -870,7 +908,10 @@ function normalizeRegionCode(regionInput: string): string {
 async function syncCategories(categories: any[]): Promise<Map<string, number>> {
   const slugToIdMap = new Map<string, number>();
   
-  if (categories.length === 0) return slugToIdMap;
+  if (categories.length === 0) {
+    // Still need to fetch existing categories for the map
+    return await fetchExistingCategories();
+  }
 
   // Upsert categories in batches
   const batchSize = 50;
@@ -887,12 +928,8 @@ async function syncCategories(categories: any[]): Promise<Map<string, number>> {
     }
   }
 
-  // Build slug to ID mapping
-  categories.forEach(category => {
-    slugToIdMap.set(category.slug, category.id);
-  });
-
-  return slugToIdMap;
+  // Fetch the updated categories to build the complete slug to ID mapping
+  return await fetchExistingCategories();
 }
 
 async function syncProducts(products: any[], categoryMap: Map<string, number>): Promise<void> {
@@ -1041,6 +1078,10 @@ Deno.serve(async (req) => {
 
     console.log("Starting external API synchronization...");
 
+    // Fetch existing categories first
+    console.log("Fetching existing categories from database...");
+    const existingCategoriesMap = await fetchExistingCategories();
+
     // Fetch data from external API
     console.log("Fetching plans from external API...");
     let plansResponse;
@@ -1102,7 +1143,7 @@ Deno.serve(async (req) => {
       }
     } catch (error) {
       console.log("Categories endpoint not available, extracting from plans...");
-      categories = extractCategoriesFromPlans(rawPlans);
+      categories = extractCategoriesFromPlans(rawPlans, existingCategoriesMap);
     }
 
     console.log(`Processing ${categories.length} categories`);
