@@ -14,41 +14,143 @@ interface PlanListProps {
   categories?: { id: number; name: string; slug: string; parent: number | null }[];
 }
 
-// Regional coverage mapping
-const regionalCoverage: Record<string, string[]> = {
-  'latinoamerica': [
-    'Argentina', 'Bolivia', 'Brasil', 'Chile', 'Colombia', 'Costa Rica', 'Cuba',
-    'Ecuador', 'El Salvador', 'Guatemala', 'Honduras', 'México', 'Nicaragua',
-    'Panamá', 'Paraguay', 'Perú', 'República Dominicana', 'Uruguay', 'Venezuela'
-  ],
-  'europa': [
-    'Alemania', 'Austria', 'Bélgica', 'Bulgaria', 'Croacia', 'Dinamarca', 'Eslovaquia',
-    'Eslovenia', 'España', 'Estonia', 'Finlandia', 'Francia', 'Grecia', 'Hungría',
-    'Irlanda', 'Italia', 'Letonia', 'Lituania', 'Luxemburgo', 'Países Bajos',
-    'Polonia', 'Portugal', 'Reino Unido', 'República Checa', 'Rumanía', 'Suecia', 'Suiza'
-  ],
-  'norteamerica': ['Estados Unidos', 'Canadá'],
-  'balcanes': ['Serbia', 'Bosnia y Herzegovina', 'Montenegro', 'Macedonia del Norte', 'Albania', 'Kosovo'],
-  'oriente-medio': [
-    'Israel', 'Turquía', 'Emiratos Árabes Unidos', 'Arabia Saudita', 'Qatar',
-    'Kuwait', 'Baréin', 'Omán', 'Jordania', 'Líbano'
-  ],
-  'caribe': [
-    'Cuba', 'República Dominicana', 'Jamaica', 'Bahamas', 'Barbados',
-    'Trinidad y Tobago', 'Antigua y Barbuda', 'Santa Lucía', 'Granada'
-  ],
-  'caucaso': ['Georgia', 'Armenia', 'Azerbaiyán'],
-  'asia-central': ['Kazajistán', 'Uzbekistán', 'Turkmenistán', 'Tayikistán', 'Kirguistán'],
-  'asia': [
-    'China', 'Japón', 'Corea del Sur', 'India', 'Tailandia', 'Singapur', 'Malasia',
-    'Indonesia', 'Filipinas', 'Vietnam', 'Camboya', 'Laos', 'Myanmar', 'Bangladesh', 'Pakistán', 'Sri Lanka'
-  ],
-  'africa': [
-    'Sudáfrica', 'Egipto', 'Marruecos', 'Nigeria', 'Kenia', 'Ghana', 'Etiopía',
-    'Tanzania', 'Uganda', 'Zimbabue', 'Zambia', 'Botsuana', 'Namibia'
-  ],
-  'oceania': ['Australia', 'Nueva Zelanda', 'Fiyi', 'Papúa Nueva Guinea', 'Samoa', 'Tonga']
-};
+// Helper function to convert ISO3 country codes to country names
+function getCountryNameFromISO3(iso3Code: string): string {
+  // Convert ISO3 to ISO2 first, then get the country name
+  const iso2Code = iso3ToIso2(iso3Code);
+  if (iso2Code) {
+    return countryUtils.getCountryName(iso2Code);
+  }
+  
+  // Fallback: return the ISO3 code if conversion fails
+  return iso3Code;
+}
+
+// Helper function to convert ISO3 to ISO2 country codes
+function iso3ToIso2(iso3Code: string): string | null {
+  const iso3ToIso2Map: Record<string, string> = {
+    'AUS': 'au', // Australia
+    'CHN': 'cn', // China
+    'HKG': 'hk', // Hong Kong
+    'IDN': 'id', // Indonesia
+    'MAC': 'mo', // Macao
+    'MYS': 'my', // Malaysia
+    'NZL': 'nz', // New Zealand
+    'PHL': 'ph', // Philippines
+    'SGP': 'sg', // Singapore
+    'THA': 'th', // Thailand
+    'TWN': 'tw', // Taiwan
+    'VNM': 'vn', // Vietnam
+    'ARG': 'ar', // Argentina
+    'BOL': 'bo', // Bolivia
+    'BRA': 'br', // Brazil
+    'CHL': 'cl', // Chile
+    'COL': 'co', // Colombia
+    'CRI': 'cr', // Costa Rica
+    'CUB': 'cu', // Cuba
+    'ECU': 'ec', // Ecuador
+    'SLV': 'sv', // El Salvador
+    'GTM': 'gt', // Guatemala
+    'HND': 'hn', // Honduras
+    'MEX': 'mx', // Mexico
+    'NIC': 'ni', // Nicaragua
+    'PAN': 'pa', // Panama
+    'PRY': 'py', // Paraguay
+    'PER': 'pe', // Peru
+    'DOM': 'do', // Dominican Republic
+    'URY': 'uy', // Uruguay
+    'VEN': 've', // Venezuela
+    'DEU': 'de', // Germany
+    'AUT': 'at', // Austria
+    'BEL': 'be', // Belgium
+    'BGR': 'bg', // Bulgaria
+    'HRV': 'hr', // Croatia
+    'DNK': 'dk', // Denmark
+    'SVK': 'sk', // Slovakia
+    'SVN': 'si', // Slovenia
+    'ESP': 'es', // Spain
+    'EST': 'ee', // Estonia
+    'FIN': 'fi', // Finland
+    'FRA': 'fr', // France
+    'GRC': 'gr', // Greece
+    'HUN': 'hu', // Hungary
+    'IRL': 'ie', // Ireland
+    'ITA': 'it', // Italy
+    'LVA': 'lv', // Latvia
+    'LTU': 'lt', // Lithuania
+    'LUX': 'lu', // Luxembourg
+    'NLD': 'nl', // Netherlands
+    'POL': 'pl', // Poland
+    'PRT': 'pt', // Portugal
+    'GBR': 'gb', // United Kingdom
+    'CZE': 'cz', // Czech Republic
+    'ROU': 'ro', // Romania
+    'SWE': 'se', // Sweden
+    'CHE': 'ch', // Switzerland
+    'USA': 'us', // United States
+    'CAN': 'ca', // Canada
+    'SRB': 'rs', // Serbia
+    'BIH': 'ba', // Bosnia and Herzegovina
+    'MNE': 'me', // Montenegro
+    'MKD': 'mk', // North Macedonia
+    'ALB': 'al', // Albania
+    'XKX': 'xk', // Kosovo
+    'ISR': 'il', // Israel
+    'TUR': 'tr', // Turkey
+    'ARE': 'ae', // United Arab Emirates
+    'SAU': 'sa', // Saudi Arabia
+    'QAT': 'qa', // Qatar
+    'KWT': 'kw', // Kuwait
+    'BHR': 'bh', // Bahrain
+    'OMN': 'om', // Oman
+    'JOR': 'jo', // Jordan
+    'LBN': 'lb', // Lebanon
+    'JAM': 'jm', // Jamaica
+    'BHS': 'bs', // Bahamas
+    'BRB': 'bb', // Barbados
+    'TTO': 'tt', // Trinidad and Tobago
+    'ATG': 'ag', // Antigua and Barbuda
+    'LCA': 'lc', // Saint Lucia
+    'GRD': 'gd', // Grenada
+    'GEO': 'ge', // Georgia
+    'ARM': 'am', // Armenia
+    'AZE': 'az', // Azerbaijan
+    'KAZ': 'kz', // Kazakhstan
+    'UZB': 'uz', // Uzbekistan
+    'TKM': 'tm', // Turkmenistan
+    'TJK': 'tj', // Tajikistan
+    'KGZ': 'kg', // Kyrgyzstan
+    'JPN': 'jp', // Japan
+    'KOR': 'kr', // South Korea
+    'IND': 'in', // India
+    'BGD': 'bd', // Bangladesh
+    'PAK': 'pk', // Pakistan
+    'LKA': 'lk', // Sri Lanka
+    'KHM': 'kh', // Cambodia
+    'LAO': 'la', // Laos
+    'MMR': 'mm', // Myanmar
+    'ZAF': 'za', // South Africa
+    'EGY': 'eg', // Egypt
+    'MAR': 'ma', // Morocco
+    'NGA': 'ng', // Nigeria
+    'KEN': 'ke', // Kenya
+    'GHA': 'gh', // Ghana
+    'ETH': 'et', // Ethiopia
+    'TZA': 'tz', // Tanzania
+    'UGA': 'ug', // Uganda
+    'ZWE': 'zw', // Zimbabwe
+    'ZMB': 'zm', // Zambia
+    'BWA': 'bw', // Botswana
+    'NAM': 'na', // Namibia
+    'FJI': 'fj', // Fiji
+    'PNG': 'pg', // Papua New Guinea
+    'WSM': 'ws', // Samoa
+    'TON': 'to'  // Tonga
+  };
+  
+  return iso3ToIso2Map[iso3Code.toUpperCase()] || null;
+}
+
 // Helper function to get technology icon
 function getTechnologyIcon(tech: string): JSX.Element {
   switch (tech) {
@@ -360,19 +462,18 @@ export const PlanList: React.FC<PlanListProps> = ({
         const flagClass = getProductFlag(plan, selectedCategoryData, categories);
         const isExpanded = expandedRegionalPlans.has(plan.id);
         
-        // Initialize coverage countries as empty array and populate conditionally
+        // Get coverage countries from plan data
         let coverageCountries: string[] = [];
         
-        if (isRegional && plan.region_code && typeof plan.region_code === 'string') {
+        if (isRegional && plan.metadata?.countries_iso3 && Array.isArray(plan.metadata.countries_iso3)) {
           try {
-            const rawCoverage = regionalCoverage?.[plan.region_code];
-            if (Array.isArray(rawCoverage) && rawCoverage.length > 0) {
-              coverageCountries = rawCoverage.filter(country => 
-                country && typeof country === 'string' && country.trim().length > 0
-              );
-            }
+            // Convert ISO3 codes to country names
+            coverageCountries = plan.metadata.countries_iso3
+              .filter((iso3Code: string) => iso3Code && typeof iso3Code === 'string' && iso3Code.trim().length > 0)
+              .map((iso3Code: string) => getCountryNameFromISO3(iso3Code))
+              .filter((countryName: string) => countryName && countryName !== iso3Code); // Filter out failed conversions
           } catch (error) {
-            console.warn('Error accessing regional coverage for', plan.region_code, ':', error);
+            console.warn('Error processing countries for plan', plan.id, ':', error);
           }
         }
         
