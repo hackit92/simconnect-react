@@ -1036,24 +1036,6 @@ async function syncProducts(products: any[], categoryMap: Map<string, number>): 
   console.log(`Sync completed: ${successCount} success, ${errorCount} errors, ${idsToDeactivate.length} deactivated`);
 }
 
-// Helper function to normalize region code from plan data
-function normalizeRegionCode(regionInput: string): string {
-  if (!regionInput) return '';
-  
-  const normalized = regionInput.toLowerCase().trim();
-  
-  // Map various input formats to canonical region codes
-  const regionMappings: Record<string, string> = {
-    'latin america': 'latinoamerica',
-    'europe': 'europa',
-    'middle east': 'oriente-medio',
-    'north america': 'norteamerica',
-    'caribbean': 'caribe'
-  };
-  
-  return regionMappings[normalized] || normalized;
-}
-
 Deno.serve(async (req) => {
   try {
     if (req.method === "OPTIONS") {
