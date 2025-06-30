@@ -696,7 +696,9 @@ function transformExternalCategories(rawCategories: any[]): any[] {
 
 function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
   const categories = new Map<string, any>();
-  let categoryId = 10000; // Start with high ID to avoid conflicts
+  
+  // We'll let the database assign IDs automatically to avoid conflicts
+  // The upsert with onConflict: 'slug' will handle existing categories
 
   plans.forEach(plan => {
     // Extract country categories from ISO3 codes
@@ -706,7 +708,7 @@ function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
         
         if (!categories.has(frontendSlug)) {
           categories.set(frontendSlug, {
-            id: categoryId++,
+            // Don't set ID - let database assign it or use existing one via upsert
             name: getCountryNameFromIso3(iso3Code),
             slug: frontendSlug, // Use frontend-compatible slug
             parent: null
@@ -742,7 +744,7 @@ function extractCategoriesFromPlans(plans: ExternalPlan[]): any[] {
       
       if (regionCode && !categories.has(regionCode)) {
         categories.set(regionCode, {
-          id: categoryId++,
+          // Don't set ID - let database assign it or use existing one via upsert
           name: getRegionName(regionCode),
           slug: regionCode,
           parent: null
@@ -1146,7 +1148,7 @@ async function syncCategories(categories: any[]): Promise<Map<string, number>> {
     
     const { error } = await supabase
       .from('wc_categories')
-      .upsert(batch, { onConflict: 'id' });
+      .upsert(batch, { onConflict: 'slug' });
 
     if (error) {
       console.error(`Error upserting categories batch ${i/batchSize + 1}:`, error);
@@ -1154,8 +1156,18 @@ async function syncCategories(categories: any[]): Promise<Map<string, number>> {
     }
   }
 
-  // Build slug to ID mapping
-  categories.forEach(category => {
+  // Build slug to ID mapping by querying the database to get actual IDs
+  const { data: dbCategories, error: fetchError } = await supabase
+    .from('wc_categories')
+    .select('id, slug')
+    .in('slug', categories.map(cat => cat.slug));
+
+  if (fetchError) {
+    console.error('Error fetching category IDs:', fetchError);
+    throw fetchError;
+  }
+
+  dbCategories?.forEach(category => {
     slugToIdMap.set(category.slug, category.id);
   });
 
