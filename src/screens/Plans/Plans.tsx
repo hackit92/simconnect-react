@@ -25,7 +25,6 @@ interface PlansProps {
 export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
-  const [showGrids, setShowGrids] = useState(false);
   const { selectedCurrency } = useCurrency();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
@@ -43,7 +42,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
   const {
-    plans,
+    products: plans,
     loading,
     error,
     refetch
@@ -100,23 +99,19 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     fetchData();
   }, []);
 
-  // Filter categories based on search term - REMOVED AUTO-SELECTION
+  // Filter categories based on search term
   useEffect(() => {
     if (!searchEngine) return;
     
     if (debouncedSearchTerm.trim()) {
       const filtered = searchEngine.search(debouncedSearchTerm);
       setFilteredCategories(filtered);
-      setShowGrids(true); // Show grids when user searches
-      
-      // REMOVED: Auto-selection logic that was causing confusion
-      // Users now need to explicitly click on suggestions or countries
-    } else {
-      setFilteredCategories(categories);
-      // Clear selections when search is empty
+      // Clear selections when searching
       setSelectedCategory(undefined);
       setSelectedRegion(undefined);
-      setShowGrids(false); // Hide grids when search is cleared
+    } else {
+      setFilteredCategories(categories);
+      // Don't clear selections when search is empty - let user keep their selection
     }
   }, [debouncedSearchTerm, searchEngine, categories]);
 
@@ -130,10 +125,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     setSelectedCategory(undefined);
     setSelectedRegion(undefined);
     setCurrentCategoryPage(1);
-    // Show grids when user explicitly selects a tab
-    if (selectedTab) {
-      setShowGrids(true);
-    }
   }, [selectedTab]);
 
   const handleCategorySelect = (categoryId: number) => {
@@ -169,21 +160,20 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
   const handleTabChange = (tab: 'countries' | 'regions') => {
     setSelectedTab(tab);
-    setShowGrids(true); // Show grids when user selects a tab
+    // Clear search and selections when changing tabs
+    setSearchTerm('');
+    setSelectedCategory(undefined);
+    setSelectedRegion(undefined);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    // Show grids immediately when user starts typing
-    if (value.trim()) {
-      setShowGrids(true);
-    }
   };
 
-  // NEW: Handle suggestion click with explicit selection
+  // Handle suggestion click with explicit selection
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
-    // Don't set search term to suggestion text to avoid conflicts
-    setSearchTerm(''); // Clear search term for clean filtering
+    // Clear search term for clean filtering
+    setSearchTerm('');
     
     if (suggestion.type === 'country' && suggestion.id) {
       // Directly select the country
@@ -214,8 +204,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     setSearchTerm('');
     setSelectedCategory(undefined);
     setSelectedRegion(undefined);
-    setFilteredCategories(categories); // Reset filtered categories
-    setShowGrids(false); // Hide grids when clearing search
+    setFilteredCategories(categories);
+    setSelectedTab('countries'); // Default to countries tab
   };
 
   const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
@@ -235,8 +225,15 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     return regionNames[regionValue] || regionValue;
   };
 
-  // Determine if we should show plans
-  const shouldShowPlans = selectedCategory || selectedRegion;
+  // Determine what to show based on current state
+  const hasSearchTerm = debouncedSearchTerm.trim().length > 0;
+  const hasSelection = selectedCategory || selectedRegion;
+  const shouldShowPlans = hasSelection;
+  const shouldShowWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0;
+  const shouldShowEmptyState = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length === 0;
+  const shouldShowSearchResults = hasSearchTerm && filteredCategories.length > 0;
+  const shouldShowNoResults = hasSearchTerm && filteredCategories.length === 0;
+  const shouldShowTabs = !hasSearchTerm && !hasSelection;
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -324,11 +321,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   ? 'w-1/3' 
                   : 'w-full'
               }`}>
-                {/* Tab Selector - Always visible when no country/region is selected */}
-                {!selectedCategory && !selectedRegion && !showGrids && (
-                  <div className={`mb-6 ${
-                    isDesktop ? '' : ''
-                  }`}>
+                
+                {/* Tab Selector - Show when no selection is made and no search */}
+                {shouldShowTabs && (
+                  <div className={`mb-6 ${isDesktop ? '' : ''}`}>
                     <TabSelector
                       selectedTab={selectedTab}
                       onTabChange={handleTabChange}
@@ -336,32 +332,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   </div>
                 )}
 
-                {/* Tab Selector - Show when grids are visible but no selection made */}
-                {!selectedCategory && !selectedRegion && showGrids && (
-                  <div className={`mb-6 ${
-                    isDesktop ? '' : ''
-                  }`}>
-                    <div className="flex items-center justify-center relative">
-                      {/* Back button positioned absolutely to the left */}
-                      <button
-                        onClick={() => setShowGrids(false)}
-                        className="absolute left-0 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                        title="Volver"
-                      >
-                        <ArrowLeft className="w-5 h-5" />
-                      </button>
-                      
-                      {/* Centered tabs */}
-                      <TabSelector
-                        selectedTab={selectedTab}
-                        onTabChange={handleTabChange}
-                      />
-                    </div>
-                  </div>
-                )}
-
                 {/* Selected Country/Region Header */}
-                {(selectedCategory || selectedRegion) && (
+                {hasSelection && (
                   <div className="mb-6">
                     <button
                       onClick={() => {
@@ -387,8 +359,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   </div>
                 )}
 
-                {/* Countries/Regions Grid - Show when tab is selected but no country/region is selected and no search */}
-                {!selectedCategory && !selectedRegion && !debouncedSearchTerm.trim() && showGrids && (
+                {/* Countries/Regions Grid - Show when tabs are visible and no search */}
+                {shouldShowTabs && (
                   <div className="mb-8">
                     {selectedTab === 'countries' ? (
                       <CountryGrid
@@ -415,7 +387,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Search Results for Countries/Regions */}
-                {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length > 0 && showGrids && (
+                {shouldShowSearchResults && (
                   <div className="mb-8">
                     <h2 className="text-xl font-bold text-gray-900 mb-6">
                       Países encontrados para "{debouncedSearchTerm}"
@@ -432,7 +404,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* No Results Message */}
-                {debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && filteredCategories.length === 0 && showGrids && (
+                {shouldShowNoResults && (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                       <Globe className="w-8 h-8 text-gray-400" />
@@ -451,7 +423,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Welcome Message - Show when no search, no selection, and data is loaded */}
-                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length > 0 && !showGrids && (
+                {shouldShowWelcome && !isDesktop && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
@@ -483,7 +455,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Empty State - Show when no data is loaded */}
-                {!isDesktop && !debouncedSearchTerm.trim() && !selectedCategory && !selectedRegion && !categoriesLoading && categories.length === 0 && !showGrids && (
+                {shouldShowEmptyState && !isDesktop && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
@@ -508,7 +480,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   : 'w-full mt-6'
               }`}>
                 {/* Currency indicator */}
-                {(selectedCategory || selectedRegion) && (
+                {shouldShowPlans && (
                   <div className="mb-4 text-sm text-gray-600">
                     Precios mostrados en: <span className="font-semibold">{selectedCurrency}</span>
                   </div>
