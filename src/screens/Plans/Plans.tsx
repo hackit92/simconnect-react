@@ -238,6 +238,9 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const shouldShowCountriesList = selectedTab === 'countries' && !hasSearchTerm && !hasSelection && !categoriesLoading;
   const shouldShowRegionsList = selectedTab === 'regions' && !hasSearchTerm && !hasSelection && !categoriesLoading;
   const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
+  const shouldShowCountriesList = selectedTab === 'countries' && !hasSearchTerm && !hasSelection && !categoriesLoading;
+  const shouldShowRegionsList = selectedTab === 'regions' && !hasSearchTerm && !hasSelection && !categoriesLoading;
+  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -327,7 +330,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
               }`}>
                 
                 {/* Tab Selector - Show when no selection is made and no search */}
-                {shouldShowTabs && (
+                {shouldShowCountriesList && (
                   <div className={`mb-6 ${isDesktop ? '' : ''}`}>
                     <TabSelector
                       selectedTab={selectedTab}
@@ -339,27 +342,24 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {/* Selected Country/Region Header */}
                 {hasSelection && (
                   <div className="mb-6">
-                    <button
-                      onClick={() => {
-                        setSelectedCategory(undefined);
-                        setSelectedRegion(undefined);
-                        setSearchTerm(''); // Clear search when going back
-                      }}
-                      className="flex items-center space-x-3 text-blue-600 hover:text-blue-700 transition-colors duration-200"
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                      <span className="font-medium">
-                        Volver a {selectedTab === 'countries' ? 'países' : 'regiones'}
-                      </span>
-                    </button>
-                    
-                    {selectedRegion && (
-                      <div className="mt-2">
-                        <h2 className="text-xl font-bold text-gray-900">
-                          Planes para {getRegionDisplayName(selectedRegion)}
-                        </h2>
-                      </div>
-                    )}
+                    <CountryGrid
+                      categories={paginatedCategories}
+                      selectedCategory={selectedCategory}
+                      onSelectCategory={handleCategorySelect}
+                      currentPage={currentCategoryPage}
+                      totalPages={totalCategoryPages}
+                      onPageChange={handleCategoryPageChange}
+                    />
+                  </div>
+                )}
+
+                {shouldShowRegionsList && (
+                  <div className="mb-8">
+                    <RegionGrid
+                      categories={filteredCategories}
+                      products={allProducts}
+                      selectedCategory={selectedCategory}
+                      onSelectCategory={handleCategorySelect}
                   </div>
                 )}
 
