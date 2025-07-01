@@ -1,5 +1,3 @@
-Here's the fixed version with all missing closing brackets added:
-
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, AlertCircle, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
