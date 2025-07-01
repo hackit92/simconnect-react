@@ -376,7 +376,26 @@ function transformExternalPlans(rawPlans: any[]): any[] {
 
     // Determine plan type and codes
     const planType = determinePlanType(plan);
-    const regionCode = planType === 'regional' ? normalizeRegionCode(plan.region_code || plan.region || '') : null;
+    
+    // Extract region code for regional plans
+    let regionCode: string | null = null;
+    if (planType === 'regional') {
+      // First try explicit region fields
+      if (plan.region_code) {
+        regionCode = normalizeRegionCode(plan.region_code);
+      } else if (plan.region) {
+        regionCode = normalizeRegionCode(plan.region);
+      } else {
+        // Fall back to extracting from plan name
+        const planNameEs = plan.name?.es || '';
+        const planNameEn = plan.name?.en || '';
+        const planName = planNameEs || planNameEn;
+        
+        if (planName) {
+          regionCode = normalizeRegionCode(planName);
+        }
+      }
+    }
     
     // Get country code from the first country in the countries array - use ISO2 format
     let countryCode: string | null = null;
@@ -854,6 +873,7 @@ function normalizeRegionCode(regionInput: string): string {
     'latin america': 'latinoamerica',
     'latin-america': 'latinoamerica',
     'latinamerica': 'latinoamerica',
+    'latinoamérica': 'latinoamerica',
     'latino america': 'latinoamerica',
     'latino-america': 'latinoamerica',
     'south america': 'latinoamerica',
@@ -861,6 +881,7 @@ function normalizeRegionCode(regionInput: string): string {
     
     // Europe variations
     'europe': 'europa',
+    'europa': 'europa',
     'european union': 'europa',
     'eu': 'europa',
     
@@ -868,37 +889,48 @@ function normalizeRegionCode(regionInput: string): string {
     'north america': 'norteamerica',
     'north-america': 'norteamerica',
     'northamerica': 'norteamerica',
+    'norteamérica': 'norteamerica',
+    'norteamerica': 'norteamerica',
     
     // Middle East variations
     'middle east': 'oriente-medio',
     'middle-east': 'oriente-medio',
     'middleeast': 'oriente-medio',
     'oriente medio': 'oriente-medio',
+    'oriente-medio': 'oriente-medio',
     'orientemedio': 'oriente-medio',
     
     // Caribbean variations
     'caribbean': 'caribe',
+    'caribe': 'caribe',
     
     // Balkans variations
     'balkans': 'balcanes',
     'balkan': 'balcanes',
+    'balcanes': 'balcanes',
     
     // Caucasus variations
     'caucasus': 'caucaso',
+    'caucaso': 'caucaso',
+    'cáucaso': 'caucaso',
     
     // Central Asia variations
     'central asia': 'asia-central',
     'central-asia': 'asia-central',
     'centralasia': 'asia-central',
+    'asia central': 'asia-central',
+    'asia-central': 'asia-central',
     
     // Africa variations
     'africa': 'africa',
+    'áfrica': 'africa',
     
     // Asia variations
     'asia': 'asia',
     
     // Oceania variations
     'oceania': 'oceania',
+    'oceanía': 'oceania',
     'pacific': 'oceania'
   };
   
