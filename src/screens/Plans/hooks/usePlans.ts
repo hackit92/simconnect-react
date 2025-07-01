@@ -69,7 +69,7 @@ export function usePlans({
         if (countryISO3) {
           // Use OR condition to get both country-specific plans and regional plans that include this country
           productsQuery = productsQuery.or(
-            `category_ids.cs.{${selectedCategory}},and(plan_type.eq.regional,metadata->>countries_iso3.cs.["${countryISO3}"])`
+            `category_ids.cs.{${selectedCategory}},and(plan_type.eq.regional,metadata->countries_iso3.cs.["${countryISO3}"]::jsonb)`
           );
         } else {
           // Fallback to just country-specific plans if ISO3 conversion fails
