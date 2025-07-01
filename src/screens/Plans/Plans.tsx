@@ -230,11 +230,14 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const hasSearchTerm = debouncedSearchTerm.trim().length > 0;
   const hasSelection = selectedCategory || selectedRegion;
   const shouldShowPlans = hasSelection;
-  const shouldShowWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0;
+  const shouldShowWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
   const shouldShowEmptyState = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length === 0;
   const shouldShowSearchResults = hasSearchTerm && filteredCategories.length > 0;
   const shouldShowNoResults = hasSearchTerm && filteredCategories.length === 0;
   const shouldShowTabs = !hasSearchTerm && !hasSelection;
+  const shouldShowCountriesList = selectedTab === 'countries' && !hasSearchTerm && !hasSelection && !categoriesLoading;
+  const shouldShowRegionsList = selectedTab === 'regions' && !hasSearchTerm && !hasSelection && !categoriesLoading;
+  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -361,29 +364,27 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Countries/Regions Grid - Show when tabs are visible and no search */}
-                {shouldShowTabs && (
+                {shouldShowCountriesList && (
                   <div className="mb-8">
-                    {selectedTab === 'countries' ? (
-                      <CountryGrid
-                        categories={paginatedCategories}
-                        selectedCategory={selectedCategory}
-                        onSelectCategory={handleCategorySelect}
-                        currentPage={currentCategoryPage}
-                        totalPages={totalCategoryPages}
-                        onPageChange={handleCategoryPageChange}
-                      />
-                    ) : (
-                      <RegionGrid
-                        categories={filteredCategories}
-                        products={allProducts}
-                        selectedCategory={selectedCategory}
-                        onSelectCategory={handleCategorySelect}
-                        onSelectRegion={handleRegionSelect}
-                        currentPage={currentCategoryPage}
-                        totalPages={totalCategoryPages}
-                        onPageChange={handleCategoryPageChange}
-                      />
-                    )}
+                    <CountryGrid
+                      categories={paginatedCategories}
+                      selectedCategory={selectedCategory}
+                      onSelectCategory={handleCategorySelect}
+                      currentPage={currentCategoryPage}
+                      totalPages={totalCategoryPages}
+                      onPageChange={handleCategoryPageChange}
+                    />
+                  </div>
+                )}
+
+                {shouldShowRegionsList && (
+                  <div className="mb-8">
+                    <RegionGrid
+                      categories={filteredCategories}
+                      products={allProducts}
+                      selectedCategory={selectedCategory}
+                      onSelectCategory={handleCategorySelect}
+                    />
                   </div>
                 )}
 
@@ -424,7 +425,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
 
                 {/* Welcome Message - Show when no search, no selection, and data is loaded */}
-                {shouldShowWelcome && !isDesktop && (
+                {shouldShowInitialWelcome && !isDesktop && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
