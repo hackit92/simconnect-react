@@ -1,3 +1,5 @@
+Here's the fixed version with all missing closing brackets added:
+
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, AlertCircle, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -238,9 +240,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const shouldShowCountriesList = selectedTab === 'countries' && !hasSearchTerm && !hasSelection && !categoriesLoading;
   const shouldShowRegionsList = selectedTab === 'regions' && !hasSearchTerm && !hasSelection && !categoriesLoading;
   const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
-  const shouldShowCountriesList = selectedTab === 'countries' && !hasSearchTerm && !hasSelection && !categoriesLoading;
-  const shouldShowRegionsList = selectedTab === 'regions' && !hasSearchTerm && !hasSelection && !categoriesLoading;
-  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -266,14 +265,14 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
           
           <div className={`${isDesktop ? 'w-full max-w-none flex justify-center' : ''}`}>
             <div className={`${isDesktop ? 'w-3/5' : 'w-full'}`}>
-            <SearchBar
-              value={searchTerm}
-              onChange={handleSearchChange}
-              suggestions={suggestions}
-              onSuggestionClick={handleSuggestionClick}
-              onClear={clearSearch}
-              placeholder="Buscar país..."
-            />
+              <SearchBar
+                value={searchTerm}
+                onChange={handleSearchChange}
+                suggestions={suggestions}
+                onSuggestionClick={handleSuggestionClick}
+                onClear={clearSearch}
+                placeholder="Buscar país..."
+              />
             </div>
           </div>
         </div>
@@ -360,6 +359,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       products={allProducts}
                       selectedCategory={selectedCategory}
                       onSelectCategory={handleCategorySelect}
+                    />
                   </div>
                 )}
 
