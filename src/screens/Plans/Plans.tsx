@@ -50,6 +50,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     searchTerm: debouncedSearchTerm,
     selectedCategory,
     selectedRegion,
+    allCategories: categories,
     currentPage: 1,
     pageSize: 20
   });
