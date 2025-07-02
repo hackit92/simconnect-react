@@ -125,13 +125,23 @@ export const Cart = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+      <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${
+        isDesktop ? 'px-6' : 'px-4'
+      }`}>
         <div className="text-center max-w-md">
-          <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-white shadow-lg flex items-center justify-center">
-            <ShoppingBag className="w-12 h-12 text-gray-400" />
+          <div className={`mx-auto mb-8 rounded-full bg-white shadow-lg flex items-center justify-center ${
+            isDesktop ? 'w-24 h-24' : 'w-20 h-20'
+          }`}>
+            <ShoppingBag className={`text-gray-400 ${
+              isDesktop ? 'w-12 h-12' : 'w-10 h-10'
+            }`} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Tu carrito está vacío</h1>
-          <p className="text-gray-600 mb-8 text-lg">
+          <h1 className={`font-bold text-gray-900 mb-4 ${
+            isDesktop ? 'text-3xl' : 'text-2xl'
+          }`}>Tu carrito está vacío</h1>
+          <p className={`text-gray-600 mb-8 ${
+            isDesktop ? 'text-lg' : 'text-base'
+          }`}>
             Explora nuestros planes de datos móviles y encuentra el perfecto para tu próximo viaje.
           </p>
           <Button
@@ -147,20 +157,28 @@ export const Cart = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className={`max-w-7xl mx-auto ${
+        isDesktop ? 'px-6 py-8' : 'px-4 py-6'
+      }`}>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Carrito de Compras</h1>
-              <p className="text-gray-600 text-lg">
+              <h1 className={`font-bold text-gray-900 mb-2 ${
+                isDesktop ? 'text-4xl' : 'text-2xl'
+              }`}>Carrito de Compras</h1>
+              <p className={`text-gray-600 ${
+                isDesktop ? 'text-lg' : 'text-base'
+              }`}>
                 {items.length} {items.length === 1 ? 'producto' : 'productos'} en tu carrito
               </p>
             </div>
             <Button
               onClick={clearCart}
               variant="outline"
-              className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 transition-all duration-200 px-6 py-3"
+              className={`text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 transition-all duration-200 ${
+                isDesktop ? 'px-6 py-3' : 'px-4 py-2'
+              }`}
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Vaciar carrito
@@ -191,7 +209,9 @@ export const Cart = () => {
                         </h3>
                         
                         {/* Product Details */}
-                        <div className="flex items-center space-x-6 text-sm text-gray-600 mb-6">
+                        <div className={`flex items-center text-sm text-gray-600 mb-6 ${
+                          isDesktop ? 'space-x-6' : 'space-x-4'
+                        }`}>
                           {item.data_gb && (
                             <div className="flex items-center space-x-1">
                               <span className="font-medium">Datos:</span>
@@ -271,20 +291,30 @@ export const Cart = () => {
 
           {/* Order Summary - Right Column */}
           <div className="lg:w-1/3">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 sticky top-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Resumen del Pedido</h3>
+            <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 sticky top-8 ${
+              isDesktop ? 'p-8' : 'p-6'
+            }`}>
+              <h3 className={`font-bold text-gray-900 mb-6 ${
+                isDesktop ? 'text-2xl' : 'text-xl'
+              }`}>Resumen del Pedido</h3>
               
               <div className="space-y-4 mb-8">
-                <div className="flex justify-between text-gray-600 text-lg">
+                <div className={`flex justify-between text-gray-600 ${
+                  isDesktop ? 'text-lg' : 'text-base'
+                }`}>
                   <span>Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} productos)</span>
                   <span className="font-medium">{formatPrice(getTotalPrice(selectedCurrency))}</span>
                 </div>
-                <div className="flex justify-between text-gray-600 text-lg">
+                <div className={`flex justify-between text-gray-600 ${
+                  isDesktop ? 'text-lg' : 'text-base'
+                }`}>
                   <span>Activación</span>
                   <span className="text-[#299ae4] font-semibold">Gratis</span>
                 </div>
                 <div className="border-t border-gray-200 pt-4">
-                  <div className="flex justify-between text-2xl font-bold text-gray-900">
+                  <div className={`flex justify-between font-bold text-gray-900 ${
+                    isDesktop ? 'text-2xl' : 'text-xl'
+                  }`}>
                     <span>Total</span>
                     <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
                   </div>
