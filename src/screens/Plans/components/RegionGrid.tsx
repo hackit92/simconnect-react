@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { Globe } from 'lucide-react';
 import type { Category, Product } from "../../../lib/supabase";
 import { supabase } from '../../../lib/supabase';
+
+// Import region SVG assets
+import AsiaIcon from '../../../assets/regions/asia.svg?react';
+import CaribeIcon from '../../../assets/regions/caribe.svg?react';
+import CaucasoIcon from '../../../assets/regions/caucaso.svg?react';
+import EuropaIcon from '../../../assets/regions/europa.svg?react';
+import LatinoAmericaIcon from '../../../assets/regions/latino-america.svg?react';
+import MedioOrienteIcon from '../../../assets/regions/medio-oriente.svg?react';
+import NorteamericaIcon from '../../../assets/regions/Norteamerica.svg?react';
 
 interface RegionOption {
   value: string;
@@ -77,6 +87,17 @@ const regions: RegionOption[] = [
   }
 ];
 
+// Map region values to their corresponding SVG components
+const regionIcons: Record<string, React.ComponentType<any>> = {
+  'latinoamerica': LatinoAmericaIcon,
+  'europa': EuropaIcon,
+  'norteamerica': NorteamericaIcon,
+  'oriente-medio': MedioOrienteIcon,
+  'caribe': CaribeIcon,
+  'caucaso': CaucasoIcon,
+  'asia': AsiaIcon,
+};
+
 export const RegionGrid: React.FC<RegionGridProps> = ({
   categories,
   products,
@@ -151,6 +172,9 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
           
           const hasContent = regionCategories.length > 0 || regionalPlansCount > 0;
           
+          // Get the appropriate icon component
+          const IconComponent = regionIcons[region.value];
+          
           return (
             <button
               key={region.value}
@@ -162,6 +186,15 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
                   : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
               }`}
             >
+              {/* Region Icon */}
+              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                {IconComponent ? (
+                  <IconComponent className="w-10 h-10 text-[#299ae4]" />
+                ) : (
+                  <Globe className="w-10 h-10 text-[#299ae4]" />
+                )}
+              </div>
+              
               <div className="text-lg font-medium mb-1">{region.label}</div>
               <div className="text-sm text-gray-500">
                 {regionCategories.length > 0 && (

@@ -11,6 +11,7 @@ export default defineConfig({
       plugins: [tailwind()],
     },
   },
+  assetsInclude: ['**/*.svg'],
   define: {
     global: {},
     'process.env': {},

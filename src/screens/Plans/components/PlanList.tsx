@@ -6,6 +6,11 @@ import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useCart } from '../../../contexts/CartContext';
 
+// Import technology SVG assets
+import FiveGIcon from '../../../assets/technology/5G.svg?react';
+import LTEIcon from '../../../assets/technology/LTE.svg?react';
+import ThreeGIcon from '../../../assets/technology/3G.svg?react';
+
 interface PlanListProps {
   products: Product[];
   loading: boolean;
@@ -156,34 +161,34 @@ function getTechnologyIcon(tech: string): JSX.Element {
   switch (tech) {
     case '5G':
       return (
-        <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-pink-500 rounded text-white text-xs font-bold flex items-center justify-center">
-          5G
+        <div className="w-6 h-6 flex items-center justify-center">
+          <FiveGIcon className="w-5 h-5 text-purple-600" />
         </div>
       );
     case '4G/LTE':
     case '4G':
       return (
-        <div className="w-5 h-5 bg-blue-500 rounded text-white text-xs font-bold flex items-center justify-center">
-          4G
+        <div className="w-6 h-6 flex items-center justify-center">
+          <LTEIcon className="w-5 h-5 text-blue-600" />
         </div>
       );
     case '3G':
       return (
-        <div className="w-5 h-5 bg-green-500 rounded text-white text-xs font-bold flex items-center justify-center">
-          3G
+        <div className="w-6 h-6 flex items-center justify-center">
+          <ThreeGIcon className="w-5 h-5 text-green-600" />
         </div>
       );
     case '2G':
     case '2G/EDGE':
       return (
-        <div className="w-5 h-5 bg-gray-500 rounded text-white text-xs font-bold flex items-center justify-center">
+        <div className="w-6 h-6 bg-gray-500 rounded text-white text-xs font-bold flex items-center justify-center">
           2G
         </div>
       );
     default:
       return (
-        <div className="w-5 h-5 bg-blue-500 rounded text-white text-xs font-bold flex items-center justify-center">
-          4G
+        <div className="w-6 h-6 flex items-center justify-center">
+          <LTEIcon className="w-5 h-5 text-blue-600" />
         </div>
       );
   }
