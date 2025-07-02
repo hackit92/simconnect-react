@@ -12,6 +12,15 @@ import FiveGIcon from '../../../assets/technology/5G.svg?react';
 import LTEIcon from '../../../assets/technology/LTE.svg?react';
 import ThreeGIcon from '../../../assets/technology/3G.svg?react';
 
+// Import region SVG assets
+import AsiaIcon from '../../../assets/regions/asia.svg?react';
+import CaribeIcon from '../../../assets/regions/caribe.svg?react';
+import CaucasoIcon from '../../../assets/regions/caucaso.svg?react';
+import EuropaIcon from '../../../assets/regions/europa.svg?react';
+import LatinoAmericaIcon from '../../../assets/regions/latino-america.svg?react';
+import MedioOrienteIcon from '../../../assets/regions/medio-oriente.svg?react';
+import NorteamericaIcon from '../../../assets/regions/norteamerica.svg?react';
+
 interface PlanListProps {
   products: Product[];
   loading: boolean;
@@ -19,6 +28,17 @@ interface PlanListProps {
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null };
   categories?: { id: number; name: string; slug: string; parent: number | null }[];
 }
+
+// Map region codes to their corresponding SVG components
+const regionSvgIcons: Record<string, React.ComponentType<any>> = {
+  'latinoamerica': LatinoAmericaIcon,
+  'europa': EuropaIcon,
+  'norteamerica': NorteamericaIcon,
+  'oriente-medio': MedioOrienteIcon,
+  'caribe': CaribeIcon,
+  'asia-central': CaucasoIcon, // Using Caucaso icon for unified Asia Central y Cáucaso
+  'asia': AsiaIcon,
+};
 
 // Helper function to convert ISO3 country codes to country names
 function getCountryNameFromISO3(iso3Code: string): string {
@@ -334,10 +354,15 @@ function getProductFlag(
   product: Product,
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null },
   categories?: { id: number; name: string; slug: string; parent: number | null }[]
-): string {
+): string | React.ComponentType<any> {
   // For regional plans, return a generic international flag
   if (product.plan_type === 'regional') {
-    return 'fi fi-un'; // UN flag for regional plans
+    // Return the appropriate region icon component if available
+    const RegionIcon = regionSvgIcons[product.region_code || ''];
+    if (RegionIcon) {
+      return RegionIcon;
+    }
+    return 'fi fi-un'; // Fallback to UN flag for regional plans
   }
   
   // For country-specific plans, try to get the flag from various sources
@@ -459,7 +484,7 @@ export const PlanList: React.FC<PlanListProps> = ({
         const isRegional = plan.plan_type === 'regional';
         const gbAmount = plan.data_gb;
         const validityDays = plan.validity_days;
-        const flagClass = getProductFlag(plan, selectedCategoryData, categories);
+        const flagOrIcon = getProductFlag(plan, selectedCategoryData, categories);
         const isExpanded = expandedRegionalPlans.has(plan.id);
         
         // Get coverage countries from plan data
@@ -488,13 +513,17 @@ export const PlanList: React.FC<PlanListProps> = ({
                 <div className="flex items-center space-x-4">
                   {/* Flag */}
                   <div className="w-12 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
-                    {isRegional ? (
-                      <Globe className="w-6 h-6 text-blue-500" />
+                    {typeof flagOrIcon === 'string' ? (
+                      isRegional ? (
+                        <Globe className="w-6 h-6 text-blue-500" />
+                      ) : (
+                        <span 
+                          className={flagOrIcon} 
+                          style={{ transform: 'scale(1.8)' }} 
+                        />
+                      )
                     ) : (
-                      <span 
-                        className={flagClass} 
-                        style={{ transform: 'scale(1.8)' }} 
-                      />
+                      React.createElement(flagOrIcon, { className: "w-6 h-6 text-[#299ae4]" })
                     )}
                   </div>
                   
@@ -550,13 +579,17 @@ export const PlanList: React.FC<PlanListProps> = ({
                   <div className="flex items-center space-x-3">
                     {/* Flag or Regional Icon */}
                     <div className="w-10 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
-                      {isRegional ? (
-                        <Globe className="w-6 h-6 text-blue-500" />
+                      {typeof flagOrIcon === 'string' ? (
+                        isRegional ? (
+                          <Globe className="w-6 h-6 text-blue-500" />
+                        ) : (
+                          <span 
+                            className={flagOrIcon} 
+                            style={{ transform: 'scale(1.5)' }} 
+                          />
+                        )
                       ) : (
-                        <span 
-                          className={flagClass} 
-                          style={{ transform: 'scale(1.5)' }} 
-                        />
+                        React.createElement(flagOrIcon, { className: "w-6 h-6 text-[#299ae4]" })
                       )}
                     </div>
                     
