@@ -39,7 +39,8 @@
     "vite": "6.0.4"
   },
   "alias": {
-    "@/*": "./src/components/ui/$1"
+    "@/*": "./src/components/ui/$1",
     "vite": "^6.0.5",
     "vite-plugin-svgr": "^4.2.0"
+  }
 }
