@@ -230,11 +230,13 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const hasSearchTerm = debouncedSearchTerm.trim().length > 0;
   const hasSelection = selectedCategory || selectedRegion;
   const shouldShowPlans = hasSelection;
-  const shouldShowWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
+  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
   const shouldShowEmptyState = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length === 0;
   const shouldShowSearchResults = hasSearchTerm && filteredCategories.length > 0;
   const shouldShowNoResults = hasSearchTerm && filteredCategories.length === 0;
   const shouldShowTabs = !hasSearchTerm && !hasSelection;
+  const shouldShowCountriesList = shouldShowTabs && selectedTab === 'countries';
+  const shouldShowRegionsList = shouldShowTabs && selectedTab === 'regions';
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
