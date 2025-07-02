@@ -288,8 +288,7 @@ function getDisplayName(
       'balcanes': 'Balcanes',
       'oriente-medio': 'Oriente Medio',
       'caribe': 'Caribe',
-      'caucaso': 'Cáucaso',
-      'asia-central': 'Asia Central',
+      'asia-central': 'Asia Central y Cáucaso',
       'asia': 'Asia',
       'africa': 'África',
       'oceania': 'Oceanía'
