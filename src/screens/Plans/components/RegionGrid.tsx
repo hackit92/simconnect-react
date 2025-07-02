@@ -66,16 +66,10 @@ const regions: RegionOption[] = [
     keywords: ['caribe', 'caribbean', 'antillas']
   },
   {
-    value: 'caucaso',
-    label: 'Cáucaso',
-    countries: ['ge', 'am', 'az'],
-    keywords: ['caucaso', 'caucasus', 'caucasian']
-  },
-  {
     value: 'asia-central',
-    label: 'Asia Central',
+    label: 'Asia Central y Cáucaso',
     countries: ['kz', 'uz', 'tm', 'tj', 'kg'],
-    keywords: ['asia central', 'central asia', 'asia centrale']
+    keywords: ['asia central', 'central asia', 'asia centrale', 'caucaso', 'caucasus', 'caucasian']
   },
   {
     value: 'asia',
