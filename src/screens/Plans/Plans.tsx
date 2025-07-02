@@ -235,9 +235,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const shouldShowSearchResults = hasSearchTerm && filteredCategories.length > 0;
   const shouldShowNoResults = hasSearchTerm && filteredCategories.length === 0;
   const shouldShowTabs = !hasSearchTerm && !hasSelection;
-  const shouldShowCountriesList = selectedTab === 'countries' && !hasSearchTerm && !hasSelection && !categoriesLoading;
-  const shouldShowRegionsList = selectedTab === 'regions' && !hasSearchTerm && !hasSelection && !categoriesLoading;
-  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -350,17 +347,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   </div>
                 )}
 
-                {shouldShowRegionsList && (
-                  <div className="mb-8">
-                    <RegionGrid
-                      categories={filteredCategories}
-                      products={allProducts}
-                      selectedCategory={selectedCategory}
-                      onSelectCategory={handleCategorySelect}
-                    />
-                  </div>
-                )}
-
                 {/* Countries/Regions Grid - Show when tabs are visible and no search */}
                 {shouldShowCountriesList && (
                   <div className="mb-8">
@@ -382,6 +368,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       products={allProducts}
                       selectedCategory={selectedCategory}
                       onSelectCategory={handleCategorySelect}
+                      onSelectRegion={handleRegionSelect}
+                      currentPage={currentCategoryPage}
+                      totalPages={totalCategoryPages}
+                      onPageChange={handleCategoryPageChange}
                     />
                   </div>
                 )}
