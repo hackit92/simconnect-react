@@ -74,18 +74,6 @@ const regions: RegionOption[] = [
     label: 'Asia',
     countries: ['cn', 'jp', 'kr', 'in', 'th', 'sg', 'my', 'id', 'ph', 'vn', 'kh', 'la', 'mm', 'bd', 'pk', 'lk'],
     keywords: ['asia']
-  },
-  {
-    value: 'africa',
-    label: 'África',
-    countries: ['za', 'eg', 'ma', 'ng', 'ke', 'gh', 'et', 'tz', 'ug', 'zw', 'zm', 'bw', 'na'],
-    keywords: ['africa', 'áfrica']
-  },
-  {
-    value: 'oceania',
-    label: 'Oceanía',
-    countries: ['au', 'nz', 'fj', 'pg', 'ws', 'to', 'vu', 'sb'],
-    keywords: ['oceania', 'oceanía']
   }
 ];
 
