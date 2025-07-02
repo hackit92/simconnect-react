@@ -1,14 +1,18 @@
 import React from "react";
 import { Trash2, Plus, Minus, ShoppingBag, CreditCard } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { useCart } from "../../contexts/CartContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { countryUtils } from "../../lib/countries/countryUtils";
 import { supabase, type Category } from "../../lib/supabase";
 
 export const Cart = () => {
   const { items, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
   const { selectedCurrency, formatPrice } = useCurrency();
+  const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const [categories, setCategories] = React.useState<Category[]>([]);
 
   // Load categories for proper country name display
@@ -40,6 +44,22 @@ export const Cart = () => {
   const handleCheckout = () => {
     // TODO: Implement checkout logic
     alert('Funcionalidad de pago en desarrollo. ¡Pronto estará disponible!');
+  };
+
+  const handleExplorePlans = () => {
+    if (isDesktop) {
+      // On desktop, navigate to home and scroll to plans section
+      navigate('/');
+      setTimeout(() => {
+        const plansSection = document.getElementById('plans-section');
+        if (plansSection) {
+          plansSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // On mobile, navigate to plans page
+      navigate('/plans');
+    }
   };
 
   const getProductPrice = (item: any) => {
@@ -115,7 +135,7 @@ export const Cart = () => {
             Explora nuestros planes de datos móviles y encuentra el perfecto para tu próximo viaje.
           </p>
           <Button
-            onClick={() => window.history.back()}
+            onClick={handleExplorePlans}
             className="bg-[#299ae4] hover:bg-[#299ae4]/90 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             Explorar Planes
