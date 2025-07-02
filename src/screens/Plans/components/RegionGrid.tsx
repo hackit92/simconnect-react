@@ -10,7 +10,7 @@ import CaucasoIcon from '../../../assets/regions/caucaso.svg?react';
 import EuropaIcon from '../../../assets/regions/europa.svg?react';
 import LatinoAmericaIcon from '../../../assets/regions/latino-america.svg?react';
 import MedioOrienteIcon from '../../../assets/regions/medio-oriente.svg?react';
-import NorteamericaIcon from '../../../assets/regions/Norteamerica.svg?react';
+import NorteamericaIcon from '../../../assets/regions/norteamerica.svg?react';
 
 interface RegionOption {
   value: string;
