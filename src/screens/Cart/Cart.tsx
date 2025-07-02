@@ -1,6 +1,5 @@
 import React from "react";
 import { Trash2, Plus, Minus, ShoppingBag, CreditCard } from "lucide-react";
-import { CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { useCart } from "../../contexts/CartContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
@@ -106,172 +105,188 @@ export const Cart = () => {
 
   if (items.length === 0) {
     return (
-      <>
-        <CardContent className="flex flex-col items-center px-6 py-12 relative self-stretch w-full min-h-[600px] justify-center">
-          <div className="text-center">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
-              <ShoppingBag className="w-10 h-10 text-gray-400" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">Tu carrito está vacío</h1>
-            <p className="text-gray-600 mb-6 max-w-sm">
-              Explora nuestros planes de datos móviles y encuentra el perfecto para tu próximo viaje.
-            </p>
-            <Button
-              onClick={() => window.history.back()}
-              className="bg-[#299ae4] hover:bg-[#299ae4]/90 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              Explorar Planes
-            </Button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+        <div className="text-center max-w-md">
+          <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-white shadow-lg flex items-center justify-center">
+            <ShoppingBag className="w-12 h-12 text-gray-400" />
           </div>
-        </CardContent>
-      </>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Tu carrito está vacío</h1>
+          <p className="text-gray-600 mb-8 text-lg">
+            Explora nuestros planes de datos móviles y encuentra el perfecto para tu próximo viaje.
+          </p>
+          <Button
+            onClick={() => window.history.back()}
+            className="bg-[#299ae4] hover:bg-[#299ae4]/90 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            Explorar Planes
+          </Button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <>
-      <CardContent className="flex flex-col px-0 py-0 relative self-stretch w-full min-h-screen bg-white max-w-6xl mx-auto">
-        <div className="text-center max-w-md mx-auto">
-          {/* Header */}
-          <div className="px-6 pt-6 pb-4 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900">Carrito de Compras</h1>
-              <Button
-                onClick={clearCart}
-                variant="outline"
-                size="sm"
-                className="text-red-600 border-red-200 hover:bg-red-50 transition-all duration-200"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Vaciar
-              </Button>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Carrito de Compras</h1>
+              <p className="text-gray-600 text-lg">
+                {items.length} {items.length === 1 ? 'producto' : 'productos'} en tu carrito
+              </p>
             </div>
-            <p className="text-gray-600 mt-2">
-              {items.length} {items.length === 1 ? 'producto' : 'productos'} en tu carrito
-            </p>
+            <Button
+              onClick={clearCart}
+              variant="outline"
+              className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 transition-all duration-200 px-6 py-3"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Vaciar carrito
+            </Button>
           </div>
+        </div>
 
-          {/* Cart Items */}
-          <div className="flex-1 px-6 py-6">
-            <div className="grid gap-6 lg:grid-cols-3">
-              {/* Cart Items - Takes 2 columns on large screens */}
-              <div className="lg:col-span-2 space-y-4">
+        {/* Main Content */}
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Cart Items - Left Column */}
+          <div className="lg:w-2/3">
+            <div className="space-y-6">
               {items.map((item) => {
                 const price = getProductPrice(item);
                 const displayName = getDisplayName(item, categories);
                 const subtotal = price * item.quantity;
 
                 return (
-                  <div key={item.id} className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                  <div 
+                    key={item.id} 
+                    className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
+                  >
                     <div className="flex items-start justify-between">
                       {/* Product Info */}
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      <div className="flex-1 pr-6">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-3">
                           {displayName}
                         </h3>
                         
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+                        {/* Product Details */}
+                        <div className="flex items-center space-x-6 text-sm text-gray-600 mb-6">
                           {item.data_gb && (
-                            <span>
-                              {item.data_gb < 1 ? `${Math.round(item.data_gb * 1024)} MB` : `${item.data_gb} GB`}
-                            </span>
+                            <div className="flex items-center space-x-1">
+                              <span className="font-medium">Datos:</span>
+                              <span>
+                                {item.data_gb < 1 ? `${Math.round(item.data_gb * 1024)} MB` : `${item.data_gb} GB`}
+                              </span>
+                            </div>
                           )}
                           {item.validity_days && (
-                            <span>{item.validity_days} días</span>
+                            <div className="flex items-center space-x-1">
+                              <span className="font-medium">Vigencia:</span>
+                              <span>{item.validity_days} días</span>
+                            </div>
                           )}
                           {item.technology && (
-                            <span>{item.technology}</span>
+                            <div className="flex items-center space-x-1">
+                              <span className="font-medium">Red:</span>
+                              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                                {item.technology}
+                              </span>
+                            </div>
                           )}
                         </div>
 
+                        {/* Quantity and Price Controls */}
                         <div className="flex items-center justify-between">
                           {/* Quantity Controls */}
-                          <div className="flex items-center space-x-3">
-                            <span className="text-sm text-gray-600">Cantidad:</span>
-                            <div className="flex items-center bg-gray-50 rounded-xl overflow-hidden">
+                          <div className="flex items-center space-x-4">
+                            <span className="text-sm font-medium text-gray-700">Cantidad:</span>
+                            <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200">
                               <button
                                 onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                                className="p-2 hover:bg-gray-100 transition-colors duration-200 rounded-l-xl"
+                                className="p-3 hover:bg-gray-100 transition-colors duration-200 rounded-l-xl"
                               >
-                                <Minus className="w-4 h-4" />
+                                <Minus className="w-4 h-4 text-gray-600" />
                               </button>
-                              <span className="px-4 py-2 font-medium">{item.quantity}</span>
+                              <span className="px-6 py-3 font-semibold text-gray-900 min-w-[60px] text-center">
+                                {item.quantity}
+                              </span>
                               <button
                                 onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                className="p-2 hover:bg-gray-100 transition-colors duration-200 rounded-r-xl"
+                                className="p-3 hover:bg-gray-100 transition-colors duration-200 rounded-r-xl"
                               >
-                                <Plus className="w-4 h-4" />
+                                <Plus className="w-4 h-4 text-gray-600" />
                               </button>
                             </div>
                           </div>
 
-                          {/* Price and Remove */}
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <div className="text-lg font-bold text-gray-900">
-                                {formatPrice(subtotal)}
-                              </div>
-                              {item.quantity > 1 && (
-                                <div className="text-sm text-gray-500">
-                                  {formatPrice(price)} cada uno
-                                </div>
-                              )}
+                          {/* Price */}
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-gray-900">
+                              {formatPrice(subtotal)}
                             </div>
-                            <button
-                              onClick={() => removeFromCart(item.id)}
-                              className="p-2 hover:bg-[#299ae4]/10 hover:text-[#299ae4] transition-all duration-200 rounded-r-xl"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
+                            {item.quantity > 1 && (
+                              <div className="text-sm text-gray-500">
+                                {formatPrice(price)} cada uno
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
+
+                      {/* Remove Button */}
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
+                        title="Eliminar producto"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
                 );
               })}
-              </div>
+            </div>
+          </div>
 
-              {/* Order Summary - Takes 1 column on large screens, full width on smaller */}
-              <div className="lg:col-span-1">
-                <div className="bg-white rounded-2xl p-6 border border-gray-200 sticky top-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen del Pedido</h3>
-                  
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between text-gray-600">
-                      <span>Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} productos)</span>
-                      <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-600">
-                      <span>Activación</span>
-                      <span className="text-[#299ae4] font-medium">Gratis</span>
-                    </div>
-                    <div className="border-t border-gray-200 pt-3">
-                      <div className="flex justify-between text-lg font-bold text-gray-900">
-                        <span>Total</span>
-                        <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
-                      </div>
-                    </div>
+          {/* Order Summary - Right Column */}
+          <div className="lg:w-1/3">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 sticky top-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Resumen del Pedido</h3>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between text-gray-600 text-lg">
+                  <span>Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} productos)</span>
+                  <span className="font-medium">{formatPrice(getTotalPrice(selectedCurrency))}</span>
+                </div>
+                <div className="flex justify-between text-gray-600 text-lg">
+                  <span>Activación</span>
+                  <span className="text-[#299ae4] font-semibold">Gratis</span>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex justify-between text-2xl font-bold text-gray-900">
+                    <span>Total</span>
+                    <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
                   </div>
-
-                  <Button
-                    onClick={handleCheckout}
-                    className="w-full bg-[#299ae4] hover:bg-[#299ae4]/90 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-                    size="lg"
-                  >
-                    <CreditCard className="w-5 h-5 mr-2" />
-                    Proceder al Pago
-                  </Button>
-
-                  <p className="text-xs text-gray-500 text-center mt-4">
-                    Activación instantánea • Soporte 24/7 • Garantía de satisfacción
-                  </p>
                 </div>
               </div>
+
+              <Button
+                onClick={handleCheckout}
+                className="w-full bg-[#299ae4] hover:bg-[#299ae4]/90 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                size="lg"
+              >
+                <CreditCard className="w-5 h-5 mr-3" />
+                Proceder al Pago
+              </Button>
+
+              <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
+                Activación instantánea • Soporte 24/7 • Garantía de satisfacción
+              </p>
             </div>
           </div>
         </div>
-      </CardContent>
-    </>
+      </div>
+    </div>
   );
 };
