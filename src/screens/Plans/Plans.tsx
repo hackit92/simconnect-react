@@ -338,14 +338,39 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {/* Selected Country/Region Header */}
                 {hasSelection && (
                   <div className="mb-6">
-                    <CountryGrid
-                      categories={paginatedCategories}
-                      selectedCategory={selectedCategory}
-                      onSelectCategory={handleCategorySelect}
-                      currentPage={currentCategoryPage}
-                      totalPages={totalCategoryPages}
-                      onPageChange={handleCategoryPageChange}
-                    />
+                    {selectedCategory && (
+                      <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <div className="w-8 h-5 rounded overflow-hidden flex items-center justify-center bg-white shadow-sm">
+                          <span 
+                            className={countryUtils.getFlagClass(selectedCategoryData?.slug || '')} 
+                            style={{ transform: 'scale(1.3)' }} 
+                          />
+                        </div>
+                        <h3 className="text-lg font-semibold text-blue-700">
+                          Planes para {countryUtils.getCountryName(selectedCategoryData?.slug || '')}
+                        </h3>
+                        <button
+                          onClick={() => setSelectedCategory(undefined)}
+                          className="ml-auto text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                          Cambiar país
+                        </button>
+                      </div>
+                    )}
+                    {selectedRegion && (
+                      <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <Globe className="w-6 h-6 text-blue-600" />
+                        <h3 className="text-lg font-semibold text-blue-700">
+                          Planes para {getRegionDisplayName(selectedRegion)}
+                        </h3>
+                        <button
+                          onClick={() => setSelectedRegion(undefined)}
+                          className="ml-auto text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                          Cambiar región
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -368,9 +393,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     <RegionGrid
                       categories={filteredCategories}
                       products={allProducts}
-                      selectedCategory={selectedCategory}
-                      onSelectCategory={handleCategorySelect}
                       onSelectRegion={handleRegionSelect}
+                      currentPage={currentCategoryPage}
+                      totalPages={totalCategoryPages}
+                      onPageChange={handleCategoryPageChange}
                       currentPage={currentCategoryPage}
                       totalPages={totalCategoryPages}
                       onPageChange={handleCategoryPageChange}

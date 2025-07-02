@@ -22,8 +22,6 @@ interface RegionOption {
 interface RegionGridProps {
   categories: Category[];
   products: Product[];
-  selectedCategory: number | undefined;
-  onSelectCategory: (id: number) => void;
   onSelectRegion: (regionValue: string) => void;
   currentPage: number;
   totalPages: number;
@@ -101,8 +99,6 @@ const regionIcons: Record<string, React.ComponentType<any>> = {
 export const RegionGrid: React.FC<RegionGridProps> = ({
   categories,
   products,
-  selectedCategory,
-  onSelectCategory,
   onSelectRegion,
   currentPage,
   totalPages,

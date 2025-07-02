@@ -1,10 +1,11 @@
 import React from 'react';
-import { Globe, ChevronDown, ChevronUp } from 'lucide-react';
+import { Globe, ChevronDown, ChevronUp, Wifi } from 'lucide-react';
 import { Button } from "../../../components/ui/button";
 import type { Product } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useCart } from '../../../contexts/CartContext';
+import { useIsDesktop } from '../../../hooks/useIsDesktop';
 
 // Import technology SVG assets
 import FiveGIcon from '../../../assets/technology/5G.svg?react';
@@ -158,38 +159,32 @@ function iso3ToIso2(iso3Code: string): string | null {
 
 // Helper function to get technology icon
 function getTechnologyIcon(tech: string): JSX.Element {
+  const iconClass = "w-6 h-6";
+  
   switch (tech) {
     case '5G':
       return (
-        <div className="w-6 h-6 flex items-center justify-center">
-          <FiveGIcon className="w-5 h-5 text-purple-600" />
-        </div>
+        <FiveGIcon className={`${iconClass} text-purple-600`} />
       );
     case '4G/LTE':
     case '4G':
       return (
-        <div className="w-6 h-6 flex items-center justify-center">
-          <LTEIcon className="w-5 h-5 text-blue-600" />
-        </div>
+        <LTEIcon className={`${iconClass} text-blue-600`} />
       );
     case '3G':
       return (
-        <div className="w-6 h-6 flex items-center justify-center">
-          <ThreeGIcon className="w-5 h-5 text-green-600" />
-        </div>
+        <ThreeGIcon className={`${iconClass} text-green-600`} />
       );
     case '2G':
     case '2G/EDGE':
       return (
-        <div className="w-6 h-6 bg-gray-500 rounded text-white text-xs font-bold flex items-center justify-center">
-          2G
+        <div className="w-6 h-6 bg-gray-500 rounded-full text-white text-xs font-bold flex items-center justify-center">
+          <span>2G</span>
         </div>
       );
     default:
       return (
-        <div className="w-6 h-6 flex items-center justify-center">
-          <LTEIcon className="w-5 h-5 text-blue-600" />
-        </div>
+        <LTEIcon className={`${iconClass} text-blue-600`} />
       );
   }
 }
@@ -389,6 +384,7 @@ export const PlanList: React.FC<PlanListProps> = ({
 }) => {
   const { selectedCurrency, formatPrice } = useCurrency();
   const { addToCart, isInCart } = useCart();
+  const isDesktop = useIsDesktop();
   const [expandedRegionalPlans, setExpandedRegionalPlans] = React.useState<Set<number>>(new Set());
 
   const handlePurchase = (productId: number) => {
@@ -436,7 +432,7 @@ export const PlanList: React.FC<PlanListProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className={`${isDesktop ? 'space-y-3' : 'space-y-4'}`}>
       {products.filter(Boolean).map((plan) => {
         // Defensive check: ensure plan is a valid object
         if (!plan || typeof plan !== 'object') {
@@ -483,141 +479,181 @@ export const PlanList: React.FC<PlanListProps> = ({
         }
         
         return (
-          <div key={plan.id} className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all duration-200">
-            {/* Header with Flag and Country/Region */}
-            <div className="relative flex items-center justify-between mb-6">
-              {/* Block 1: Flag, Name, Technology Icon */}
-              <div className="flex items-center space-x-3">
-                {/* Flag or Regional Icon */}
-                <div className="w-10 h-7 rounded-md overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
-                  {isRegional ? (
-                    <Globe className="w-6 h-6 text-blue-500" />
-                  ) : (
-                    <span 
-                      className={flagClass} 
-                      style={{ transform: 'scale(1.5)' }} 
-                    />
-                  )}
-                </div>
-                
-                {/* Country/Region Name and Technology Icon */}
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-bold text-gray-900 truncate">{displayName}</h3>
+          <div key={plan.id} className={`bg-white border border-gray-200 hover:shadow-md transition-all duration-200 ${
+            isDesktop ? 'rounded-xl p-4' : 'rounded-2xl p-6'
+          }`}>
+            {isDesktop ? (
+              // Desktop Layout - Horizontal single row
+              <div className="flex items-center justify-between">
+                {/* Left: Flag + Country + Technology */}
+                <div className="flex items-center space-x-4">
+                  {/* Flag */}
+                  <div className="w-12 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
+                    {isRegional ? (
+                      <Globe className="w-6 h-6 text-blue-500" />
+                    ) : (
+                      <span 
+                        className={flagClass} 
+                        style={{ transform: 'scale(1.8)' }} 
+                      />
+                    )}
+                  </div>
+                  
+                  {/* Country Name */}
+                  <h3 className="text-lg font-semibold text-gray-900 min-w-[120px]">
+                    {displayName}
+                  </h3>
+                  
                   {/* Technology Icon */}
-                  {getTechnologyIcon(technology)}
+                  <div className="flex items-center justify-center">
+                    {getTechnologyIcon(technology)}
+                  </div>
                 </div>
-              </div>
-              
-              {/* Regional Button - Positioned absolutely to align with card edge */}
-              {isRegional && coverageCountries.length > 0 && (
-                <button
-                  onClick={() => toggleRegionalCoverage(plan.id)}
-                  className="absolute -top-2 -right-2 flex items-center space-x-1 px-4 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition-colors duration-200 shadow-lg z-10"
-                >
-                  <span>Plan Regional</span>
-                  {isExpanded ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                </button>
-              )}
-              
-              {/* Block 2: Price with Currency */}
-              <div className="text-right flex-shrink-0">
-                <div className="text-2xl font-bold text-blue-600">
-                  {displayPrice}
-                </div>
-              </div>
-            </div>
-            
-            {/* Regional Coverage Dropdown */}
-            {isRegional && isExpanded && coverageCountries.length > 0 && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-xl">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">Cobertura Regional:</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {coverageCountries.map((country, index) => (
-                    <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
-                      <span>{country}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Plan Details */}
-            <div className="flex items-center justify-start mb-6">
-              <div className="flex items-center space-x-6">
-                {/* Data Amount */}
-                {gbAmount !== null && gbAmount !== undefined && (
-                  <div>
-                    <div className="text-lg font-semibold text-gray-900">
+                
+                {/* Center: Data and Validity */}
+                <div className="flex items-center space-x-2 text-gray-700 text-base font-medium">
+                  {gbAmount !== null && gbAmount !== undefined && (
+                    <span>
                       {gbAmount < 1 ? `${Math.round(gbAmount * 1024)} MB` : `${gbAmount} GB`}
-                    </div>
-                    <div className="text-xs text-gray-500">Datos</div>
-                  </div>
-                )}
+                    </span>
+                  )}
+                  {gbAmount !== null && gbAmount !== undefined && validityDays !== null && validityDays !== undefined && (
+                    <span className="text-gray-400">|</span>
+                  )}
+                  {validityDays !== null && validityDays !== undefined && (
+                    <span>{validityDays} días</span>
+                  )}
+                </div>
                 
-                {/* Validity */}
-                {validityDays !== null && validityDays !== undefined && (
-                  <div>
-                    <div className="text-lg font-semibold text-gray-900">{validityDays} días</div>
-                    <div className="text-xs text-gray-500">Vigencia</div>
+                {/* Right: Price and Button */}
+                <div className="flex items-center space-x-6">
+                  <div className="text-2xl font-bold text-[#299ae4]">
+                    {displayPrice}
                   </div>
-                )}
-                
-                {/* Show plan name if no GB or validity found */}
-                {(gbAmount === null || gbAmount === undefined) && (validityDays === null || validityDays === undefined) && (
-                  <div>
-                    <div className="text-sm font-medium text-gray-900 max-w-48 truncate">{plan.name}</div>
-                    <div className="text-xs text-gray-500">Plan</div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Debug info for development (remove in production) */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="mb-4 p-3 bg-yellow-50 rounded-lg text-xs">
-                <div className="font-semibold text-yellow-800 mb-2">Debug Info:</div>
-                <div className="space-y-1 text-yellow-700">
-                  <div><strong>Name:</strong> {plan.name}</div>
-                  <div><strong>SKU:</strong> {plan.sku}</div>
-                  <div><strong>Plan Type:</strong> {plan.plan_type}</div>
-                  <div><strong>Region Code:</strong> {plan.region_code || 'N/A'}</div>
-                  <div><strong>Country Code:</strong> {plan.country_code || 'N/A'}</div>
-                  <div><strong>Category IDs:</strong> {JSON.stringify(plan.category_ids)}</div>
-                  <div><strong>Flag Class:</strong> {flagClass}</div>
-                  <div><strong>Display Name:</strong> {displayName}</div>
-                  <div><strong>Data GB:</strong> {gbAmount !== null && gbAmount !== undefined ? gbAmount : 'Not found'}</div>
-                  <div><strong>Validity Days:</strong> {validityDays !== null && validityDays !== undefined ? validityDays : 'Not found'}</div>
-                  <div><strong>Technology:</strong> {technology}</div>
-                  <div><strong>Has 5G:</strong> {plan.has_5g ? 'Yes' : 'No'}</div>
-                  <div><strong>Has LTE:</strong> {plan.has_lte ? 'Yes' : 'No'}</div>
-                  <div><strong>Price USD:</strong> {plan.regular_price_usd || 'N/A'}</div>
-                  <div><strong>Price EUR:</strong> {plan.regular_price_eur || 'N/A'}</div>
-                  <div><strong>Price MXN:</strong> {plan.regular_price_mxn || 'N/A'}</div>
-                  <div><strong>Selected Currency:</strong> {selectedCurrency}</div>
-                  <div><strong>Current Price:</strong> {displayPrice}</div>
+                  <Button
+                    onClick={() => handlePurchase(plan.id)}
+                    className={`rounded-full px-6 py-3 font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${
+                      isInCart(plan.id)
+                        ? 'bg-green-500 hover:bg-green-600 text-white'
+                        : 'bg-[#299ae4] hover:bg-[#299ae4]/90 text-white'
+                    }`}
+                  >
+                    {isInCart(plan.id) ? 'AÑADIDO' : 'COMPRAR'}
+                  </Button>
                 </div>
               </div>
+            ) : (
+              // Mobile Layout - Original vertical layout
+              <>
+                {/* Header with Flag and Country/Region */}
+                <div className="relative flex items-center justify-between mb-6">
+                  {/* Block 1: Flag, Name, Technology Icon */}
+                  <div className="flex items-center space-x-3">
+                    {/* Flag or Regional Icon */}
+                    <div className="w-10 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
+                      {isRegional ? (
+                        <Globe className="w-6 h-6 text-blue-500" />
+                      ) : (
+                        <span 
+                          className={flagClass} 
+                          style={{ transform: 'scale(1.5)' }} 
+                        />
+                      )}
+                    </div>
+                    
+                    {/* Country/Region Name and Technology Icon */}
+                    <div className="flex items-center space-x-2">
+                      <h3 className="text-lg font-bold text-gray-900 truncate">{displayName}</h3>
+                      {/* Technology Icon */}
+                      {getTechnologyIcon(technology)}
+                    </div>
+                  </div>
+                  
+                  {/* Regional Button - Positioned absolutely to align with card edge */}
+                  {isRegional && coverageCountries.length > 0 && (
+                    <button
+                      onClick={() => toggleRegionalCoverage(plan.id)}
+                      className="absolute -top-2 -right-2 flex items-center space-x-1 px-4 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition-colors duration-200 shadow-lg z-10"
+                    >
+                      <span>Plan Regional</span>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                  
+                  {/* Block 2: Price with Currency */}
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {displayPrice}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Regional Coverage Dropdown */}
+                {isRegional && isExpanded && coverageCountries.length > 0 && (
+                  <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Cobertura Regional:</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {coverageCountries.map((country, index) => (
+                        <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <span>{country}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Plan Details */}
+                <div className="flex items-center justify-start mb-6">
+                  <div className="flex items-center space-x-6">
+                    {/* Data Amount */}
+                    {gbAmount !== null && gbAmount !== undefined && (
+                      <div>
+                        <div className="text-lg font-semibold text-gray-900">
+                          {gbAmount < 1 ? `${Math.round(gbAmount * 1024)} MB` : `${gbAmount} GB`}
+                        </div>
+                        <div className="text-xs text-gray-500">Datos</div>
+                      </div>
+                    )}
+                    
+                    {/* Validity */}
+                    {validityDays !== null && validityDays !== undefined && (
+                      <div>
+                        <div className="text-lg font-semibold text-gray-900">{validityDays} días</div>
+                        <div className="text-xs text-gray-500">Vigencia</div>
+                      </div>
+                    )}
+                    
+                    {/* Show plan name if no GB or validity found */}
+                    {(gbAmount === null || gbAmount === undefined) && (validityDays === null || validityDays === undefined) && (
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 max-w-48 truncate">{plan.name}</div>
+                        <div className="text-xs text-gray-500">Plan</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Purchase Button */}
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => handlePurchase(plan.id)}
+                    className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
+                      isInCart(plan.id)
+                        ? 'bg-green-500 hover:bg-green-600 text-white'
+                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                    }`}
+                    size="lg"
+                  >
+                    {isInCart(plan.id) ? 'AÑADIDO AL CARRITO' : 'AÑADIR AL CARRITO'}
+                  </Button>
+                </div>
+              </>
             )}
-            
-            {/* Purchase Button */}
-            <div className="flex justify-end">
-              <Button
-                onClick={() => handlePurchase(plan.id)}
-                className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
-                  isInCart(plan.id)
-                    ? 'bg-green-500 hover:bg-green-600 text-white'
-                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                }`}
-                size="lg"
-              >
-                {isInCart(plan.id) ? 'AÑADIDO AL CARRITO' : 'AÑADIR AL CARRITO'}
-              </Button>
-            </div>
           </div>
         );
       })}
