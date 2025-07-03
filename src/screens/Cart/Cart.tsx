@@ -228,7 +228,7 @@ export const Cart = () => {
                           {item.technology && (
                             <div className="flex items-center space-x-1">
                               <span className="font-medium">Red:</span>
-                              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                              <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
                                 {item.technology}
                               </span>
                             </div>

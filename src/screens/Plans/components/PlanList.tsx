@@ -432,7 +432,7 @@ export const PlanList: React.FC<PlanListProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         <span className="ml-3 text-gray-600">Cargando planes...</span>
       </div>
     );
@@ -504,7 +504,7 @@ export const PlanList: React.FC<PlanListProps> = ({
         
         return (
           <div key={plan.id} className={`bg-white border border-gray-200 hover:shadow-md transition-all duration-200 ${
-            isDesktop ? 'rounded-xl p-4' : 'rounded-2xl p-6'
+            isDesktop ? 'rounded-xl p-4' : 'rounded-2xl p-4'
           }`}>
             {isDesktop ? (
               // Desktop Layout - Horizontal single row
@@ -576,16 +576,16 @@ export const PlanList: React.FC<PlanListProps> = ({
                 {/* Header with Flag and Country/Region */}
                 <div className="relative flex items-center justify-between mb-6">
                   {/* Block 1: Flag, Name, Technology Icon */}
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
                     {/* Flag or Regional Icon */}
                     <div className="w-10 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
                       {typeof flagOrIcon === 'string' ? (
                         isRegional ? (
-                          <Globe className="w-6 h-6 text-blue-500" />
+                          <Globe className="w-6 h-6 text-primary" />
                         ) : (
                           <span 
                             className={flagOrIcon} 
-                            style={{ transform: 'scale(1.5)' }} 
+                            style={{ transform: 'scale(1.2)' }} 
                           />
                         )
                       ) : (
@@ -594,8 +594,8 @@ export const PlanList: React.FC<PlanListProps> = ({
                     </div>
                     
                     {/* Country/Region Name and Technology Icon */}
-                    <div className="flex items-center space-x-2">
-                      <h3 className="text-lg font-bold text-gray-900 truncate">{displayName}</h3>
+                    <div className="flex items-center space-x-1">
+                      <h3 className="text-base font-semibold text-gray-900 truncate">{displayName}</h3>
                       {/* Technology Icon */}
                       {getTechnologyIcon(technology)}
                     </div>
@@ -605,7 +605,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                   {isRegional && coverageCountries.length > 0 && (
                     <button
                       onClick={() => toggleRegionalCoverage(plan.id)}
-                      className="absolute -top-2 -right-2 flex items-center space-x-1 px-4 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition-colors duration-200 shadow-lg z-10"
+                      className="absolute -top-2 -right-2 flex items-center space-x-1 px-3 py-1 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary/90 transition-colors duration-200 shadow-lg z-10"
                     >
                       <span>Plan Regional</span>
                       {isExpanded ? (
@@ -617,11 +617,6 @@ export const PlanList: React.FC<PlanListProps> = ({
                   )}
                   
                   {/* Block 2: Price with Currency */}
-                  <div className="text-right flex-shrink-0">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {displayPrice}
-                    </div>
-                  </div>
                 </div>
                 
                 {/* Regional Coverage Dropdown */}
@@ -631,7 +626,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                     <div className="grid grid-cols-2 gap-2">
                       {coverageCountries.map((country, index) => (
                         <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
                           <span>{country}</span>
                         </div>
                       ))}
@@ -640,12 +635,12 @@ export const PlanList: React.FC<PlanListProps> = ({
                 )}
                 
                 {/* Plan Details */}
-                <div className="flex items-center justify-start mb-6">
-                  <div className="flex items-center space-x-6">
+                <div className="flex items-center justify-start mb-4">
+                  <div className="flex items-center space-x-4">
                     {/* Data Amount */}
                     {gbAmount !== null && gbAmount !== undefined && (
                       <div>
-                        <div className="text-lg font-semibold text-gray-900">
+                        <div className="text-base font-medium text-gray-900">
                           {gbAmount < 1 ? `${Math.round(gbAmount * 1024)} MB` : `${gbAmount} GB`}
                         </div>
                         <div className="text-xs text-gray-500">Datos</div>
@@ -655,7 +650,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                     {/* Validity */}
                     {validityDays !== null && validityDays !== undefined && (
                       <div>
-                        <div className="text-lg font-semibold text-gray-900">{validityDays} días</div>
+                        <div className="text-base font-medium text-gray-900">{validityDays} días</div>
                         <div className="text-xs text-gray-500">Vigencia</div>
                       </div>
                     )}
@@ -670,16 +665,18 @@ export const PlanList: React.FC<PlanListProps> = ({
                   </div>
                 </div>
                 
-                {/* Purchase Button */}
-                <div className="flex justify-end">
+                {/* Price and Purchase Button */}
+                <div className="flex items-center justify-between">
+                  <div className="text-2xl font-bold text-primary">
+                    {displayPrice}
+                  </div>
                   <Button
                     onClick={() => handlePurchase(plan.id)}
-                    className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
+                    className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
                       isInCart(plan.id)
                         ? 'bg-green-500 hover:bg-green-600 text-white'
-                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                        : 'bg-primary hover:bg-primary/90 text-white'
                     }`}
-                    size="lg"
                   >
                     {isInCart(plan.id) ? 'AÑADIDO AL CARRITO' : 'AÑADIR AL CARRITO'}
                   </Button>

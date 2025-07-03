@@ -78,7 +78,7 @@ export const MobileAppLayout: React.FC = () => {
                         onClick={() => handleCurrencyChange(currency.value)}
                         className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all
                           ${selectedCurrency === currency.value
-                            ? 'bg-blue-50 text-blue-600 font-medium'
+                            ? 'bg-primary/10 text-primary font-medium'
                             : 'text-gray-600 hover:bg-gray-50'
                           }`}
                       >
@@ -104,7 +104,7 @@ export const MobileAppLayout: React.FC = () => {
                         onClick={() => handleLanguageChange(language.value)}
                         className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all
                           ${i18n.language === language.value
-                            ? 'bg-blue-50 text-blue-600 font-medium'
+                            ? 'bg-primary/10 text-primary font-medium'
                             : 'text-gray-600 hover:bg-gray-50'
                           }`}
                         >
@@ -136,8 +136,8 @@ export const MobileAppLayout: React.FC = () => {
             to="/" 
             className={`flex flex-col items-center gap-1 transition-colors duration-200 ${
               location.pathname === '/' 
-                ? 'text-blue-600' 
-                : 'text-gray-600 hover:text-blue-600'
+                ? 'text-primary' 
+                : 'text-gray-600 hover:text-primary'
             }`}
           >
             <HomeIcon className="h-5 w-5" />
@@ -148,8 +148,8 @@ export const MobileAppLayout: React.FC = () => {
             to="/plans" 
             className={`flex flex-col items-center gap-1 transition-colors duration-200 ${
               location.pathname === '/plans' 
-                ? 'text-blue-600' 
-                : 'text-gray-600 hover:text-blue-600'
+                ? 'text-primary' 
+                : 'text-gray-600 hover:text-primary'
             }`}
           >
             <GlobeIcon className="h-5 w-5" />
@@ -160,14 +160,14 @@ export const MobileAppLayout: React.FC = () => {
             to="/cart" 
             className={`flex flex-col items-center gap-1 transition-colors duration-200 ${
               location.pathname === '/cart' 
-                ? 'text-blue-600' 
-                : 'text-gray-600 hover:text-blue-600'
+                ? 'text-primary' 
+                : 'text-gray-600 hover:text-primary'
             }`}
           >
             <div className="relative">
               <ShoppingCartIcon className="h-5 w-5" />
               {getTotalItems() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                   {getTotalItems()}
                 </span>
               )}

@@ -297,7 +297,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         {/* Loading State */}
         {(loading || categoriesLoading) && (
           <div className={`flex items-center justify-center ${isEmbedded ? 'py-8' : 'py-12'}`}>
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <span className="ml-3 text-gray-600">Cargando...</span>
           </div>
         )}
@@ -346,33 +346,33 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {hasSelection && (
                   <div className="mb-6">
                     {selectedCategory && (
-                      <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                      <div className="flex items-center space-x-3 p-4 bg-primary/10 rounded-xl border border-primary/20">
                         <div className="w-8 h-5 rounded overflow-hidden flex items-center justify-center bg-white shadow-sm">
                           <span 
                             className={countryUtils.getFlagClass(selectedCategoryData?.slug || '')} 
                             style={{ transform: 'scale(1.3)' }} 
                           />
                         </div>
-                        <h3 className="text-lg font-semibold text-blue-700">
+                        <h3 className="text-lg font-semibold text-primary">
                           Planes para {countryUtils.getCountryName(selectedCategoryData?.slug || '')}
                         </h3>
                         <button
                           onClick={() => setSelectedCategory(undefined)}
-                          className="ml-auto text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
                         >
                           Cambiar país
                         </button>
                       </div>
                     )}
                     {selectedRegion && (
-                      <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                        <Globe className="w-6 h-6 text-blue-600" />
-                        <h3 className="text-lg font-semibold text-blue-700">
+                      <div className="flex items-center space-x-3 p-4 bg-primary/10 rounded-xl border border-primary/20">
+                        <Globe className="w-6 h-6 text-primary" />
+                        <h3 className="text-lg font-semibold text-primary">
                           Planes para {getRegionDisplayName(selectedRegion)}
                         </h3>
                         <button
                           onClick={() => setSelectedRegion(undefined)}
-                          className="ml-auto text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
                         >
                           Cambiar región
                         </button>
@@ -444,7 +444,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {shouldShowInitialWelcome && !isDesktop && (
                   <div className={`text-center ${isEmbedded ? 'py-6' : 'py-8'}`}>
                     <div className="max-w-md mx-auto">
-                      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
+                      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
                         <Globe className="w-10 h-10 text-[#299ae4]" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -456,7 +456,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       
                       <div className="space-y-3 text-sm text-gray-500">
                         <div className="flex items-center justify-center space-x-2">
-                          <span className="w-2 h-2 bg-[#299ae4] rounded-full"></span>
+                          <span className="w-2 h-2 bg-primary rounded-full"></span>
                           <span>Más de 200 países disponibles</span>
                         </div>
                         <div className="flex items-center justify-center space-x-2">
@@ -464,7 +464,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                           <span>Planes regionales y por país</span>
                         </div>
                         <div className="flex items-center justify-center space-x-2">
-                          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                          <span className="w-2 h-2 bg-primary rounded-full"></span>
                           <span>Activación instantánea</span>
                         </div>
                       </div>

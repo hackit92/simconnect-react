@@ -134,7 +134,7 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         <span className="ml-3 text-gray-600">Cargando regiones...</span>
       </div>
     );
@@ -164,7 +164,7 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
               disabled={!hasContent}
               className={`p-4 text-center rounded-lg border transition-all duration-200 ${
                 hasContent
-                  ? 'border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer'
+                  ? 'border-gray-200 hover:border-primary/30 hover:bg-primary/10 cursor-pointer'
                   : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
               }`}
             >
