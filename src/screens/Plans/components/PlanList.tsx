@@ -430,7 +430,8 @@ export const PlanList: React.FC<PlanListProps> = ({
       return newSet;
     });
   };
-  if (loading) {
+  // Show initial loading state only when there are no products
+  if (loading && products.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -457,7 +458,17 @@ export const PlanList: React.FC<PlanListProps> = ({
   }
 
   return (
-    <div className={`${isDesktop ? 'space-y-3' : 'space-y-4'}`}>
+    <div className={`relative ${isDesktop ? 'space-y-3' : 'space-y-4'}`}>
+      {/* Subtle loading overlay when filtering */}
+      {loading && products.length > 0 && (
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+          <div className="flex items-center space-x-3 bg-white px-6 py-3 rounded-full shadow-lg border border-gray-100">
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
+            <span className="text-sm font-medium text-gray-700">Actualizando planes...</span>
+          </div>
+        </div>
+      )}
+      
       {products.filter(Boolean).map((plan) => {
         // Defensive check: ensure plan is a valid object
         if (!plan || typeof plan !== 'object') {
