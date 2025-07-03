@@ -40,8 +40,7 @@ export const PlanFilters: React.FC<PlanFiltersProps> = ({
 
   const planTypeOptions = [
     { value: 'country', label: 'LOCAL' },
-    { value: 'regional_specific', label: 'REGIONAL' },
-    { value: 'regional_global', label: 'GLOBAL' }
+    { value: 'regional', label: 'REGIONAL' }
   ];
 
   const handleFilterChange = (filterType: keyof FilterValues, value: string) => {

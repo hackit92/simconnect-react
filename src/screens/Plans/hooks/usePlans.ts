@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, type Product, type Category } from '../../../lib/supabase';
 import { countryUtils } from '../../../lib/countries/countryUtils';
+import { regionMapping } from '../../../lib/search/searchUtils';
 import type { FilterValues } from '../components/PlanFilters';
 
 interface UsePlansParams {
@@ -80,43 +81,52 @@ export function usePlans({
         }
       }
 
-      // Apply plan type filter
-      if (filters.planType) {
-        if (filters.planType === 'country') {
-          productsQuery = productsQuery.eq('plan_type', 'country');
-        } else if (filters.planType === 'regional_specific') {
-          // Filter for specific regional plans
-          const specificRegions = ['latinoamerica', 'europa', 'norteamerica', 'oriente-medio', 'caribe', 'asia-central', 'asia', 'africa', 'oceania', 'balcanes'];
-          productsQuery = productsQuery.eq('plan_type', 'regional').in('region_code', specificRegions);
-        } else if (filters.planType === 'regional_global') {
-          // Filter for global/broader regional plans (those not in specific regions or with null region_code)
-          const specificRegions = ['latinoamerica', 'europa', 'norteamerica', 'oriente-medio', 'caribe', 'asia-central', 'asia', 'africa', 'oceania', 'balcanes'];
-          productsQuery = productsQuery.eq('plan_type', 'regional').not('region_code', 'in', `(${specificRegions.map(r => `"${r}"`).join(',')})`);
+      // Apply plan type filter - only when there's a selection
+      if (filters.planType && (selectedCategory || selectedRegion)) {
+        if (selectedCategory) {
+          // For country selections, filter between country-specific and regional plans
+          if (filters.planType === 'country') {
+            productsQuery = productsQuery.eq('plan_type', 'country');
+          } else if (filters.planType === 'regional') {
+            // Only show regional plans that include this country
+            const selectedCategoryData = allCategories.find(cat => cat.id === selectedCategory);
+            if (selectedCategoryData) {
+              const countryISO3 = iso2ToIso3(selectedCategoryData.slug);
+              if (countryISO3) {
+                productsQuery = productsQuery
+                  .eq('plan_type', 'regional')
+                  .contains('metadata->countries_iso3', `["${countryISO3}"]`);
+              }
+            }
+          }
+        } else if (selectedRegion) {
+          // For region selections, filter between regional and country plans within that region
+          if (filters.planType === 'regional') {
+            productsQuery = productsQuery.eq('plan_type', 'regional');
+          } else if (filters.planType === 'country') {
+            // Show country plans for countries within this region
+            const regionCountries = regionMapping[selectedRegion] || [];
+            if (regionCountries.length > 0) {
+              // Get category IDs for countries in this region
+              const regionCategoryIds = allCategories
+                .filter(cat => regionCountries.includes(cat.slug))
+                .map(cat => cat.id);
+              
+              if (regionCategoryIds.length > 0) {
+                const categoryFilter = regionCategoryIds.map(id => `[${id}]`).join(',');
+                productsQuery = productsQuery
+                  .eq('plan_type', 'country')
+                  .or(categoryFilter.split(',').map(id => `category_ids.cs.${id}`).join(','));
+              }
+            }
+          }
         }
       }
 
       // Apply data amount filter
       if (filters.dataAmount) {
-        switch (filters.dataAmount) {
-          case 'under_1gb':
-            productsQuery = productsQuery.lt('data_gb', 1);
-            break;
-          case '1_5gb':
-            productsQuery = productsQuery.gte('data_gb', 1).lte('data_gb', 5);
-            break;
-          case '6_10gb':
-            productsQuery = productsQuery.gte('data_gb', 6).lte('data_gb', 10);
-            break;
-          case '11_20gb':
-            productsQuery = productsQuery.gte('data_gb', 11).lte('data_gb', 20);
-            break;
-          case 'over_20gb':
-            productsQuery = productsQuery.gt('data_gb', 20);
-            break;
-          case 'unlimited':
-            productsQuery = productsQuery.is('data_gb', null);
-            break;
-        }
+        const dataGb = parseFloat(filters.dataAmount);
+        productsQuery = productsQuery.eq('data_gb', dataGb);
       }
 
       // Apply validity filter
