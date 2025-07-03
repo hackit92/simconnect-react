@@ -25,6 +25,7 @@ interface PlansProps {
 export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const { selectedCurrency } = useCurrency();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
@@ -132,6 +133,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     const newSelectedCategory = categoryId === selectedCategory ? undefined : categoryId;
     setSelectedCategory(newSelectedCategory);
     setSelectedRegion(undefined); // Clear region selection when selecting country
+    setShowWelcomeMessage(false); // Hide welcome message when user interacts
     
     // Clear search term when explicitly selecting a category to avoid conflicts
     if (newSelectedCategory !== undefined) {
@@ -143,6 +145,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     const newSelectedRegion = regionValue === selectedRegion ? undefined : regionValue;
     setSelectedRegion(newSelectedRegion);
     setSelectedCategory(undefined); // Clear category selection when selecting region
+    setShowWelcomeMessage(false); // Hide welcome message when user interacts
     
     // Clear search term when explicitly selecting a region to avoid conflicts
     if (newSelectedRegion !== undefined) {
@@ -161,14 +164,14 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
   const handleTabChange = (tab: 'countries' | 'regions') => {
     setSelectedTab(tab);
-    // Clear search and selections when changing tabs
-    setSearchTerm('');
-    setSelectedCategory(undefined);
-    setSelectedRegion(undefined);
+    setShowWelcomeMessage(false); // Hide welcome message when user interacts with tabs
   };
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+    if (value.trim()) {
+      setShowWelcomeMessage(false); // Hide welcome message when user starts searching
+    }
   };
 
   // Handle suggestion click with explicit selection
@@ -176,6 +179,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     // Clear search term for clean filtering
     setSearchTerm('');
     
+    setShowWelcomeMessage(false); // Hide welcome message when user selects suggestion
     if (suggestion.type === 'country' && suggestion.id) {
       // Directly select the country
       setSelectedCategory(suggestion.id);
@@ -207,6 +211,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     setSelectedRegion(undefined);
     setFilteredCategories(categories);
     setSelectedTab('countries'); // Default to countries tab
+    setShowWelcomeMessage(true); // Show welcome message when clearing search
   };
 
   const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
@@ -222,6 +227,9 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
       'caribe': 'Caribe',
       'asia-central': 'Asia Central y Cáucaso'
     };
+      'africa': 'África',
+      'oceania': 'Oceanía',
+      'balcanes': 'Balcanes'
     return regionNames[regionValue] || regionValue;
   };
 
@@ -233,10 +241,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const shouldShowSearchResults = hasSearchTerm && filteredCategories.length > 0;
   const shouldShowNoResults = hasSearchTerm && filteredCategories.length === 0;
   
-  // Always show tabs, but control what lists are displayed
-  const shouldShowCountriesList = !hasSearchTerm && !hasSelection && selectedTab === 'countries' && !categoriesLoading;
+  // Control what lists are displayed
+  const shouldShowCountriesList = !hasSearchTerm && !hasSelection && selectedTab === 'countries' && !categoriesLoading && !showWelcomeMessage;
   const shouldShowRegionsList = !hasSearchTerm && !hasSelection && selectedTab === 'regions' && !categoriesLoading;
-  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries';
+  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries' && showWelcomeMessage;
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -500,11 +508,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {/* Plans List - Show when country/region is selected */}
                 {shouldShowPlans && (
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">
-                      Planes Disponibles
-                      {selectedRegion && ` - ${getRegionDisplayName(selectedRegion)}`}
-                      {selectedCategoryData && ` - ${countryUtils.getCountryName(selectedCategoryData.slug)}`}
-                    </h2>
                     <PlanList
                       products={plans}
                       loading={loading}
