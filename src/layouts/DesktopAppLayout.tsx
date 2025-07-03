@@ -214,16 +214,6 @@ export const DesktopAppLayout: React.FC = () => {
               <Products />
             </ProtectedRoute>
           } />
-          <Route path="/success" element={
-            <ProtectedRoute>
-              <Success />
-            </ProtectedRoute>
-          } />
-          <Route path="/checkout" element={
-            <ProtectedRoute>
-              <CheckoutForm />
-            </ProtectedRoute>
-          } />
         </Routes>
       </main>
     </div>
