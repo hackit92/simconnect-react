@@ -20,12 +20,7 @@ interface RegionOption {
 }
 
 interface RegionGridProps {
-  categories: Category[];
-  products: Product[];
   onSelectRegion: (regionValue: string) => void;
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
 }
 
 const regions: RegionOption[] = [
@@ -91,12 +86,7 @@ const regionIcons: Record<string, React.ComponentType<any>> = {
 };
 
 export const RegionGrid: React.FC<RegionGridProps> = ({
-  categories,
-  products,
   onSelectRegion,
-  currentPage,
-  totalPages,
-  onPageChange
 }) => {
   const [regionCounts, setRegionCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
