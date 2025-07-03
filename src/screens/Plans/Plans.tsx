@@ -29,7 +29,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [filters, setFilters] = useState<FilterValues>({});
-  const [showFilters, setShowFilters] = useState(false);
   const { selectedCurrency } = useCurrency();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
@@ -362,19 +361,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   : 'w-full'
               }`}>
                 
-                {/* Plan Filters */}
-                {!hasSelection && (
-                  <div className="mb-6">
-                    <PlanFilters
-                      filters={filters}
-                      onFiltersChange={handleFiltersChange}
-                      onClearFilters={handleClearFilters}
-                      isVisible={showFilters}
-                      onToggleVisibility={() => setShowFilters(!showFilters)}
-                    />
-                  </div>
-                )}
-
                 {/* Tab Selector - Always show */}
                 {!hasSelection && !hasFilters && (
                   <div className={`mb-6 ${isDesktop ? '' : ''}`}>
@@ -428,16 +414,14 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {hasFilters && !hasSelection && (
                   <div className="mb-6">
                     <div className="flex items-center space-x-3 p-4 bg-primary/10 rounded-xl border border-primary/20">
-                      <Filter className="w-6 h-6 text-primary" />
+                      <div className="w-6 h-6 text-primary flex items-center justify-center">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+                        </svg>
+                      </div>
                       <h3 className="text-lg font-semibold text-primary">
                         Planes filtrados
                       </h3>
-                      <button
-                        onClick={handleClearFilters}
-                        className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
-                      >
-                        Limpiar filtros
-                      </button>
                     </div>
                   </div>
                 )}
@@ -557,6 +541,15 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   ? 'w-2/3 pl-8 border-l border-gray-100' 
                   : 'w-full mt-6'
               }`}>
+                {/* Plan Filters - Show when plans are displayed */}
+                {shouldShowPlans && (
+                  <PlanFilters
+                    filters={filters}
+                    onFiltersChange={handleFiltersChange}
+                    onClearFilters={handleClearFilters}
+                  />
+                )}
+                
                 {/* Currency indicator */}
                 {shouldShowPlans && (
                   <div className="mb-4 text-sm text-gray-600">

@@ -48,7 +48,7 @@ function normalizeText(text: string): string {
 }
 
 // Mapeo de regiones a países
-const regionMapping: Record<string, string[]> = {
+export const regionMapping: Record<string, string[]> = {
   'europa': ['spain', 'france', 'germany', 'italy', 'netherlands', 'portugal', 'greece', 'switzerland', 'austria', 'belgium', 'denmark', 'finland', 'ireland', 'norway', 'sweden', 'united-kingdom', 'poland', 'czechia', 'hungary', 'romania', 'bulgaria', 'croatia', 'slovenia', 'slovakia', 'lithuania', 'latvia', 'estonia'],
   'europe': ['spain', 'france', 'germany', 'italy', 'netherlands', 'portugal', 'greece', 'switzerland', 'austria', 'belgium', 'denmark', 'finland', 'ireland', 'norway', 'sweden', 'united-kingdom', 'poland', 'czechia', 'hungary', 'romania', 'bulgaria', 'croatia', 'slovenia', 'slovakia', 'lithuania', 'latvia', 'estonia'],
   'latinoamerica': ['mexico', 'brazil', 'argentina', 'chile', 'colombia', 'peru', 'venezuela', 'ecuador', 'bolivia', 'paraguay', 'uruguay', 'costa-rica', 'panama', 'guatemala', 'honduras', 'el-salvador', 'nicaragua', 'cuba', 'dominican-republic'],

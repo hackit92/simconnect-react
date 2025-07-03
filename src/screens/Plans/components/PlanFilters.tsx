@@ -1,7 +1,7 @@
 import React from 'react';
-import { Filter, X } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
 
 export interface FilterValues {
@@ -14,39 +14,34 @@ interface PlanFiltersProps {
   filters: FilterValues;
   onFiltersChange: (filters: FilterValues) => void;
   onClearFilters: () => void;
-  isVisible: boolean;
-  onToggleVisibility: () => void;
 }
 
 export const PlanFilters: React.FC<PlanFiltersProps> = ({
   filters,
   onFiltersChange,
-  onClearFilters,
-  isVisible,
-  onToggleVisibility
+  onClearFilters
 }) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
   const validityOptions = [
-    { value: '1_7_days', label: '1-7 días' },
-    { value: '8_15_days', label: '8-15 días' },
-    { value: '16_30_days', label: '16-30 días' },
-    { value: '30_plus_days', label: 'Más de 30 días' }
+    { value: '5', label: '5' },
+    { value: '10', label: '10' },
+    { value: '15', label: '15' },
+    { value: '30', label: '30' }
   ];
 
   const dataOptions = [
-    { value: 'under_1gb', label: 'Menos de 1 GB' },
-    { value: '1_5gb', label: '1-5 GB' },
-    { value: '6_10gb', label: '6-10 GB' },
-    { value: '11_20gb', label: '11-20 GB' },
-    { value: 'over_20gb', label: 'Más de 20 GB' },
-    { value: 'unlimited', label: 'Ilimitado' }
+    { value: '3', label: '3' },
+    { value: '5', label: '5' },
+    { value: '10', label: '10' },
+    { value: '20', label: '20' }
   ];
 
   const planTypeOptions = [
-    { value: 'country', label: 'Planes por País' },
-    { value: 'regional', label: 'Planes Regionales' }
+    { value: 'country', label: 'LOCAL' },
+    { value: 'regional_specific', label: 'REGIONAL' },
+    { value: 'regional_global', label: 'GLOBAL' }
   ];
 
   const handleFilterChange = (filterType: keyof FilterValues, value: string) => {
@@ -66,113 +61,97 @@ export const PlanFilters: React.FC<PlanFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   return (
-    <div className="w-full">
-      {/* Filter Toggle Button */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={onToggleVisibility}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-200 ${
-            isVisible || hasActiveFilters
-              ? 'bg-primary/10 border-primary/20 text-primary'
-              : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-          }`}
-        >
-          <Filter className="w-4 h-4" />
-          <span className="font-medium">Filtros</span>
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`bg-gray-50 rounded-2xl p-6 mb-6 ${
+        isDesktop ? '' : ''
+      }`}
+    >
+      <div className={`${
+        isDesktop ? 'grid grid-cols-4 gap-8 items-start' : 'space-y-6'
+      }`}>
+        {/* Validity Filter */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4 tracking-wide uppercase">
+            Duración (Días)
+          </h3>
+          <div className={`flex gap-2 ${isDesktop ? 'flex-wrap' : 'flex-wrap'}`}>
+            {validityOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => handleFilterChange('validity', option.value)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
+                  filters.validity === option.value
+                    ? 'bg-primary text-white border-primary shadow-md'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Data Amount Filter */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4 tracking-wide uppercase">
+            Datos (GB)
+          </h3>
+          <div className={`flex gap-2 ${isDesktop ? 'flex-wrap' : 'flex-wrap'}`}>
+            {dataOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => handleFilterChange('dataAmount', option.value)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
+                  filters.dataAmount === option.value
+                    ? 'bg-primary text-white border-primary shadow-md'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Plan Type Filter */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4 tracking-wide uppercase">
+            Tipo de Plan
+          </h3>
+          <div className={`flex gap-2 ${isDesktop ? 'flex-wrap' : 'flex-wrap'}`}>
+            {planTypeOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => handleFilterChange('planType', option.value)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
+                  filters.planType === option.value
+                    ? 'bg-primary text-white border-primary shadow-md'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Clear Filters Button */}
+        <div className={`${isDesktop ? 'flex justify-end items-start' : 'flex justify-center'}`}>
           {hasActiveFilters && (
-            <span className="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {Object.keys(filters).length}
-            </span>
+            <button
+              onClick={onClearFilters}
+              className="flex items-center gap-2 px-4 py-2 text-gray-500 hover:text-gray-700 transition-colors duration-200 bg-white border border-gray-200 rounded-full hover:border-gray-300 hover:bg-gray-50"
+              title="Limpiar filtros"
+            >
+              <RotateCcw className="w-4 h-4" />
+              {isDesktop && <span className="text-sm font-medium">Limpiar</span>}
+            </button>
           )}
-        </button>
-
-        {hasActiveFilters && (
-          <button
-            onClick={onClearFilters}
-            className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 text-sm"
-          >
-            <X className="w-4 h-4" />
-            <span>Limpiar filtros</span>
-          </button>
-        )}
+        </div>
       </div>
-
-      {/* Filter Panel */}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden"
-          >
-            <div className={`bg-white border border-gray-200 rounded-xl p-6 mb-6 ${
-              isDesktop ? 'grid grid-cols-3 gap-6' : 'space-y-6'
-            }`}>
-              {/* Plan Type Filter */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Tipo de Plan</h3>
-                <div className="space-y-2">
-                  {planTypeOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleFilterChange('planType', option.value)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
-                        filters.planType === option.value
-                          ? 'bg-primary/10 text-primary border border-primary/20'
-                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-transparent'
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Data Amount Filter */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Cantidad de Datos</h3>
-                <div className="space-y-2">
-                  {dataOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleFilterChange('dataAmount', option.value)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
-                        filters.dataAmount === option.value
-                          ? 'bg-primary/10 text-primary border border-primary/20'
-                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-transparent'
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Validity Filter */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Vigencia</h3>
-                <div className="space-y-2">
-                  {validityOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleFilterChange('validity', option.value)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
-                        filters.validity === option.value
-                          ? 'bg-primary/10 text-primary border border-primary/20'
-                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-transparent'
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };

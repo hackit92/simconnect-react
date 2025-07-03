@@ -82,7 +82,17 @@ export function usePlans({
 
       // Apply plan type filter
       if (filters.planType) {
-        productsQuery = productsQuery.eq('plan_type', filters.planType);
+        if (filters.planType === 'country') {
+          productsQuery = productsQuery.eq('plan_type', 'country');
+        } else if (filters.planType === 'regional_specific') {
+          // Filter for specific regional plans
+          const specificRegions = ['latinoamerica', 'europa', 'norteamerica', 'oriente-medio', 'caribe', 'asia-central', 'asia', 'africa', 'oceania', 'balcanes'];
+          productsQuery = productsQuery.eq('plan_type', 'regional').in('region_code', specificRegions);
+        } else if (filters.planType === 'regional_global') {
+          // Filter for global/broader regional plans (those not in specific regions or with null region_code)
+          const specificRegions = ['latinoamerica', 'europa', 'norteamerica', 'oriente-medio', 'caribe', 'asia-central', 'asia', 'africa', 'oceania', 'balcanes'];
+          productsQuery = productsQuery.eq('plan_type', 'regional').not('region_code', 'in', `(${specificRegions.map(r => `"${r}"`).join(',')})`);
+        }
       }
 
       // Apply data amount filter
@@ -111,44 +121,14 @@ export function usePlans({
 
       // Apply validity filter
       if (filters.validity) {
-        switch (filters.validity) {
-          case '1_7_days':
-            productsQuery = productsQuery.gte('validity_days', 1).lte('validity_days', 7);
-            break;
-          case '8_15_days':
-            productsQuery = productsQuery.gte('validity_days', 8).lte('validity_days', 15);
-            break;
-          case '16_30_days':
-            productsQuery = productsQuery.gte('validity_days', 16).lte('validity_days', 30);
-            break;
-          case '30_plus_days':
-            productsQuery = productsQuery.gt('validity_days', 30);
-            break;
-        }
+        const validityDays = parseInt(filters.validity);
+        productsQuery = productsQuery.eq('validity_days', validityDays);
       }
       // Apply pagination
       const from = (currentPage - 1) * pageSize;
       const to = from + pageSize - 1;
-      productsQuery = productsQuery.range(from, to);
-
-      const { data: fetchedProducts, error: productsError } = await productsQuery;
-      if (productsError) throw productsError;
-      
-      setProducts(fetchedProducts || []);
-      
-    } catch (err) {
-      console.error('Fetch error:', err);
-      setError('Error al cargar los datos. Por favor intente nuevamente.');
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm, selectedCategory, selectedRegion, filters, allCategories, currentPage, pageSize]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const refetch = useCallback(() => {
+        const dataGb = parseInt(filters.dataAmount);
+        productsQuery = productsQuery.eq('data_gb', dataGb);
     fetchData();
   }, [fetchData]);
 
