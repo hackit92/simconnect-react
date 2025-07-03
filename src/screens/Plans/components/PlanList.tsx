@@ -1,6 +1,6 @@
 import React from 'react';
 import { Globe, ChevronDown, ChevronUp, Wifi } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "../../../components/ui/button";
 import type { Product } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
@@ -469,7 +469,8 @@ export const PlanList: React.FC<PlanListProps> = ({
         </div>
       )}
       
-      {products.filter(Boolean).map((plan) => {
+      <AnimatePresence mode="popLayout">
+        {products.filter(Boolean).map((plan, index) => {
         // Defensive check: ensure plan is a valid object
         if (!plan || typeof plan !== 'object') {
           console.warn('Invalid plan object encountered:', plan);
@@ -516,15 +517,40 @@ export const PlanList: React.FC<PlanListProps> = ({
         
         return (
           <motion.div 
-            key={plan.id} 
+            key={plan.id}
+            layout
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ 
+              opacity: 1, 
+              y: 0, 
+              scale: 1,
+              transition: {
+                duration: 0.4,
+                delay: index * 0.05, // Stagger animation
+                ease: [0.25, 0.46, 0.45, 0.94] // Custom easing
+              }
+            }}
+            exit={{ 
+              opacity: 0, 
+              y: -20, 
+              scale: 0.95,
+              transition: {
+                duration: 0.3,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }
+            }}
             className={`bg-white border border-gray-200 transition-all duration-200 ${
             isDesktop ? 'rounded-xl p-4' : 'rounded-2xl p-4'
           }`}
             whileHover={{ 
-              scale: 1.02, 
+              scale: 1.01, 
               boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
             }}
-            transition={{ duration: 0.2 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 30 
+            }}
           >
             {isDesktop ? (
               // Desktop Layout - Horizontal single row
@@ -705,7 +731,8 @@ export const PlanList: React.FC<PlanListProps> = ({
             )}
           </motion.div>
         );
-      })}
+        })}
+      </AnimatePresence>
     </div>
   );
 };
