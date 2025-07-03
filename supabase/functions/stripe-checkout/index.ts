@@ -202,7 +202,7 @@ Deno.serve(async (req) => {
     return corsResponse({ sessionId: session.id, url: session.url });
   } catch (error: any) {
     console.error(`Checkout error: ${error.message}`);
-    return corsResponse({ error: error.message }, 500);
+    return corsResponse({ error: error.message || 'An unexpected error occurred during checkout. Please try again.' }, 500);
   }
 });
 
