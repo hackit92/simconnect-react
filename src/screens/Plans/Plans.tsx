@@ -391,15 +391,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {shouldShowRegionsList && (
                   <div className="mb-8">
                     <RegionGrid
-                      categories={filteredCategories}
-                      products={allProducts}
+                      categories={categories}
                       onSelectRegion={handleRegionSelect}
-                      currentPage={currentCategoryPage}
-                      totalPages={totalCategoryPages}
-                      onPageChange={handleCategoryPageChange}
-                      currentPage={currentCategoryPage}
-                      totalPages={totalCategoryPages}
-                      onPageChange={handleCategoryPageChange}
                     />
                   </div>
                 )}

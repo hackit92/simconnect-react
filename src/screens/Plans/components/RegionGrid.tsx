@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Globe } from 'lucide-react';
-import type { Category, Product } from "../../../lib/supabase";
+import type { Category } from "../../../lib/supabase";
 import { supabase } from '../../../lib/supabase';
 
 // Import region SVG assets
@@ -20,6 +20,7 @@ interface RegionOption {
 }
 
 interface RegionGridProps {
+  categories: Category[];
   onSelectRegion: (regionValue: string) => void;
 }
 
@@ -86,6 +87,7 @@ const regionIcons: Record<string, React.ComponentType<any>> = {
 };
 
 export const RegionGrid: React.FC<RegionGridProps> = ({
+  categories,
   onSelectRegion,
 }) => {
   const [regionCounts, setRegionCounts] = useState<Record<string, number>>({});
