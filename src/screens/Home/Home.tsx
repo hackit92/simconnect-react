@@ -27,7 +27,7 @@ export const Home = () => {
             isDesktop 
               ? 'lg:w-3/5 lg:text-left lg:items-start px-16 py-24' 
               : 'items-center px-6 pt-12 pb-16 text-center'
-          }`}>
+          }`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -110,7 +110,7 @@ export const Home = () => {
           <motion.div 
             className={`relative flex-1 ${
             isDesktop ? 'lg:w-2/5 lg:mt-0' : 'w-full mt-8'
-          }`}>
+          }`}
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
