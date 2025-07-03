@@ -101,29 +101,37 @@ export const CheckoutForm: React.FC = () => {
     }
 
     try {
+      let checkoutItems;
+
       // For direct product purchase
       if (directProduct) {
-        await createCheckoutSession({
+        checkoutItems = [{
           priceId: directProduct.priceId,
-          mode: directProduct.mode,
-          successUrl: `${window.location.origin}/success`,
-          cancelUrl: `${window.location.origin}/checkout${productId ? `?product=${productId}` : ''}`,
-          billingDetails,
-        });
+          quantity: 1,
+          wcProductId: directProduct.wcProductId || 4658,
+          sku: directProduct.sku || 'MY-SPN-1GB-07D'
+        }];
       } else {
-        // For cart items - we'll need to create a custom checkout for multiple items
-        // For now, we'll handle the first item (this can be extended for multiple items)
-        const firstItem = items[0];
-        if (firstItem) {
-          // Create a temporary product for the cart item
-          await createCheckoutSession({
-            priceId: 'price_1RRIsZLwj7he4JL2nZBc6TMn', // Use the recarga price for now
-            mode: 'payment',
-            successUrl: `${window.location.origin}/success`,
-            cancelUrl: `${window.location.origin}/checkout`,
-            billingDetails,
-          });
-        }
+        // For cart items - map each cart item to checkout item
+        checkoutItems = items.map(item => ({
+          priceId: 'price_1RRIsZLwj7he4JL2nZBc6TMn', // Use default price for now
+          quantity: 1,
+          wcProductId: item.id, // Use the actual product ID from cart
+          sku: item.sku || 'MY-SPN-1GB-07D' // Use the actual SKU from cart
+        }));
+      }
+
+      await createCheckoutSession({
+        items: checkoutItems,
+        mode: directProduct?.mode || 'payment',
+        successUrl: `${window.location.origin}/success`,
+        cancelUrl: `${window.location.origin}/checkout${productId ? `?product=${productId}` : ''}`,
+        billingDetails,
+      });
+
+      // Clear cart after successful checkout initiation (only for cart purchases)
+      if (!directProduct && items.length > 0) {
+        clearCart();
       }
     } catch (error) {
       console.error('Error processing checkout:', error);

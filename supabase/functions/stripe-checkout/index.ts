@@ -43,13 +43,17 @@ Deno.serve(async (req) => {
       return corsResponse({ error: 'Method not allowed' }, 405);
     }
 
-    const { price_id, success_url, cancel_url, mode, billing_details } = await req.json();
+    const { items, success_url, cancel_url, mode, billing_details } = await req.json();
+
+    // Validate that we have items array
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return corsResponse({ error: 'Items array is required and must not be empty' }, 400);
+    }
 
     const error = validateParameters(
-      { price_id, success_url, cancel_url, mode },
+      { success_url, cancel_url, mode },
       {
         cancel_url: 'string',
-        price_id: 'string',
         success_url: 'string',
         mode: { values: ['payment', 'subscription'] },
       },
@@ -168,19 +172,32 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Build line items from the items array
+    const line_items = items.map((item: any) => ({
+      price_data: {
+        currency: 'mxn',
+        product_data: {
+          name: 'Recarga',
+          description: 'Recarga de datos móviles',
+          metadata: {
+            wc_product_id: item.wcProductId.toString(),
+            wc_sku: item.sku,
+          },
+        },
+        unit_amount: 3000, // MX$30.00 in cents
+      },
+      quantity: item.quantity,
+    }));
+
     // Create Checkout Session
     const sessionData: any = {
       customer: customerId,
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price: price_id,
-          quantity: 1,
-        },
-      ],
+      line_items,
       mode,
       success_url,
       cancel_url,
+      expand: ['line_items', 'line_items.data.price.product'], // Expand to include product metadata
     };
 
     // Pre-fill customer email if available (from user or billing details)

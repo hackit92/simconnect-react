@@ -10,8 +10,15 @@ interface BillingDetails {
   phone: string;
 }
 
-interface CheckoutParams {
+interface CheckoutItem {
   priceId: string;
+  quantity: number;
+  wcProductId: number;
+  sku: string;
+}
+
+interface CheckoutParams {
+  items: CheckoutItem[];
   mode: 'payment' | 'subscription';
   successUrl: string;
   cancelUrl: string;
@@ -42,7 +49,7 @@ export const useStripeCheckout = () => {
           method: 'POST',
           headers: headers,
           body: JSON.stringify({
-            price_id: params.priceId,
+            items: params.items,
             mode: params.mode,
             success_url: params.successUrl,
             cancel_url: params.cancelUrl,

@@ -91,11 +91,11 @@ async function handleEvent(event: Stripe.Event) {
       await syncCustomerFromStripe(customerId);
     } else if (mode === 'payment' && payment_status === 'paid') {
       try {
-        // Get the full session with line items
+        // Get the full session with line items and expanded product data
         const session = await stripe.checkout.sessions.retrieve(
           stripeData.id as string,
           {
-            expand: ['line_items', 'customer']
+            expand: ['line_items', 'line_items.data.price.product', 'customer']
           }
         );
 
@@ -140,8 +140,10 @@ async function handleEvent(event: Stripe.Event) {
 
 async function sendOrderToExternalAPI(session: Stripe.Checkout.Session, customer: Stripe.Customer) {
   try {
-    // Get line items
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    // Get line items with expanded product data
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+      expand: ['data.price.product']
+    });
     
     // Construct the order data in the required format
     const orderData = {
@@ -158,15 +160,36 @@ async function sendOrderToExternalAPI(session: Stripe.Checkout.Session, customer
         prefix: customer.metadata?.phonePrefix || '',
         phone: customer.phone ? customer.phone.replace(customer.metadata?.phonePrefix || '', '') : '',
       },
-      items: lineItems.data.map(item => ({
-        product_id: 4658, // Default product ID as specified
-        sku: "MY-SPN-1GB-07D", // Default SKU as specified
-        name: item.description || "Recarga",
-        quantity: item.quantity || 1,
-        subtotal: ((item.amount_subtotal || 0) / 100).toString(),
-        total: ((item.amount_total || 0) / 100).toString()
-      }))
+      items: lineItems.data.map(item => {
+        // Extract product metadata if available
+        let productId = 4658; // Default product ID
+        let sku = "MY-SPN-1GB-07D"; // Default SKU
+        
+        if (item.price && item.price.product && typeof item.price.product === 'object') {
+          const product = item.price.product as Stripe.Product;
+          if (product.metadata) {
+            // Extract the actual product ID and SKU from metadata
+            if (product.metadata.wc_product_id) {
+              productId = parseInt(product.metadata.wc_product_id) || productId;
+            }
+            if (product.metadata.wc_sku) {
+              sku = product.metadata.wc_sku;
+            }
+          }
+        }
+        
+        return {
+          product_id: productId,
+          sku: sku,
+          name: item.description || "Recarga",
+          quantity: item.quantity || 1,
+          subtotal: ((item.amount_subtotal || 0) / 100).toString(),
+          total: ((item.amount_total || 0) / 100).toString()
+        };
+      })
     };
+
+    console.log('Sending order data to external API:', JSON.stringify(orderData, null, 2));
 
     // Send to external API
     const externalApiUrl = 'https://api-iot.ucc.systems/api/external/salev2';
