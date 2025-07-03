@@ -1,25 +1,11 @@
 import React from 'react';
-import { Globe, ChevronDown, ChevronUp, Wifi } from 'lucide-react';
+import { Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from "../../../components/ui/button";
 import type { Product } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useCart } from '../../../contexts/CartContext';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
-
-// Import technology SVG assets
-import FiveGIcon from '../../../assets/technology/5G.svg?react';
-import LTEIcon from '../../../assets/technology/LTE.svg?react';
-import ThreeGIcon from '../../../assets/technology/3G.svg?react';
-
-// Import region SVG assets
-import AsiaIcon from '../../../assets/regions/asia.svg?react';
-import CaribeIcon from '../../../assets/regions/caribe.svg?react';
-import CaucasoIcon from '../../../assets/regions/caucaso.svg?react';
-import EuropaIcon from '../../../assets/regions/europa.svg?react';
-import LatinoAmericaIcon from '../../../assets/regions/latino-america.svg?react';
-import MedioOrienteIcon from '../../../assets/regions/medio-oriente.svg?react';
-import NorteamericaIcon from '../../../assets/regions/norteamerica.svg?react';
 
 interface PlanListProps {
   products: Product[];
@@ -28,17 +14,6 @@ interface PlanListProps {
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null };
   categories?: { id: number; name: string; slug: string; parent: number | null }[];
 }
-
-// Map region codes to their corresponding SVG components
-const regionSvgIcons: Record<string, React.ComponentType<any>> = {
-  'latinoamerica': LatinoAmericaIcon,
-  'europa': EuropaIcon,
-  'norteamerica': NorteamericaIcon,
-  'oriente-medio': MedioOrienteIcon,
-  'caribe': CaribeIcon,
-  'asia-central': CaucasoIcon, // Using Caucaso icon for unified Asia Central y Cáucaso
-  'asia': AsiaIcon,
-};
 
 // Helper function to convert ISO3 country codes to country names
 function getCountryNameFromISO3(iso3Code: string): string {
@@ -175,38 +150,6 @@ function iso3ToIso2(iso3Code: string): string | null {
   };
   
   return iso3ToIso2Map[iso3Code.toUpperCase()] || null;
-}
-
-// Helper function to get technology icon
-function getTechnologyIcon(tech: string): JSX.Element {
-  const iconClass = "w-6 h-6";
-  
-  switch (tech) {
-    case '5G':
-      return (
-        <FiveGIcon className={`${iconClass} text-purple-600`} />
-      );
-    case '4G/LTE':
-    case '4G':
-      return (
-        <LTEIcon className={`${iconClass} text-blue-600`} />
-      );
-    case '3G':
-      return (
-        <ThreeGIcon className={`${iconClass} text-green-600`} />
-      );
-    case '2G':
-    case '2G/EDGE':
-      return (
-        <div className="w-6 h-6 bg-gray-500 rounded-full text-white text-xs font-bold flex items-center justify-center">
-          <span>2G</span>
-        </div>
-      );
-    default:
-      return (
-        <LTEIcon className={`${iconClass} text-blue-600`} />
-      );
-  }
 }
 
 // Helper function to format price with currency
@@ -354,15 +297,10 @@ function getProductFlag(
   product: Product,
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null },
   categories?: { id: number; name: string; slug: string; parent: number | null }[]
-): string | React.ComponentType<any> {
+): string {
   // For regional plans, return a generic international flag
   if (product.plan_type === 'regional') {
-    // Return the appropriate region icon component if available
-    const RegionIcon = regionSvgIcons[product.region_code || ''];
-    if (RegionIcon) {
-      return RegionIcon;
-    }
-    return 'fi fi-un'; // Fallback to UN flag for regional plans
+    return 'fi fi-un'; // UN flag for regional plans
   }
   
   // For country-specific plans, try to get the flag from various sources
@@ -429,6 +367,7 @@ export const PlanList: React.FC<PlanListProps> = ({
       return newSet;
     });
   };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -484,7 +423,7 @@ export const PlanList: React.FC<PlanListProps> = ({
         const isRegional = plan.plan_type === 'regional';
         const gbAmount = plan.data_gb;
         const validityDays = plan.validity_days;
-        const flagOrIcon = getProductFlag(plan, selectedCategoryData, categories);
+        const flagClass = getProductFlag(plan, selectedCategoryData, categories);
         const isExpanded = expandedRegionalPlans.has(plan.id);
         
         // Get coverage countries from plan data
@@ -503,9 +442,16 @@ export const PlanList: React.FC<PlanListProps> = ({
         }
         
         return (
-          <div key={plan.id} className={`bg-white border border-gray-200 hover:shadow-md transition-all duration-200 ${
+          <div key={plan.id} className={`relative bg-white border border-gray-200 hover:shadow-md transition-all duration-200 ${
             isDesktop ? 'rounded-xl p-4' : 'rounded-2xl p-4'
           }`}>
+            {/* Price positioned in top-right corner for mobile */}
+            {!isDesktop && (
+              <div className="absolute top-3 right-3 bg-primary/10 text-primary px-3 py-1 rounded-lg text-xl font-bold">
+                {displayPrice}
+              </div>
+            )}
+
             {isDesktop ? (
               // Desktop Layout - Horizontal single row
               <div className="flex items-center justify-between">
@@ -513,17 +459,13 @@ export const PlanList: React.FC<PlanListProps> = ({
                 <div className="flex items-center space-x-4">
                   {/* Flag */}
                   <div className="w-12 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
-                    {typeof flagOrIcon === 'string' ? (
-                      isRegional ? (
-                        <Globe className="w-6 h-6 text-blue-500" />
-                      ) : (
-                        <span 
-                          className={flagOrIcon} 
-                          style={{ transform: 'scale(1.8)' }} 
-                        />
-                      )
+                    {isRegional ? (
+                      <Globe className="w-6 h-6 text-primary" />
                     ) : (
-                      React.createElement(flagOrIcon, { className: "w-6 h-6 text-[#299ae4]" })
+                      <span 
+                        className={flagClass} 
+                        style={{ transform: 'scale(1.8)' }} 
+                      />
                     )}
                   </div>
                   
@@ -532,10 +474,17 @@ export const PlanList: React.FC<PlanListProps> = ({
                     {displayName}
                   </h3>
                   
-                  {/* Technology Icon */}
-                  <div className="flex items-center justify-center">
-                    {getTechnologyIcon(technology)}
-                  </div>
+                  {/* Technology Tag */}
+                  <span className="bg-primary text-white rounded-full px-2 py-0.5 text-xs font-medium">
+                    {technology}
+                  </span>
+                  
+                  {/* Regional Plan Indicator */}
+                  {isRegional && (
+                    <span className="bg-primary/20 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
+                      Plan Regional
+                    </span>
+                  )}
                 </div>
                 
                 {/* Center: Data and Validity */}
@@ -555,7 +504,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                 
                 {/* Right: Price and Button */}
                 <div className="flex items-center space-x-6">
-                  <div className="text-2xl font-bold text-[#299ae4]">
+                  <div className="text-2xl font-bold text-primary">
                     {displayPrice}
                   </div>
                   <Button
@@ -563,7 +512,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                     className={`rounded-full px-6 py-3 font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${
                       isInCart(plan.id)
                         ? 'bg-green-500 hover:bg-green-600 text-white'
-                        : 'bg-[#299ae4] hover:bg-[#299ae4]/90 text-white'
+                        : 'bg-primary hover:bg-primary/90 text-white'
                     }`}
                   >
                     {isInCart(plan.id) ? 'AÑADIDO' : 'COMPRAR'}
@@ -571,62 +520,54 @@ export const PlanList: React.FC<PlanListProps> = ({
                 </div>
               </div>
             ) : (
-              // Mobile Layout - Original vertical layout
+              // Mobile Layout - Compact vertical layout with price in top-right
               <>
                 {/* Header with Flag and Country/Region */}
-                <div className="relative flex items-center justify-between mb-6">
-                  {/* Block 1: Flag, Name, Technology Icon */}
-                  <div className="flex items-center space-x-2">
-                    {/* Flag or Regional Icon */}
-                    <div className="w-10 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
-                      {typeof flagOrIcon === 'string' ? (
-                        isRegional ? (
-                          <Globe className="w-6 h-6 text-primary" />
-                        ) : (
-                          <span 
-                            className={flagOrIcon} 
-                            style={{ transform: 'scale(1.2)' }} 
-                          />
-                        )
-                      ) : (
-                        React.createElement(flagOrIcon, { className: "w-6 h-6 text-[#299ae4]" })
-                      )}
-                    </div>
-                    
-                    {/* Country/Region Name and Technology Icon */}
-                    <div className="flex items-center space-x-1">
-                      <h3 className="text-base font-semibold text-gray-900 truncate">{displayName}</h3>
-                      {/* Technology Icon */}
-                      {getTechnologyIcon(technology)}
-                    </div>
+                <div className="flex items-center space-x-3 mb-4 pr-20">
+                  {/* Flag or Regional Icon */}
+                  <div className="w-8 h-5 rounded overflow-hidden flex items-center justify-center bg-gray-50 border flex-shrink-0">
+                    {isRegional ? (
+                      <Globe className="w-4 h-4 text-primary" />
+                    ) : (
+                      <span 
+                        className={flagClass} 
+                        style={{ transform: 'scale(1.2)' }} 
+                      />
+                    )}
                   </div>
                   
-                  {/* Regional Button - Positioned absolutely to align with card edge */}
+                  {/* Country/Region Name */}
+                  <h3 className="text-base font-semibold text-gray-900 flex-1">{displayName}</h3>
+                  
+                  {/* Technology Tag */}
+                  <span className="bg-primary text-white rounded-full px-2 py-0.5 text-xs font-medium">
+                    {technology}
+                  </span>
+                  
+                  {/* Regional Plan Indicator with Expand/Collapse */}
                   {isRegional && coverageCountries.length > 0 && (
                     <button
                       onClick={() => toggleRegionalCoverage(plan.id)}
-                      className="absolute -top-2 -right-2 flex items-center space-x-1 px-3 py-1 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary/90 transition-colors duration-200 shadow-lg z-10"
+                      className="flex items-center space-x-1 bg-primary/20 text-primary rounded-full px-2 py-0.5 text-xs font-medium"
                     >
-                      <span>Plan Regional</span>
+                      <span>Regional</span>
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4" />
+                        <ChevronUp className="w-3 h-3" />
                       ) : (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronDown className="w-3 h-3" />
                       )}
                     </button>
                   )}
-                  
-                  {/* Block 2: Price with Currency */}
                 </div>
                 
                 {/* Regional Coverage Dropdown */}
                 {isRegional && isExpanded && coverageCountries.length > 0 && (
-                  <div className="mb-6 p-4 bg-gray-50 rounded-xl">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Cobertura Regional:</h4>
-                    <div className="grid grid-cols-2 gap-2">
+                  <div className="mb-4 p-3 bg-gray-50 rounded-xl">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Cobertura Regional:</h4>
+                    <div className="grid grid-cols-2 gap-1">
                       {coverageCountries.map((country, index) => (
-                        <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
+                        <div key={index} className="flex items-center space-x-1 text-xs text-gray-600">
+                          <div className="w-1 h-1 bg-primary rounded-full flex-shrink-0"></div>
                           <span>{country}</span>
                         </div>
                       ))}
@@ -635,50 +576,31 @@ export const PlanList: React.FC<PlanListProps> = ({
                 )}
                 
                 {/* Plan Details */}
-                <div className="flex items-center justify-start mb-4">
-                  <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
                     {/* Data Amount */}
                     {gbAmount !== null && gbAmount !== undefined && (
-                      <div>
-                        <div className="text-base font-medium text-gray-900">
-                          {gbAmount < 1 ? `${Math.round(gbAmount * 1024)} MB` : `${gbAmount} GB`}
-                        </div>
-                        <div className="text-xs text-gray-500">Datos</div>
-                      </div>
+                      <span>
+                        {gbAmount < 1 ? `${Math.round(gbAmount * 1024)} MB` : `${gbAmount} GB`}
+                      </span>
                     )}
                     
                     {/* Validity */}
                     {validityDays !== null && validityDays !== undefined && (
-                      <div>
-                        <div className="text-base font-medium text-gray-900">{validityDays} días</div>
-                        <div className="text-xs text-gray-500">Vigencia</div>
-                      </div>
-                    )}
-                    
-                    {/* Show plan name if no GB or validity found */}
-                    {(gbAmount === null || gbAmount === undefined) && (validityDays === null || validityDays === undefined) && (
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 max-w-48 truncate">{plan.name}</div>
-                        <div className="text-xs text-gray-500">Plan</div>
-                      </div>
+                      <span>{validityDays} días</span>
                     )}
                   </div>
-                </div>
-                
-                {/* Price and Purchase Button */}
-                <div className="flex items-center justify-between">
-                  <div className="text-2xl font-bold text-primary">
-                    {displayPrice}
-                  </div>
+                  
+                  {/* Purchase Button */}
                   <Button
                     onClick={() => handlePurchase(plan.id)}
-                    className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
+                    className={`px-4 py-2 rounded-full font-semibold text-sm transition-all duration-200 ${
                       isInCart(plan.id)
                         ? 'bg-green-500 hover:bg-green-600 text-white'
                         : 'bg-primary hover:bg-primary/90 text-white'
                     }`}
                   >
-                    {isInCart(plan.id) ? 'AÑADIDO AL CARRITO' : 'AÑADIR AL CARRITO'}
+                    {isInCart(plan.id) ? 'AÑADIDO' : 'COMPRAR'}
                   </Button>
                 </div>
               </>
