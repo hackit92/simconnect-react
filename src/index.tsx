@@ -1,13 +1,19 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./i18n";
 import { Frame } from "./screens/Frame";
+import { LoginForm } from "./components/auth/LoginForm";
+import { SignupForm } from "./components/auth/SignupForm";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
-      <Frame />
+      <Routes>
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupForm />} />
+        <Route path="/*" element={<Frame />} />
+      </Routes>
     </BrowserRouter>
   </StrictMode>,
 );

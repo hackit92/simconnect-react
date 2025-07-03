@@ -1,12 +1,16 @@
 import React, { useCallback } from 'react';
-import { HomeIcon, ShoppingCartIcon, GlobeIcon } from "lucide-react";
-import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { HomeIcon, ShoppingCartIcon, GlobeIcon, UserIcon } from "lucide-react";
+import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCurrency } from "../contexts/CurrencyContext";
 import { useCart } from "../contexts/CartContext";
+import { supabase } from "../lib/supabase";
 import { Home } from "../screens/Home";
 import { Plans } from "../screens/Plans";
 import { Cart } from "../screens/Cart";
+import { Products } from "../screens/Products";
+import { Success } from "../screens/Success";
+import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -42,6 +46,24 @@ export const MobileAppLayout: React.FC = () => {
   const { selectedCurrency, setSelectedCurrency } = useCurrency();
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleCurrencyChange = useCallback((value: string) => {
     setSelectedCurrency(value);
@@ -126,6 +148,16 @@ export const MobileAppLayout: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/plans" element={<Plans />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/products" element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          } />
+          <Route path="/success" element={
+            <ProtectedRoute>
+              <Success />
+            </ProtectedRoute>
+          } />
         </Routes>
       </div>
 
@@ -173,6 +205,20 @@ export const MobileAppLayout: React.FC = () => {
               )}
             </div>
             <span className="text-[10px] font-medium">{t('nav.cart')}</span>
+          </Link>
+
+          <Link 
+            to={user ? "/products" : "/login"}
+            className={`flex flex-col items-center gap-1 transition-colors duration-200 ${
+              location.pathname === '/products' || location.pathname === '/login'
+                ? 'text-primary' 
+                : 'text-gray-600 hover:text-primary'
+            }`}
+          >
+            <UserIcon className="h-5 w-5" />
+            <span className="text-[10px] font-medium">
+              {user ? 'Cuenta' : 'Acceder'}
+            </span>
           </Link>
         </div>
       </div>

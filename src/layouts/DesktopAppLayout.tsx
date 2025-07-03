@@ -1,11 +1,15 @@
 import React from 'react';
 import { ShoppingCartIcon } from "lucide-react";
-import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
 import { useCurrency } from "../contexts/CurrencyContext";
+import { supabase } from "../lib/supabase";
 import { Home } from "../screens/Home";
 import { Cart } from "../screens/Cart";
+import { Products } from "../screens/Products";
+import { Success } from "../screens/Success";
+import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
 
 interface CurrencyOption {
@@ -36,6 +40,29 @@ export const DesktopAppLayout: React.FC = () => {
   const { selectedCurrency, setSelectedCurrency } = useCurrency();
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
@@ -132,11 +159,38 @@ export const DesktopAppLayout: React.FC = () => {
               </Link>
 
               {/* User Icon */}
-              <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                </svg>
-              </div>
+              {user ? (
+                <Popover>
+                  <PopoverTrigger className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-2 rounded-xl">
+                    <div className="space-y-1">
+                      <Link
+                        to="/products"
+                        className="block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        Productos
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Link
+                  to="/login"
+                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm font-medium"
+                >
+                  Iniciar sesión
+                </Link>
+              )}
 
               {/* Menu Icon */}
               <button className="p-2">
@@ -154,6 +208,16 @@ export const DesktopAppLayout: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/products" element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          } />
+          <Route path="/success" element={
+            <ProtectedRoute>
+              <Success />
+            </ProtectedRoute>
+          } />
         </Routes>
       </main>
     </div>
