@@ -163,10 +163,6 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
   const handleFiltersChange = (newFilters: FilterValues) => {
     setFilters(newFilters);
-    // Clear category/region selection when applying filters
-    setSelectedCategory(undefined);
-    setSelectedRegion(undefined);
-    setSearchTerm('');
     setShowWelcomeMessage(false);
   };
 
@@ -361,7 +357,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   : 'w-full'
               }`}>
                 
-                {/* Tab Selector - Always show */}
+                {/* Tab Selector - Show when no selection and no filters */}
                 {!hasSelection && !hasFilters && (
                   <div className={`mb-6 ${isDesktop ? '' : ''}`}>
                     <TabSelector
@@ -422,6 +418,12 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       <h3 className="text-lg font-semibold text-primary">
                         Planes filtrados
                       </h3>
+                      <button
+                        onClick={handleClearFilters}
+                        className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
+                      >
+                        Limpiar filtros
+                      </button>
                     </div>
                   </div>
                 )}
@@ -543,11 +545,13 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
               }`}>
                 {/* Plan Filters - Show when plans are displayed */}
                 {shouldShowPlans && (
-                  <PlanFilters
-                    filters={filters}
-                    onFiltersChange={handleFiltersChange}
-                    onClearFilters={handleClearFilters}
-                  />
+                  <div className="mb-6">
+                    <PlanFilters
+                      filters={filters}
+                      onFiltersChange={handleFiltersChange}
+                      onClearFilters={handleClearFilters}
+                    />
+                  </div>
                 )}
                 
                 {/* Currency indicator */}
