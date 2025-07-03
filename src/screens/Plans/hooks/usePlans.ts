@@ -124,12 +124,28 @@ export function usePlans({
         const validityDays = parseInt(filters.validity);
         productsQuery = productsQuery.eq('validity_days', validityDays);
       }
+
       // Apply pagination
       const from = (currentPage - 1) * pageSize;
       const to = from + pageSize - 1;
-        const dataGb = parseInt(filters.dataAmount);
-        productsQuery = productsQuery.eq('data_gb', dataGb);
+      productsQuery = productsQuery.range(from, to);
+
+      const { data, error: queryError } = await productsQuery;
+
+      if (queryError) {
+        throw queryError;
+      }
+
+      setProducts(data || []);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching products');
+    } finally {
+      setLoading(false);
     }
+  }, [searchTerm, selectedCategory, selectedRegion, filters, allCategories, currentPage, pageSize]);
+
+  useEffect(() => {
     fetchData();
   }, [fetchData]);
 
@@ -137,7 +153,7 @@ export function usePlans({
     products, 
     loading, 
     error, 
-    refetch 
+    refetch: fetchData 
   };
 }
 
