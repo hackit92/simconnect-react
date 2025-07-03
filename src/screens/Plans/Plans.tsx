@@ -225,11 +225,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
       'balcanes': 'Balcanes',
       'oriente-medio': 'Oriente Medio',
       'caribe': 'Caribe',
-      'asia-central': 'Asia Central y Cáucaso'
-    };
+      'asia-central': 'Asia Central y Cáucaso',
       'africa': 'África',
-      'oceania': 'Oceanía',
-      'balcanes': 'Balcanes'
+      'oceania': 'Oceanía'
+    };
     return regionNames[regionValue] || regionValue;
   };
 
