@@ -129,6 +129,7 @@ export function usePlans({
       const to = from + pageSize - 1;
         const dataGb = parseInt(filters.dataAmount);
         productsQuery = productsQuery.eq('data_gb', dataGb);
+    }
     fetchData();
   }, [fetchData]);
 
