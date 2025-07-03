@@ -12,6 +12,7 @@ import { CountryGrid } from './components/CountryGrid';
 import { RegionGrid } from './components/RegionGrid';
 import { PlanList } from './components/PlanList';
 import { SyncButton } from './components/SyncButton';
+import { PlanFilters, type FilterValues } from './components/PlanFilters';
 import { usePlans } from './hooks/usePlans';
 import { useSync } from './hooks/useSync';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -27,6 +28,8 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
+  const [filters, setFilters] = useState<FilterValues>({});
+  const [showFilters, setShowFilters] = useState(false);
   const { selectedCurrency } = useCurrency();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
@@ -52,6 +55,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     searchTerm: debouncedSearchTerm,
     selectedCategory,
     selectedRegion,
+    filters,
     allCategories: categories,
     currentPage: 1,
     pageSize: 20
@@ -112,6 +116,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
       // Clear selections when searching
       setSelectedCategory(undefined);
       setSelectedRegion(undefined);
+      setFilters({});
     } else {
       setFilteredCategories(categories);
       // Don't clear selections when search is empty - let user keep their selection
@@ -121,12 +126,13 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   // Reset page when search term or category changes
   useEffect(() => {
     setCurrentCategoryPage(1);
-  }, [debouncedSearchTerm, selectedCategory, selectedRegion]);
+  }, [debouncedSearchTerm, selectedCategory, selectedRegion, filters]);
 
   // Reset selected category/region when switching tabs
   useEffect(() => {
     setSelectedCategory(undefined);
     setSelectedRegion(undefined);
+    setFilters({});
     setCurrentCategoryPage(1);
   }, [selectedTab]);
 
@@ -134,6 +140,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     const newSelectedCategory = categoryId === selectedCategory ? undefined : categoryId;
     setSelectedCategory(newSelectedCategory);
     setSelectedRegion(undefined); // Clear region selection when selecting country
+    setFilters({}); // Clear filters when selecting category
     setShowWelcomeMessage(false); // Hide welcome message when user interacts
     
     // Clear search term when explicitly selecting a category to avoid conflicts
@@ -146,6 +153,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     const newSelectedRegion = regionValue === selectedRegion ? undefined : regionValue;
     setSelectedRegion(newSelectedRegion);
     setSelectedCategory(undefined); // Clear category selection when selecting region
+    setFilters({}); // Clear filters when selecting region
     setShowWelcomeMessage(false); // Hide welcome message when user interacts
     
     // Clear search term when explicitly selecting a region to avoid conflicts
@@ -154,6 +162,18 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     }
   };
 
+  const handleFiltersChange = (newFilters: FilterValues) => {
+    setFilters(newFilters);
+    // Clear category/region selection when applying filters
+    setSelectedCategory(undefined);
+    setSelectedRegion(undefined);
+    setSearchTerm('');
+    setShowWelcomeMessage(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilters({});
+  };
   const handleSyncData = async () => {
     await handleSync();
     refetch();
@@ -172,6 +192,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     setSearchTerm(value);
     if (value.trim()) {
       setShowWelcomeMessage(false); // Hide welcome message when user starts searching
+      setFilters({}); // Clear filters when searching
     }
   };
 
@@ -179,6 +200,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
     // Clear search term for clean filtering
     setSearchTerm('');
+    setFilters({}); // Clear filters when selecting suggestion
     
     setShowWelcomeMessage(false); // Hide welcome message when user selects suggestion
     if (suggestion.type === 'country' && suggestion.id) {
@@ -210,6 +232,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
     setSearchTerm('');
     setSelectedCategory(undefined);
     setSelectedRegion(undefined);
+    setFilters({});
     setFilteredCategories(categories);
     setSelectedTab('countries'); // Default to countries tab
     setShowWelcomeMessage(true); // Show welcome message when clearing search
@@ -236,15 +259,16 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   // Determine what to show based on current state
   const hasSearchTerm = debouncedSearchTerm.trim().length > 0;
   const hasSelection = selectedCategory || selectedRegion;
-  const shouldShowPlans = hasSelection;
+  const hasFilters = Object.keys(filters).length > 0;
+  const shouldShowPlans = hasSelection || hasFilters;
   const shouldShowEmptyState = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length === 0;
   const shouldShowSearchResults = hasSearchTerm && filteredCategories.length > 0;
   const shouldShowNoResults = hasSearchTerm && filteredCategories.length === 0;
   
   // Control what lists are displayed
-  const shouldShowCountriesList = !hasSearchTerm && !hasSelection && selectedTab === 'countries' && !categoriesLoading && !showWelcomeMessage;
-  const shouldShowRegionsList = !hasSearchTerm && !hasSelection && selectedTab === 'regions' && !categoriesLoading;
-  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !categoriesLoading && categories.length > 0 && selectedTab === 'countries' && showWelcomeMessage;
+  const shouldShowCountriesList = !hasSearchTerm && !hasSelection && !hasFilters && selectedTab === 'countries' && !categoriesLoading && !showWelcomeMessage;
+  const shouldShowRegionsList = !hasSearchTerm && !hasSelection && !hasFilters && selectedTab === 'regions' && !categoriesLoading;
+  const shouldShowInitialWelcome = !hasSearchTerm && !hasSelection && !hasFilters && !categoriesLoading && categories.length > 0 && selectedTab === 'countries' && showWelcomeMessage;
 
   return (
     <CardContent className={`flex flex-col px-0 py-0 relative self-stretch w-full bg-white ${
@@ -338,8 +362,21 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   : 'w-full'
               }`}>
                 
-                {/* Tab Selector - Always show */}
+                {/* Plan Filters */}
                 {!hasSelection && (
+                  <div className="mb-6">
+                    <PlanFilters
+                      filters={filters}
+                      onFiltersChange={handleFiltersChange}
+                      onClearFilters={handleClearFilters}
+                      isVisible={showFilters}
+                      onToggleVisibility={() => setShowFilters(!showFilters)}
+                    />
+                  </div>
+                )}
+
+                {/* Tab Selector - Always show */}
+                {!hasSelection && !hasFilters && (
                   <div className={`mb-6 ${isDesktop ? '' : ''}`}>
                     <TabSelector
                       selectedTab={selectedTab}
@@ -387,6 +424,23 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                   </div>
                 )}
 
+                {/* Active Filters Display */}
+                {hasFilters && !hasSelection && (
+                  <div className="mb-6">
+                    <div className="flex items-center space-x-3 p-4 bg-primary/10 rounded-xl border border-primary/20">
+                      <Filter className="w-6 h-6 text-primary" />
+                      <h3 className="text-lg font-semibold text-primary">
+                        Planes filtrados
+                      </h3>
+                      <button
+                        onClick={handleClearFilters}
+                        className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
+                      >
+                        Limpiar filtros
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {/* Countries/Regions Grid - Show when tabs are visible and no search */}
                 {shouldShowCountriesList && (
                   <div className="mb-8">

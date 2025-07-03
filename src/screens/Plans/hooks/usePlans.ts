@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, type Product, type Category } from '../../../lib/supabase';
 import { countryUtils } from '../../../lib/countries/countryUtils';
+import type { FilterValues } from '../components/PlanFilters';
 
 interface UsePlansParams {
   searchTerm: string;
   selectedCategory: number | undefined;
   selectedRegion: string | undefined;
+  filters: FilterValues;
   allCategories: Category[];
   currentPage: number;
   pageSize: number;
@@ -22,6 +24,7 @@ export function usePlans({
   searchTerm, 
   selectedCategory, 
   selectedRegion,
+  filters,
   allCategories,
   currentPage, 
   pageSize 
@@ -77,6 +80,52 @@ export function usePlans({
         }
       }
 
+      // Apply plan type filter
+      if (filters.planType) {
+        productsQuery = productsQuery.eq('plan_type', filters.planType);
+      }
+
+      // Apply data amount filter
+      if (filters.dataAmount) {
+        switch (filters.dataAmount) {
+          case 'under_1gb':
+            productsQuery = productsQuery.lt('data_gb', 1);
+            break;
+          case '1_5gb':
+            productsQuery = productsQuery.gte('data_gb', 1).lte('data_gb', 5);
+            break;
+          case '6_10gb':
+            productsQuery = productsQuery.gte('data_gb', 6).lte('data_gb', 10);
+            break;
+          case '11_20gb':
+            productsQuery = productsQuery.gte('data_gb', 11).lte('data_gb', 20);
+            break;
+          case 'over_20gb':
+            productsQuery = productsQuery.gt('data_gb', 20);
+            break;
+          case 'unlimited':
+            productsQuery = productsQuery.is('data_gb', null);
+            break;
+        }
+      }
+
+      // Apply validity filter
+      if (filters.validity) {
+        switch (filters.validity) {
+          case '1_7_days':
+            productsQuery = productsQuery.gte('validity_days', 1).lte('validity_days', 7);
+            break;
+          case '8_15_days':
+            productsQuery = productsQuery.gte('validity_days', 8).lte('validity_days', 15);
+            break;
+          case '16_30_days':
+            productsQuery = productsQuery.gte('validity_days', 16).lte('validity_days', 30);
+            break;
+          case '30_plus_days':
+            productsQuery = productsQuery.gt('validity_days', 30);
+            break;
+        }
+      }
       // Apply pagination
       const from = (currentPage - 1) * pageSize;
       const to = from + pageSize - 1;
@@ -93,7 +142,7 @@ export function usePlans({
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedCategory, selectedRegion, allCategories, currentPage, pageSize]);
+  }, [searchTerm, selectedCategory, selectedRegion, filters, allCategories, currentPage, pageSize]);
 
   useEffect(() => {
     fetchData();
