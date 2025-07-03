@@ -42,6 +42,7 @@ export const CheckoutForm: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Partial<BillingDetails>>({});
+  const [checkoutError, setCheckoutError] = useState<string>('');
   const [selectedCountry, setSelectedCountry] = useState<CountryData>(
     countries.find(c => c.code === 'MX') || countries[0]
   );
@@ -92,6 +93,9 @@ export const CheckoutForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear any previous checkout errors
+    setCheckoutError('');
+    
     if (!validateForm()) {
       return;
     }
@@ -123,6 +127,8 @@ export const CheckoutForm: React.FC = () => {
       }
     } catch (error) {
       console.error('Error processing checkout:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido al procesar el pago';
+      setCheckoutError(errorMessage);
     }
   };
 
@@ -307,6 +313,25 @@ export const CheckoutForm: React.FC = () => {
               </div>
 
               {/* Submit Button */}
+              {checkoutError && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="text-sm text-red-800">
+                      <p className="font-medium mb-1">Error de pago</p>
+                      <p>{checkoutError}</p>
+                      {checkoutError.includes('configuración de Stripe') && (
+                        <p className="mt-2 text-xs">
+                          Contacta al administrador para verificar la configuración de las variables de entorno de Stripe.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <Button
                 type="submit"
                 disabled={loading}

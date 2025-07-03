@@ -53,7 +53,22 @@ export const useStripeCheckout = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al crear la sesión de pago');
+        console.error('Stripe checkout error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData
+        });
+        
+        // Provide more specific error messages based on status code
+        if (response.status === 500) {
+          throw new Error(errorData.error || 'Error interno del servidor. Verifica la configuración de Stripe.');
+        } else if (response.status === 401) {
+          throw new Error('Error de autenticación. Verifica las credenciales de Stripe.');
+        } else if (response.status === 400) {
+          throw new Error(errorData.error || 'Datos de pago inválidos.');
+        } else {
+          throw new Error(errorData.error || `Error al crear la sesión de pago (${response.status})`);
+        }
       }
 
       const { url } = await response.json();
