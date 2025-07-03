@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, type Product, type Category } from '../../../lib/supabase';
 import { countryUtils } from '../../../lib/countries/countryUtils';
 import { regionMapping } from '../../../lib/search/searchUtils';
@@ -30,10 +30,11 @@ export function usePlans({
   currentPage, 
   pageSize 
 }: UsePlansParams): UsePlansReturn {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch data only when selection changes (not when filters change)
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -81,86 +82,98 @@ export function usePlans({
         }
       }
 
-      // Apply plan type filter - only when there's a selection
-      if (filters.planType && (selectedCategory || selectedRegion)) {
-        if (selectedCategory) {
-          // For country selections, filter between country-specific and regional plans
-          if (filters.planType === 'country') {
-            productsQuery = productsQuery.eq('plan_type', 'country');
-          } else if (filters.planType === 'regional') {
-            // Only show regional plans that include this country
-            const selectedCategoryData = allCategories.find(cat => cat.id === selectedCategory);
-            if (selectedCategoryData) {
-              const countryISO3 = iso2ToIso3(selectedCategoryData.slug);
-              if (countryISO3) {
-                productsQuery = productsQuery
-                  .eq('plan_type', 'regional')
-                  .contains('metadata->countries_iso3', `["${countryISO3}"]`);
-              }
-            }
-          }
-        } else if (selectedRegion) {
-          // For region selections, filter between regional and country plans within that region
-          if (filters.planType === 'regional') {
-            productsQuery = productsQuery.eq('plan_type', 'regional');
-          } else if (filters.planType === 'country') {
-            // Show country plans for countries within this region
-            const regionCountries = regionMapping[selectedRegion] || [];
-            if (regionCountries.length > 0) {
-              // Get category IDs for countries in this region
-              const regionCategoryIds = allCategories
-                .filter(cat => regionCountries.includes(cat.slug))
-                .map(cat => cat.id);
-              
-              if (regionCategoryIds.length > 0) {
-                const categoryFilter = regionCategoryIds.map(id => `[${id}]`).join(',');
-                productsQuery = productsQuery
-                  .eq('plan_type', 'country')
-                  .or(categoryFilter.split(',').map(id => `category_ids.cs.${id}`).join(','));
-              }
-            }
-          }
-        }
-      }
-
-      // Apply data amount filter
-      if (filters.dataAmount) {
-        const dataGb = parseFloat(filters.dataAmount);
-        productsQuery = productsQuery.eq('data_gb', dataGb);
-      }
-
-      // Apply validity filter
-      if (filters.validity) {
-        const validityDays = parseInt(filters.validity);
-        productsQuery = productsQuery.eq('validity_days', validityDays);
-      }
-
-      // Apply pagination
-      const from = (currentPage - 1) * pageSize;
-      const to = from + pageSize - 1;
-      productsQuery = productsQuery.range(from, to);
-
       const { data, error: queryError } = await productsQuery;
 
       if (queryError) {
         throw queryError;
       }
 
-      setProducts(data || []);
+      setAllProducts(data || []);
     } catch (err) {
       console.error('Error fetching products:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while fetching products');
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedCategory, selectedRegion, filters, allCategories, currentPage, pageSize]);
+  }, [searchTerm, selectedCategory, selectedRegion, allCategories]);
+
+  // Apply filters in memory
+  const filteredProducts = useMemo(() => {
+    let filtered = [...allProducts];
+
+    // Apply plan type filter
+    if (filters.planType) {
+      if (selectedCategory) {
+        // For country selections, filter between country-specific and regional plans
+        if (filters.planType === 'country') {
+          filtered = filtered.filter(product => product.plan_type === 'country');
+        } else if (filters.planType === 'regional') {
+          // Only show regional plans that include this country
+          const selectedCategoryData = allCategories.find(cat => cat.id === selectedCategory);
+          if (selectedCategoryData) {
+            const countryISO3 = iso2ToIso3(selectedCategoryData.slug);
+            if (countryISO3) {
+              filtered = filtered.filter(product => 
+                product.plan_type === 'regional' && 
+                product.metadata?.countries_iso3 && 
+                Array.isArray(product.metadata.countries_iso3) &&
+                product.metadata.countries_iso3.includes(countryISO3)
+              );
+            }
+          }
+        }
+      } else if (selectedRegion) {
+        // For region selections, filter between regional and country plans within that region
+        if (filters.planType === 'regional') {
+          filtered = filtered.filter(product => product.plan_type === 'regional');
+        } else if (filters.planType === 'country') {
+          // Show country plans for countries within this region
+          const regionCountries = regionMapping[selectedRegion] || [];
+          if (regionCountries.length > 0) {
+            // Get category IDs for countries in this region
+            const regionCategoryIds = allCategories
+              .filter(cat => regionCountries.includes(cat.slug))
+              .map(cat => cat.id);
+            
+            filtered = filtered.filter(product => 
+              product.plan_type === 'country' &&
+              product.category_ids &&
+              Array.isArray(product.category_ids) &&
+              product.category_ids.some(id => regionCategoryIds.includes(id))
+            );
+          }
+        }
+      }
+    }
+
+    // Apply data amount filter
+    if (filters.dataAmount) {
+      const dataGb = parseFloat(filters.dataAmount);
+      filtered = filtered.filter(product => product.data_gb === dataGb);
+    }
+
+    // Apply validity filter
+    if (filters.validity) {
+      const validityDays = parseInt(filters.validity);
+      filtered = filtered.filter(product => product.validity_days === validityDays);
+    }
+
+    return filtered;
+  }, [allProducts, filters, selectedCategory, selectedRegion, allCategories]);
+
+  // Apply pagination to filtered results
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage, pageSize]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   return { 
-    products, 
+    products: paginatedProducts, 
     loading, 
     error, 
     refetch: fetchData 
