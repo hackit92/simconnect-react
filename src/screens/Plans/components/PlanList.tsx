@@ -574,7 +574,7 @@ export const PlanList: React.FC<PlanListProps> = ({
               // Mobile Layout - Original vertical layout
               <>
                 {/* Header with Flag and Country/Region */}
-                <div className="relative flex items-center justify-between mb-6">
+                <div className="relative flex items-center mb-6">
                   {/* Block 1: Flag, Name, Technology Icon */}
                   <div className="flex items-center space-x-2">
                     {/* Flag or Regional Icon */}
@@ -601,6 +601,11 @@ export const PlanList: React.FC<PlanListProps> = ({
                     </div>
                   </div>
                   
+                  {/* Price - Positioned in top-right corner */}
+                  <div className="absolute top-0 right-0 text-xl font-bold text-primary">
+                    {displayPrice}
+                  </div>
+                  
                   {/* Regional Button - Positioned absolutely to align with card edge */}
                   {isRegional && coverageCountries.length > 0 && (
                     <button
@@ -615,8 +620,6 @@ export const PlanList: React.FC<PlanListProps> = ({
                       )}
                     </button>
                   )}
-                  
-                  {/* Block 2: Price with Currency */}
                 </div>
                 
                 {/* Regional Coverage Dropdown */}
@@ -665,11 +668,8 @@ export const PlanList: React.FC<PlanListProps> = ({
                   </div>
                 </div>
                 
-                {/* Price and Purchase Button */}
-                <div className="flex items-center justify-between">
-                  <div className="text-2xl font-bold text-primary">
-                    {displayPrice}
-                  </div>
+                {/* Purchase Button */}
+                <div className="flex justify-end">
                   <Button
                     onClick={() => handlePurchase(plan.id)}
                     className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
@@ -678,7 +678,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                         : 'bg-primary hover:bg-primary/90 text-white'
                     }`}
                   >
-                    {isInCart(plan.id) ? 'AÑADIDO AL CARRITO' : 'AÑADIR AL CARRITO'}
+                    {isInCart(plan.id) ? 'AÑADIDO' : 'COMPRAR'}
                   </Button>
                 </div>
               </>
