@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "../../components/ui/button";
 import { CardContent } from "../../components/ui/card";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
@@ -21,11 +22,16 @@ export const Home = () => {
           isDesktop ? 'lg:flex-row lg:justify-center lg:items-center' : 'flex-col'
         }`}>
           {/* Content */}
-          <div className={`relative z-10 flex flex-col ${
+          <motion.div 
+            className={`relative z-10 flex flex-col ${
             isDesktop 
               ? 'lg:w-3/5 lg:text-left lg:items-start px-16 py-24' 
               : 'items-center px-6 pt-12 pb-16 text-center'
           }`}>
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
             <h1 className={`leading-[0.9] font-light text-gray-800 ${
               isDesktop ? 'text-7xl mb-8 max-w-5xl' : 'text-[40px] mb-6'
             }`}>
@@ -73,7 +79,11 @@ export const Home = () => {
             </div>
 
             {/* CTA Button */}
-            <Button
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
               variant="outline"
               className={`border-2 border-gray-900 rounded-none bg-transparent hover:bg-gray-900 hover:text-white transition-all duration-300 font-bold tracking-[0.1em] ${
                 isDesktop ? 'px-12 py-5 text-xl' : 'w-[278px] h-12 text-lg'
@@ -92,13 +102,19 @@ export const Home = () => {
               }}
             >
               {isDesktop ? 'EXPLORA NUESTROS PLANES' : t('home.cta')}
-            </Button>
-          </div>
+              </Button>
+            </motion.div>
+          </motion.div>
 
           {/* Image */}
-          <div className={`relative flex-1 ${
+          <motion.div 
+            className={`relative flex-1 ${
             isDesktop ? 'lg:w-2/5 lg:mt-0' : 'w-full mt-8'
           }`}>
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          >
             <img
               className="w-full h-full object-cover"
               alt="People using mobile phones internationally"
@@ -107,7 +123,7 @@ export const Home = () => {
             <div className={`absolute inset-0 bg-gradient-to-t from-white/60 to-transparent ${
               isDesktop ? 'lg:hidden' : ''
             }`} />
-          </div>
+          </motion.div>
         </div>
       </CardContent>
 

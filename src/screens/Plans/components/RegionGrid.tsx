@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Globe } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
 import { supabase } from '../../../lib/supabase';
 
@@ -158,7 +159,7 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
           const IconComponent = regionIcons[region.value];
           
           return (
-            <button
+            <motion.button
               key={region.value}
               onClick={() => handleRegionClick(region)}
               disabled={!hasContent}
@@ -167,6 +168,10 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
                   ? 'border-gray-200 hover:border-primary/30 hover:bg-primary/10 cursor-pointer'
                   : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
               }`}
+              whileHover={hasContent ? { scale: 1.05 } : {}}
+              whileTap={hasContent ? { scale: 0.95 } : {}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
               {/* Region Icon */}
               <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
@@ -187,7 +192,7 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
                 )}
                 {!hasContent && <div>Sin contenido</div>}
               </div>
-            </button>
+            </motion.button>
           );
         })}
       </div>

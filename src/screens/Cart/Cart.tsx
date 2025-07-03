@@ -1,6 +1,7 @@
 import React from "react";
 import { Trash2, Plus, Minus, ShoppingBag, CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../../components/ui/button";
 import { useCart } from "../../contexts/CartContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
@@ -190,15 +191,20 @@ export const Cart = () => {
           {/* Cart Items - Left Column */}
           <div className="lg:w-2/3">
             <div className="space-y-6">
-              {items.map((item) => {
+              <AnimatePresence>
+                {items.map((item) => {
                 const price = getProductPrice(item);
                 const displayName = getDisplayName(item, categories);
                 const subtotal = price * item.quantity;
 
                 return (
-                  <div 
+                  <motion.div 
                     key={item.id} 
                     className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
                   >
                     <div className="flex items-start justify-between">
                       {/* Product Info */}
@@ -282,9 +288,10 @@ export const Cart = () => {
                         <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 );
-              })}
+                })}
+              </AnimatePresence>
             </div>
           </div>
 

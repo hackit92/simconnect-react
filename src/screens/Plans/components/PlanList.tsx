@@ -1,5 +1,6 @@
 import React from 'react';
 import { Globe, ChevronDown, ChevronUp, Wifi } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from "../../../components/ui/button";
 import type { Product } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
@@ -503,9 +504,17 @@ export const PlanList: React.FC<PlanListProps> = ({
         }
         
         return (
-          <div key={plan.id} className={`bg-white border border-gray-200 hover:shadow-md transition-all duration-200 ${
+          <motion.div 
+            key={plan.id} 
+            className={`bg-white border border-gray-200 transition-all duration-200 ${
             isDesktop ? 'rounded-xl p-4' : 'rounded-2xl p-4'
-          }`}>
+          }`}
+            whileHover={{ 
+              scale: 1.02, 
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
+            }}
+            transition={{ duration: 0.2 }}
+          >
             {isDesktop ? (
               // Desktop Layout - Horizontal single row
               <div className="flex items-center justify-between">
@@ -683,7 +692,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                 </div>
               </>
             )}
-          </div>
+          </motion.div>
         );
       })}
     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import { Smartphone, Truck, Hand, Globe, DollarSign, Heart } from 'lucide-react';
 import { useIsDesktop } from '../hooks/useIsDesktop';
 
@@ -44,11 +45,16 @@ export const WhyChooseUs: React.FC = () => {
     <section className={`bg-white ${isDesktop ? 'py-20' : 'py-12'}`}>
       <div className={`max-w-7xl mx-auto ${isDesktop ? 'px-8' : 'px-6'}`}>
         {/* Title */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className={`font-normal text-gray-800 ${isDesktop ? 'text-4xl' : 'text-2xl'}`}>
             ¿Por qué elegir <span className="text-[#299ae4] font-semibold">SimConnect</span>?
           </h2>
-        </div>
+        </motion.div>
 
         {/* Content Layout */}
         <div className={`flex items-center ${
@@ -57,7 +63,12 @@ export const WhyChooseUs: React.FC = () => {
             : 'flex-col gap-8'
         }`}>
           {/* Phone Image */}
-          <div className={`${isDesktop ? 'w-1/3' : 'w-full max-w-xs'} flex justify-center`}>
+          <motion.div 
+            className={`${isDesktop ? 'w-1/3' : 'w-full max-w-xs'} flex justify-center`}
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <div className="relative">
               <img
                 src="/phone-mockup.png"
@@ -65,17 +76,29 @@ export const WhyChooseUs: React.FC = () => {
                 className={`${isDesktop ? 'h-96' : 'h-80'} w-auto object-contain`}
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Features Grid */}
-          <div className={`${isDesktop ? 'w-2/3' : 'w-full'}`}>
+          <motion.div 
+            className={`${isDesktop ? 'w-2/3' : 'w-full'}`}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             <div className={`grid gap-8 ${
               isDesktop 
                 ? 'grid-cols-2' 
                 : 'grid-cols-1'
             }`}>
               {features.map((feature, index) => (
-                <div key={index} className="flex items-start space-x-4">
+                <motion.div 
+                  key={index} 
+                  className="flex items-start space-x-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 + (index * 0.1) }}
+                  whileHover={{ scale: 1.02 }}
+                >
                   {/* Icon */}
                   <div className="flex-shrink-0 mt-1">
                     {feature.icon}
@@ -94,10 +117,10 @@ export const WhyChooseUs: React.FC = () => {
                       {feature.description}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

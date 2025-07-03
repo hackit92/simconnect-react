@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
@@ -59,7 +60,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
           if (isDesktop) {
             // Desktop: Compact grid layout
             return (
-              <button
+              <motion.button
                 key={category.id}
                 onClick={() => onSelectCategory(category.id)}
                 className={`group relative w-full rounded-lg transition-all duration-200 p-3 text-left ${
@@ -68,6 +69,10 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                     : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
                 }`}
                 title={countryName}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
               >
                 <div className="flex items-center space-x-3">
                   {/* Flag Container */}
@@ -94,12 +99,12 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                     </div>
                   )}
                 </div>
-              </button>
+              </motion.button>
             );
           } else {
             // Mobile: Original card layout
             return (
-              <button
+              <motion.button
                 key={category.id}
                 onClick={() => onSelectCategory(category.id)}
                 className={`group relative w-full rounded-2xl transition-all duration-200 ${
@@ -107,6 +112,10 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                     ? 'bg-primary/10 border-2 border-primary/20'
                     : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
                 }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
               >
                 <div className="flex items-center p-4">
                   {/* Flag Container */}
@@ -133,7 +142,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                     </div>
                   )}
                 </div>
-              </button>
+              </motion.button>
             );
           }
         })}

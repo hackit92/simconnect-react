@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, AlertCircle, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import { CardContent } from "../../components/ui/card";
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useCart } from '../../contexts/CartContext';
@@ -304,7 +305,12 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
         {/* Content Area */}
         {!loading && !categoriesLoading && (
-          <div className="flex-1">
+          <motion.div 
+            className="flex-1"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             {/* Sync Button - Positioned absolutely in top right */}
             {!isEmbedded && (
               <div className="absolute top-6 right-6">
@@ -518,7 +524,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </CardContent>
