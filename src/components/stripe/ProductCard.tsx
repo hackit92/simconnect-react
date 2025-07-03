@@ -15,12 +15,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handlePurchase = async () => {
     setError(null);
     try {
-      await createCheckoutSession({
-        priceId: product.priceId,
-        mode: product.mode,
-        successUrl: `${window.location.origin}/success`,
-        cancelUrl: `${window.location.origin}/plans`,
-      });
+      // Navigate to checkout form with product ID
+      window.location.href = `/checkout?product=${product.priceId}`;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al procesar el pago');
     }

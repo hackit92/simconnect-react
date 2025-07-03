@@ -35,6 +35,11 @@ export interface Product {
   region_code?: string;
   country_code?: string;
   active?: boolean;
+  // Additional fields for external API integration
+  product_id?: number;
+  quantity?: number;
+  subtotal?: string;
+  total?: string;
 }
 
 export interface Category {

@@ -1,11 +1,21 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
+interface BillingDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
+  country: string;
+  phonePrefix: string;
+  phone: string;
+}
+
 interface CheckoutParams {
   priceId: string;
   mode: 'payment' | 'subscription';
   successUrl: string;
   cancelUrl: string;
+  billingDetails?: BillingDetails;
 }
 
 export const useStripeCheckout = () => {
@@ -34,6 +44,7 @@ export const useStripeCheckout = () => {
             mode: params.mode,
             success_url: params.successUrl,
             cancel_url: params.cancelUrl,
+            billing_details: params.billingDetails,
           }),
         }
       );

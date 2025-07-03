@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       return corsResponse({ error: 'Method not allowed' }, 405);
     }
 
-    const { price_id, success_url, cancel_url, mode } = await req.json();
+    const { price_id, success_url, cancel_url, mode, billing_details } = await req.json();
 
     const error = validateParameters(
       { price_id, success_url, cancel_url, mode },
@@ -93,12 +93,24 @@ Deno.serve(async (req) => {
      * In case we don't have a mapping yet, the customer does not exist and we need to create one.
      */
     if (!customer || !customer.customer_id) {
-      const newCustomer = await stripe.customers.create({
+      const customerData: any = {
         email: user.email,
         metadata: {
           userId: user.id,
         },
-      });
+      };
+
+      // Add billing details if provided
+      if (billing_details) {
+        customerData.name = `${billing_details.firstName} ${billing_details.lastName}`;
+        customerData.phone = `${billing_details.phonePrefix}${billing_details.phone}`;
+        customerData.metadata.phonePrefix = billing_details.phonePrefix;
+        customerData.metadata.countryCode = billing_details.country;
+        customerData.metadata.firstName = billing_details.firstName;
+        customerData.metadata.lastName = billing_details.lastName;
+      }
+
+      const newCustomer = await stripe.customers.create(customerData);
 
       console.log(`Created new Stripe customer ${newCustomer.id} for user ${user.id}`);
 
@@ -147,6 +159,20 @@ Deno.serve(async (req) => {
     } else {
       customerId = customer.customer_id;
 
+      // Update existing customer with billing details if provided
+      if (billing_details) {
+        await stripe.customers.update(customerId, {
+          name: `${billing_details.firstName} ${billing_details.lastName}`,
+          phone: `${billing_details.phonePrefix}${billing_details.phone}`,
+          metadata: {
+            phonePrefix: billing_details.phonePrefix,
+            countryCode: billing_details.country,
+            firstName: billing_details.firstName,
+            lastName: billing_details.lastName,
+          },
+        });
+      }
+
       if (mode === 'subscription') {
         // Verify subscription exists for existing customer
         const { data: subscription, error: getSubscriptionError } = await supabase
@@ -177,8 +203,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // create Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    // Create Checkout Session
+    const sessionData: any = {
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [
@@ -190,7 +216,15 @@ Deno.serve(async (req) => {
       mode,
       success_url,
       cancel_url,
-    });
+    };
+
+    // Pre-fill customer details if provided
+    if (billing_details) {
+      sessionData.customer_email = user.email;
+      sessionData.phone_number_collection = { enabled: true };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionData);
 
     console.log(`Created checkout session ${session.id} for customer ${customerId}`);
 

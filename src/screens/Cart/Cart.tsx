@@ -1,6 +1,6 @@
 import React from "react";
 import { Trash2, Plus, Minus, ShoppingBag, CreditCard } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../../components/ui/button";
 import { useCart } from "../../contexts/CartContext";
@@ -43,8 +43,7 @@ export const Cart = () => {
   };
 
   const handleCheckout = () => {
-    // TODO: Implement checkout logic
-    alert('Funcionalidad de pago en desarrollo. ¡Pronto estará disponible!');
+    navigate('/checkout');
   };
 
   const handleExplorePlans = () => {

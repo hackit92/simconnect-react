@@ -9,6 +9,7 @@ import { Home } from "../screens/Home";
 import { Cart } from "../screens/Cart";
 import { Products } from "../screens/Products";
 import { Success } from "../screens/Success";
+import { CheckoutForm } from "../screens/CheckoutForm";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
 
@@ -216,6 +217,11 @@ export const DesktopAppLayout: React.FC = () => {
           <Route path="/success" element={
             <ProtectedRoute>
               <Success />
+            </ProtectedRoute>
+          } />
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <CheckoutForm />
             </ProtectedRoute>
           } />
         </Routes>

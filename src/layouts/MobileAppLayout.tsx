@@ -10,6 +10,7 @@ import { Plans } from "../screens/Plans";
 import { Cart } from "../screens/Cart";
 import { Products } from "../screens/Products";
 import { Success } from "../screens/Success";
+import { CheckoutForm } from "../screens/CheckoutForm";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import {
   NavigationMenu,
@@ -156,6 +157,11 @@ export const MobileAppLayout: React.FC = () => {
           <Route path="/success" element={
             <ProtectedRoute>
               <Success />
+            </ProtectedRoute>
+          } />
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <CheckoutForm />
             </ProtectedRoute>
           } />
         </Routes>

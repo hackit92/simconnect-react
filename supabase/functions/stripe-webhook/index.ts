@@ -91,6 +91,17 @@ async function handleEvent(event: Stripe.Event) {
       await syncCustomerFromStripe(customerId);
     } else if (mode === 'payment' && payment_status === 'paid') {
       try {
+        // Get the full session with line items
+        const session = await stripe.checkout.sessions.retrieve(
+          stripeData.id as string,
+          {
+            expand: ['line_items', 'customer']
+          }
+        );
+
+        // Get customer details
+        const customer = session.customer as Stripe.Customer;
+        
         // Extract the necessary information from the session
         const {
           id: checkout_session_id,
@@ -98,7 +109,7 @@ async function handleEvent(event: Stripe.Event) {
           amount_subtotal,
           amount_total,
           currency,
-        } = stripeData as Stripe.Checkout.Session;
+        } = session;
 
         // Insert the order into the stripe_orders table
         const { error: orderError } = await supabase.from('stripe_orders').insert({
@@ -114,13 +125,71 @@ async function handleEvent(event: Stripe.Event) {
 
         if (orderError) {
           console.error('Error inserting order:', orderError);
-          return;
+        } else {
+          console.info(`Successfully processed one-time payment for session: ${checkout_session_id}`);
+          
+          // Send order data to external API
+          await sendOrderToExternalAPI(session, customer);
         }
-        console.info(`Successfully processed one-time payment for session: ${checkout_session_id}`);
       } catch (error) {
         console.error('Error processing one-time payment:', error);
       }
     }
+  }
+}
+
+async function sendOrderToExternalAPI(session: Stripe.Checkout.Session, customer: Stripe.Customer) {
+  try {
+    // Get line items
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    
+    // Construct the order data in the required format
+    const orderData = {
+      id: session.id, // Using session ID as order ID
+      total: (session.amount_total || 0) / 100, // Convert from cents
+      currency: session.currency?.toUpperCase() || 'USD',
+      status: 'completed',
+      date: new Date().toISOString().slice(0, 19).replace('T', ' '), // Format: Y-m-d H:i:s
+      billing: {
+        first_name: customer.metadata?.firstName || '',
+        last_name: customer.metadata?.lastName || '',
+        email: customer.email || '',
+        country: customer.metadata?.countryCode || '',
+        prefix: customer.metadata?.phonePrefix || '',
+        phone: customer.phone ? customer.phone.replace(customer.metadata?.phonePrefix || '', '') : '',
+      },
+      items: lineItems.data.map(item => ({
+        product_id: 4658, // Default product ID as specified
+        sku: "MY-SPN-1GB-07D", // Default SKU as specified
+        name: item.description || "Recarga",
+        quantity: item.quantity || 1,
+        subtotal: ((item.amount_subtotal || 0) / 100).toString(),
+        total: ((item.amount_total || 0) / 100).toString()
+      }))
+    };
+
+    // Send to external API
+    const externalApiUrl = Deno.env.get('EXTERNAL_API_URL') || 'https://api.example.com/orders';
+    
+    const response = await fetch(externalApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Deno.env.get('EXTERNAL_API_TOKEN') || ''}`,
+      },
+      body: JSON.stringify(orderData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`External API responded with status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.info(`Successfully sent order to external API:`, result);
+    
+  } catch (error) {
+    console.error('Error sending order to external API:', error);
+    // Don't throw here to avoid breaking the webhook processing
   }
 }
 
