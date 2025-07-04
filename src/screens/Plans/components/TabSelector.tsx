@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTranslation } from 'react-i18next';
 
 interface TabSelectorProps {
   selectedTab: 'countries' | 'regions';
@@ -8,8 +7,6 @@ interface TabSelectorProps {
 }
 
 export const TabSelector: React.FC<TabSelectorProps> = ({ selectedTab, onTabChange }) => {
-  const { t } = useTranslation();
-
   const { t } = useTranslation();
 
   return (

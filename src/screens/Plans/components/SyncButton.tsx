@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTranslation } from 'react-i18next';
 import { Button } from "../../../components/ui/button";
 
 interface SyncButtonProps {
@@ -9,8 +8,6 @@ interface SyncButtonProps {
 }
 
 export const SyncButton: React.FC<SyncButtonProps> = ({ onSync, syncing }) => {
-  const { t } = useTranslation();
-
   const { t } = useTranslation();
 
   return (
