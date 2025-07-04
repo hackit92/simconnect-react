@@ -61,7 +61,7 @@ export const BenefitsSection: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
             >
-              <div className="flex items-center justify-center mb-4 w-16 h-16 rounded-full bg-primary/10">
+              <div className="flex items-center justify-center mb-4 w-16 h-16 rounded-full ">
                 {benefit.icon}
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">{benefit.title}</h3>
