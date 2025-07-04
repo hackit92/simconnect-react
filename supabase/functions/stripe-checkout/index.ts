@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       return corsResponse({ error: 'Method not allowed' }, 405);
     }
 
-    const { items, success_url, cancel_url, mode, billing_details } = await req.json();
+    const { items, success_url, cancel_url, mode, billing_details, coupon_code } = await req.json();
 
     // Validate that we have items array
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -199,6 +199,31 @@ Deno.serve(async (req) => {
       cancel_url,
       expand: ['line_items', 'line_items.data.price.product'], // Expand to include product metadata
     };
+
+    // Add coupon if provided
+    if (coupon_code) {
+      try {
+        // Verify the coupon exists and is valid
+        const coupon = await stripe.coupons.retrieve(coupon_code);
+        
+        if (coupon.valid) {
+          sessionData.discounts = [{ coupon: coupon.id }];
+          console.log(`Applied coupon ${coupon_code} to checkout session`);
+        } else {
+          console.warn(`Coupon ${coupon_code} is not valid`);
+          return corsResponse({ error: 'The provided coupon code is not valid' }, 400);
+        }
+      } catch (error: any) {
+        console.error(`Error retrieving coupon ${coupon_code}:`, error.message);
+        
+        if (error.code === 'resource_missing') {
+          return corsResponse({ error: 'The provided coupon code does not exist' }, 400);
+        }
+        
+        // Don't fail the checkout if coupon validation fails, just log the error
+        console.warn(`Proceeding without coupon due to error: ${error.message}`);
+      }
+    }
 
     // Always enable phone number collection if billing details are provided
     if (billing_details?.phone) {

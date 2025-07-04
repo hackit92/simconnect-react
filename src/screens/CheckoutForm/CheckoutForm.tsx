@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CreditCard, User, Mail, Phone, Globe } from 'lucide-react';
+import { ArrowLeft, CreditCard, User, Mail, Phone, Globe, Tag, Check } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 import { useCart } from '../../contexts/CartContext';
@@ -28,6 +28,9 @@ export const CheckoutForm: React.FC = () => {
   const { items, getTotalPrice, clearCart } = useCart();
   const { selectedCurrency, formatPrice } = useCurrency();
   const { createCheckoutSession, loading } = useStripeCheckout();
+  const [couponCode, setCouponCode] = useState<string>('');
+  const [isCouponApplied, setIsCouponApplied] = useState<boolean>(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
   const isDesktop = useIsDesktop();
 
   // Get product from URL params for direct purchase
@@ -83,6 +86,28 @@ export const CheckoutForm: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) {
+      setCouponError(t('checkout.coupon_empty'));
+      return;
+    }
+    
+    // In a real implementation, you might want to validate the coupon with Stripe
+    // before proceeding, but for simplicity we'll just mark it as applied
+    setIsCouponApplied(true);
+    setCouponError(null);
+  };
+
+  const handleCouponChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCouponCode(e.target.value);
+    if (isCouponApplied) {
+      setIsCouponApplied(false);
+    }
+    if (couponError) {
+      setCouponError(null);
+    }
+  };
+
   const handleCountrySelect = (country: CountryData) => {
     setSelectedCountry(country);
     setBillingDetails(prev => ({
@@ -128,6 +153,7 @@ export const CheckoutForm: React.FC = () => {
         mode: directProduct?.mode || 'payment',
         successUrl: `${window.location.origin}/success`,
         cancelUrl: `${window.location.origin}/checkout${productId ? `?product=${productId}` : ''}`,
+        couponCode: isCouponApplied ? couponCode : undefined,
         billingDetails,
       });
 
@@ -238,6 +264,52 @@ export const CheckoutForm: React.FC = () => {
                     <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
                   )}
                 </div>
+              </div>
+
+              {/* Coupon Code */}
+              <div>
+                <label htmlFor="coupon" className="block text-sm font-medium text-gray-700 mb-2">
+                  <Tag className="w-4 h-4 inline mr-1" />
+                  {t('checkout.coupon')}
+                </label>
+                <div className="flex">
+                  <input
+                    type="text"
+                    id="coupon"
+                    value={couponCode}
+                    onChange={handleCouponChange}
+                    disabled={isCouponApplied}
+                    className={`flex-1 px-4 py-3 border rounded-l-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
+                      couponError ? 'border-red-300' : isCouponApplied ? 'border-green-300 bg-green-50' : 'border-gray-300'
+                    }`}
+                    placeholder={t('checkout.coupon_placeholder')}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={isCouponApplied || !couponCode.trim()}
+                    className={`px-4 py-3 font-medium text-sm transition-all duration-200 ${
+                      isCouponApplied 
+                        ? 'bg-green-500 text-white rounded-r-xl'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-r-xl border border-l-0 border-gray-300'
+                    }`}
+                  >
+                    {isCouponApplied ? (
+                      <div className="flex items-center">
+                        <Check className="w-4 h-4 mr-1" />
+                        {t('checkout.coupon_applied')}
+                      </div>
+                    ) : (
+                      t('checkout.apply_coupon')
+                    )}
+                  </button>
+                </div>
+                {couponError && (
+                  <p className="mt-1 text-sm text-red-600">{couponError}</p>
+                )}
+                {isCouponApplied && (
+                  <p className="mt-1 text-sm text-green-600">{t('checkout.coupon_success')}</p>
+                )}
               </div>
 
               {/* Email */}

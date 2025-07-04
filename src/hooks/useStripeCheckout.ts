@@ -22,6 +22,7 @@ interface CheckoutParams {
   mode: 'payment' | 'subscription';
   successUrl: string;
   cancelUrl: string;
+  couponCode?: string;
   billingDetails?: BillingDetails;
 }
 
@@ -45,6 +46,7 @@ export const useStripeCheckout = () => {
           method: 'POST',
           headers: headers,
           body: JSON.stringify({
+            coupon_code: params.couponCode,
             items: params.items,
             mode: params.mode,
             success_url: params.successUrl,
