@@ -39,7 +39,7 @@ export const Home = () => {
               {isDesktop ? (
                 <>
                   <span className="font-light">{t('home.title').toUpperCase()}</span><br />
-                  <span className="font-black text-gray-900 text-8xl">{t('home.title_bold').toUpperCase()}</span>
+                  <span className="font-black text-gray-900 text-6xl">{t('home.title_bold').toUpperCase()}</span>
                 </>
               ) : (
                 <>
