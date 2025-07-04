@@ -126,31 +126,32 @@ export const CheckoutForm: React.FC = () => {
     
     if (!validateForm()) {
       return;
-    }
+        checkoutItems = items.map(item => {
+          // Get price based on selected currency
+          let unitAmount = 0;
 
-    try {
-      let checkoutItems: any[] = [];
+          switch (selectedCurrency) {
+            case 'USD':
+              unitAmount = item.regular_price_usd || parseFloat(item.regular_price || '0') || 30;
+              break;
+            case 'EUR':
+              unitAmount = item.regular_price_eur || parseFloat(item.regular_price || '0') || 30;
+              break;
+            case 'MXN':
+              unitAmount = item.regular_price_mxn || parseFloat(item.regular_price || '0') || 30;
+              break;
+            default:
+              unitAmount = item.regular_price_usd || parseFloat(item.regular_price || '0') || 30;
+          }
 
-      // For direct product purchase
-      if (directProduct) {
-        checkoutItems = [{
-          priceId: directProduct.priceId,
-          quantity: 1,
-          unitAmount: 30,
-          currency: selectedCurrency,
-          wcProductId: directProduct.wcProductId || 4658,
-          sku: directProduct.sku || 'MY-SPN-1GB-07D'
-        }];
-      } else {
-        // For cart items - map each cart item to checkout item
-        checkoutItems = items.map(item => ({
-          priceId: '', // We don't need this when using dynamic pricing
-          quantity: item.quantity || 1,
-          unitAmount: item.regular_price_usd || parseFloat(item.regular_price || '0') || 30,
-          currency: selectedCurrency,
-          quantity: 1,
-          wcProductId: item.id // Use the actual product ID from cart
-        }));
+          return {
+            priceId: '', // We don't need this when using dynamic pricing
+            quantity: item.quantity || 1,
+            unitAmount,
+            currency: selectedCurrency,
+            wcProductId: item.id // Use the actual product ID from cart
+          };
+        });
       }
 
       await createCheckoutSession({
