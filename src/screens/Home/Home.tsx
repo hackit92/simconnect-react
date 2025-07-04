@@ -34,7 +34,7 @@ export const Home = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h1 className={`font-light text-gray-800 ${
-              isDesktop ? 'text-3xl mb-8 max-w-5xl' : 'text-[40px] mb-6'
+              isDesktop ? 'text-5xl mb-8 max-w-5xl' : 'text-[40px] mb-6'
             }`}>
               {isDesktop ? (
                 <>
