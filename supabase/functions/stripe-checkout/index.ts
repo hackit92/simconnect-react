@@ -200,13 +200,6 @@ Deno.serve(async (req) => {
       expand: ['line_items', 'line_items.data.price.product'], // Expand to include product metadata
     };
 
-    // Pre-fill customer email if available (from user or billing details)
-    if (billing_details?.email) {
-      sessionData.customer_email = billing_details.email;
-    } else if (user?.email) {
-      sessionData.customer_email = user.email;
-    }
-    
     // Always enable phone number collection if billing details are provided
     if (billing_details?.phone) {
       sessionData.phone_number_collection = { enabled: true };
