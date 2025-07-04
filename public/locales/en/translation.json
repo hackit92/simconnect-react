@@ -234,5 +234,26 @@
     "easy_setup_desc": "Quick and simple installation in just a few clicks using a QR code",
     "total_satisfaction": "TOTAL SATISFACTION",
     "total_satisfaction_desc": "For us, the most important thing is that you love our service, from contracting to during your trip, which is why we provide you with boutique customer service and support"
+  },
+  "benefits": {
+    "title": "Your",
+    "title_suffix": "in just a few minutes",
+    "subtitle": "Don't waste time or extra money, SimConnect is the solution.",
+    "choose_plan": {
+      "title": "CHOOSE YOUR PLAN",
+      "description": "Select the plan that adapts best to your travel needs"
+    },
+    "install": {
+      "title": "INSTALL",
+      "description": "You'll receive a QR code via email or WhatsApp, scan it to install the eSIM on your device"
+    },
+    "connect": {
+      "title": "CONNECT & ACTIVATE",
+      "description": "Upon arrival at your destination, the eSIM will connect to the internet and activate the service"
+    },
+    "enjoy": {
+      "title": "ENJOY",
+      "description": "The best signal and speed of the country you visit, enjoying the best customer service"
+    }
   }
 }

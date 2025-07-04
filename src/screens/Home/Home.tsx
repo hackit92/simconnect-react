@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/button";
 import { CardContent } from "../../components/ui/card";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { WhyChooseUs } from "../../components/WhyChooseUs";
+import { BenefitsSection } from "../../components/BenefitsSection";
 import { Plans } from "../Plans";
 
 export const Home = () => {
@@ -119,6 +120,9 @@ export const Home = () => {
 
       {/* Why Choose Us Section - Mobile Only */}
       {!isDesktop && <WhyChooseUs />}
+      
+      {/* Benefits Section - Mobile Only */}
+      {!isDesktop && <BenefitsSection />}
 
       {/* Embedded Plans Section - Desktop Only */}
       {isDesktop && (
@@ -140,6 +144,9 @@ export const Home = () => {
 
       {/* Why Choose Us Section - Desktop Only */}
       {isDesktop && <WhyChooseUs />}
+      
+      {/* Benefits Section - Desktop Only */}
+      {isDesktop && <BenefitsSection />}
     </>
   );
 };
