@@ -121,7 +121,7 @@ export const CheckoutForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Clear any previous checkout errors
+    // Clear any previous checkout errors 
     setCheckoutError('');
     
     if (!validateForm()) {
@@ -129,23 +129,70 @@ export const CheckoutForm: React.FC = () => {
     }
 
     try {
-      let checkoutItems;
+      let checkoutItems: any[] = [];
 
       // For direct product purchase
       if (directProduct) {
+        // Get price based on selected currency
+        let unitAmount = 30; // Default fallback price
+        
+        // Try to get the actual price from the product
+        if (directProduct.wcProductId) {
+          const { data: productData } = await supabase
+            .from('wc_products')
+            .select('regular_price_usd, regular_price_eur, regular_price_mxn')
+            .eq('id', directProduct.wcProductId)
+            .single();
+            
+          if (productData) {
+            switch (selectedCurrency) {
+              case 'USD':
+                unitAmount = productData.regular_price_usd || 30;
+                break;
+              case 'EUR':
+                unitAmount = productData.regular_price_eur || 30;
+                break;
+              case 'MXN':
+                unitAmount = productData.regular_price_mxn || 30;
+                break;
+            }
+          }
+        }
+        
         checkoutItems = [{
           priceId: directProduct.priceId,
           quantity: 1,
+          unitAmount,
+          currency: selectedCurrency,
           wcProductId: directProduct.wcProductId || 4658,
           sku: directProduct.sku || 'MY-SPN-1GB-07D'
         }];
       } else {
         // For cart items - map each cart item to checkout item
         checkoutItems = items.map(item => ({
-          priceId: 'price_1RRIsZLwj7he4JL2nZBc6TMn', // Use default price for now
+          // Get price based on selected currency
+          let unitAmount = 0;
+          
+          switch (selectedCurrency) {
+            case 'USD':
+              unitAmount = item.regular_price_usd || parseFloat(item.regular_price || '0') || 30;
+              break;
+            case 'EUR':
+              unitAmount = item.regular_price_eur || 30;
+              break;
+            case 'MXN':
+              unitAmount = item.regular_price_mxn || 30;
+              break;
+            default:
+              unitAmount = item.regular_price_usd || parseFloat(item.regular_price || '0') || 30;
+          }
+            priceId: '', // We don't need this when using dynamic pricing
+            quantity: item.quantity || 1,
+            unitAmount,
+            currency: selectedCurrency,
           quantity: 1,
           wcProductId: item.id, // Use the actual product ID from cart
-          sku: item.sku || 'MY-SPN-1GB-07D' // Use the actual SKU from cart
+          };
         }));
       }
 
@@ -155,7 +202,7 @@ export const CheckoutForm: React.FC = () => {
         successUrl: `${window.location.origin}/success`,
         cancelUrl: `${window.location.origin}/checkout${productId ? `?product=${productId}` : ''}`,
         couponCode: isCouponApplied ? couponCode : undefined,
-        billingDetails,
+        billingDetails
       });
 
       // Clear cart after successful checkout initiation (only for cart purchases)

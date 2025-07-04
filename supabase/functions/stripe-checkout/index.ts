@@ -175,16 +175,16 @@ Deno.serve(async (req) => {
     // Build line items from the items array
     const line_items = items.map((item: any) => ({
       price_data: {
-        currency: 'mxn',
+        currency: item.currency.toLowerCase(),
         product_data: {
-          name: 'Recarga',
-          description: 'Recarga de datos móviles',
+          name: item.name || 'SimConnect Plan',
+          description: item.description || 'Mobile data plan',
           metadata: {
             wc_product_id: item.wcProductId.toString(),
             wc_sku: item.sku,
           },
         },
-        unit_amount: 3000, // MX$30.00 in cents
+        unit_amount: Math.round(item.unitAmount * 100), // Convert to cents
       },
       quantity: item.quantity,
     }));

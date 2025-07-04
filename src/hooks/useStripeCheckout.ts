@@ -13,6 +13,8 @@ interface BillingDetails {
 interface CheckoutItem {
   priceId: string;
   quantity: number;
+  unitAmount: number;
+  currency: string;
   wcProductId: number;
   sku: string;
 }
