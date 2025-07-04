@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CreditCard, User, Mail, Phone, Globe, Tag, Check } from 'lucide-react';
+import { ArrowLeft, CreditCard, User, Mail, Phone, Globe, Tag, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 import { useCart } from '../../contexts/CartContext';
@@ -31,6 +31,7 @@ export const CheckoutForm: React.FC = () => {
   const [couponCode, setCouponCode] = useState<string>('');
   const [isCouponApplied, setIsCouponApplied] = useState<boolean>(false);
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [isCouponExpanded, setIsCouponExpanded] = useState<boolean>(false);
   const isDesktop = useIsDesktop();
 
   // Get product from URL params for direct purchase
@@ -267,50 +268,64 @@ export const CheckoutForm: React.FC = () => {
               </div>
 
               {/* Coupon Code */}
-              <div>
-                <label htmlFor="coupon" className="block text-sm font-medium text-gray-700 mb-2">
-                  <Tag className="w-4 h-4 inline mr-1" />
-                  {t('checkout.coupon')}
-                </label>
-                <div className="flex">
-                  <input
-                    type="text"
-                    id="coupon"
-                    value={couponCode}
-                    onChange={handleCouponChange}
-                    disabled={isCouponApplied}
-                    className={`flex-1 px-4 py-3 border rounded-l-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
-                      couponError ? 'border-red-300' : isCouponApplied ? 'border-green-300 bg-green-50' : 'border-gray-300'
-                    }`}
-                    placeholder={t('checkout.coupon_placeholder')}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleApplyCoupon}
-                    disabled={isCouponApplied || !couponCode.trim()}
-                    className={`px-4 py-3 font-medium text-sm transition-all duration-200 ${
-                      isCouponApplied 
-                        ? 'bg-green-500 text-white rounded-r-xl'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-r-xl border border-l-0 border-gray-300'
-                    }`}
-                  >
-                    {isCouponApplied ? (
-                      <div className="flex items-center">
-                        <Check className="w-4 h-4 mr-1" />
-                        {t('checkout.coupon_applied')}
-                      </div>
-                    ) : (
-                      t('checkout.apply_coupon')
-                    )}
-                  </button>
+              <details className="group mb-2" open={isCouponExpanded}>
+                <summary 
+                  className="flex items-center justify-between cursor-pointer text-sm text-gray-600 hover:text-gray-800 py-2 transition-colors duration-200"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsCouponExpanded(!isCouponExpanded);
+                  }}
+                >
+                  <div className="flex items-center">
+                    <Tag className="w-4 h-4 mr-2 text-gray-500" />
+                    <span>{t('checkout.have_coupon')}</span>
+                  </div>
+                  {isCouponExpanded ? 
+                    <ChevronUp className="w-4 h-4 text-gray-500" /> : 
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                  }
+                </summary>
+                <div className="pt-3 pb-1">
+                  <div className="flex">
+                    <input
+                      type="text"
+                      id="coupon"
+                      value={couponCode}
+                      onChange={handleCouponChange}
+                      disabled={isCouponApplied}
+                      className={`flex-1 px-4 py-3 border rounded-l-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
+                        couponError ? 'border-red-300' : isCouponApplied ? 'border-green-300 bg-green-50' : 'border-gray-300'
+                      }`}
+                      placeholder={t('checkout.coupon_placeholder')}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={isCouponApplied || !couponCode.trim()}
+                      className={`px-4 py-3 font-medium text-sm transition-all duration-200 ${
+                        isCouponApplied 
+                          ? 'bg-green-500 text-white rounded-r-xl'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-r-xl border border-l-0 border-gray-300'
+                      }`}
+                    >
+                      {isCouponApplied ? (
+                        <div className="flex items-center">
+                          <Check className="w-4 h-4 mr-1" />
+                          {t('checkout.coupon_applied')}
+                        </div>
+                      ) : (
+                        t('checkout.apply_coupon')
+                      )}
+                    </button>
+                  </div>
+                  {couponError && (
+                    <p className="mt-1 text-sm text-red-600">{couponError}</p>
+                  )}
+                  {isCouponApplied && (
+                    <p className="mt-1 text-sm text-green-600">{t('checkout.coupon_success')}</p>
+                  )}
                 </div>
-                {couponError && (
-                  <p className="mt-1 text-sm text-red-600">{couponError}</p>
-                )}
-                {isCouponApplied && (
-                  <p className="mt-1 text-sm text-green-600">{t('checkout.coupon_success')}</p>
-                )}
-              </div>
+              </details>
 
               {/* Email */}
               <div>
@@ -455,8 +470,14 @@ export const CheckoutForm: React.FC = () => {
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between text-gray-600">
                 <span>{t('checkout.subtotal')}</span>
-                <span>{formatPrice(getTotalAmount(), selectedCurrency)}</span>
+                <span>{formatPrice(getTotalAmount(), selectedCurrency)}</span> 
               </div>
+              {isCouponApplied && (
+                <div className="flex justify-between text-gray-600">
+                  <span>{t('checkout.discount')}</span>
+                  <span className="text-green-600">-{formatPrice(0, selectedCurrency)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600">
                 <span>{t('checkout.activation')}</span>
                 <span className="text-green-600 font-medium">{t('checkout.free')}</span>

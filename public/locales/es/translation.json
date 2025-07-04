@@ -185,6 +185,7 @@
     "pay_button": "Pagar",
     "processing": "Procesando...",
     "payment_error": "Error de pago",
+    "have_coupon": "¿Tienes un código de cupón?",
     "coupon": "Código de Cupón",
     "coupon_placeholder": "Ingresa código de cupón",
     "apply_coupon": "Aplicar",
