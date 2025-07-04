@@ -448,7 +448,6 @@ export const PlanList: React.FC<PlanListProps> = ({
         <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
           <Globe className="w-8 h-8 text-gray-400" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron planes</h3>
        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('plans.no_plans_found')}</h3>
         <p className="text-gray-500 max-w-sm">
           {selectedCategory 
