@@ -57,17 +57,7 @@ export const Home = () => {
               isDesktop ? 'text-2xl mb-16 max-w-4xl' : 'text-xl mb-12 max-w-[361px]'
             }`}>
               {isDesktop ? (
-                <>
-                  <p className="mb-3">
-                    {t('home.hero_description_desktop_1')}
-                  </p>
-                  <p className="mb-3">
-                    {t('home.hero_description_desktop_2')}
-                  </p>
-                  <p>
-                    {t('home.hero_description_desktop_3')}
-                  </p>
-                </>
+                <p className="mb-3" dangerouslySetInnerHTML={{ __html: t('home.hero_full_description_desktop') }} />
               ) : (
                 <p>
                   <span className="font-light">{t('home.description_light')} </span>

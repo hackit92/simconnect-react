@@ -16,9 +16,7 @@
     "description_business": "negocios",
     "cta": "EXPLORA NUESTROS PLANES",
     "hero_subtitle_desktop": "CON NUESTROS SERVICIOS DE DATOS MÓVILES INTERNACIONALES",
-    "hero_description_desktop_1": "YA SEA POR TURISMO O NEGOCIOS, CONÉCTATE CON LA",
-    "hero_description_desktop_2": "MAYOR VELOCIDAD Y DISPONIBILIDAD DEL MERCADO.",
-    "hero_description_desktop_3": "COMO EN CASA, A PRECIOS LOCALES EN TODO EL MUNDO."
+    "hero_full_description_desktop": "YA SEA POR <span class=\"font-bold text-gray-900\">TURISMO</span> O <span class=\"font-bold text-gray-900\">NEGOCIOS</span>, CONÉCTATE CON LA MAYOR VELOCIDAD Y DISPONIBILIDAD DEL MERCADO. COMO EN CASA, A <span class=\"italic font-medium text-primary\">PRECIOS LOCALES</span> EN <span class=\"font-bold text-gray-900\">TODO EL MUNDO</span>."
   },
   "plans": {
     "title": "¿Dónde necesitas conectarte?",

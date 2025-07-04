@@ -16,9 +16,7 @@
     "description_business": "business",
     "cta": "EXPLORE OUR PLANS",
     "hero_subtitle_desktop": "WITH OUR INTERNATIONAL MOBILE DATA SERVICES",
-    "hero_description_desktop_1": "WHETHER FOR TOURISM OR BUSINESS, CONNECT WITH THE",
-    "hero_description_desktop_2": "HIGHEST SPEED AND AVAILABILITY IN THE MARKET.",
-    "hero_description_desktop_3": "LIKE AT HOME, AT LOCAL PRICES WORLDWIDE."
+    "hero_full_description_desktop": "WHETHER FOR <span class=\"font-bold text-gray-900\">TOURISM</span> OR <span class=\"font-bold text-gray-900\">BUSINESS</span>, CONNECT WITH THE HIGHEST SPEED AND AVAILABILITY IN THE MARKET. LIKE AT HOME, AT <span class=\"italic font-medium text-primary\">LOCAL PRICES</span> IN <span class=\"font-bold text-gray-900\">WORLDWIDE</span>."
   },
   "plans": {
     "title": "Where do you need to connect?",
