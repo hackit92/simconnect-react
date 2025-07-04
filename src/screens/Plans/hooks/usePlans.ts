@@ -40,6 +40,12 @@ export function usePlans({
     setError(null);
     
     try {
+      console.log('usePlans: Starting fetch with params:', {
+        searchTerm,
+        selectedCategory,
+        selectedRegion
+      });
+      
       let productsQuery = supabase
         .from('wc_products')
         .select('*')
@@ -48,11 +54,13 @@ export function usePlans({
 
       // Apply search filter
       if (searchTerm) {
+        console.log('usePlans: Applying search filter:', searchTerm);
         productsQuery = productsQuery.ilike('name', `%${searchTerm}%`);
       }
 
       // Apply region filter - much more efficient now!
       if (selectedRegion) {
+        console.log('usePlans: Applying region filter:', selectedRegion);
         productsQuery = productsQuery
           .eq('plan_type', 'regional')
           .eq('region_code', selectedRegion);
@@ -82,16 +90,28 @@ export function usePlans({
         }
       }
 
+      console.log('usePlans: Executing query...');
       const { data, error: queryError } = await productsQuery;
 
       if (queryError) {
+        console.error('usePlans: Query error:', queryError);
         throw queryError;
       }
 
+      console.log('usePlans: Query successful, products found:', data?.length || 0);
       setAllProducts(data || []);
     } catch (err) {
       console.error('Error fetching products:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred while fetching products');
+      
+      let errorMessage = 'An error occurred while fetching products';
+      if (err instanceof Error) {
+        if (err.message.includes('Failed to fetch')) {
+          errorMessage = 'Connection error. Please check your internet connection and that Supabase is accessible.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

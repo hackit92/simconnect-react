@@ -70,13 +70,20 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
       setCategoriesError(null);
       
       try {
+        console.log('Fetching categories and products...');
+        
         // Fetch categories
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('wc_categories')
           .select('*')
           .order('name');
         
-        if (categoriesError) throw categoriesError;
+        if (categoriesError) {
+          console.error('Categories error:', categoriesError);
+          throw new Error(`Categories fetch failed: ${categoriesError.message}`);
+        }
+        
+        console.log('Categories fetched:', categoriesData?.length || 0);
         
         // Fetch all products for region analysis
         const { data: productsData, error: productsError } = await supabase
@@ -84,7 +91,12 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
           .select('*')
           .eq('active', true);
         
-        if (productsError) throw productsError;
+        if (productsError) {
+          console.error('Products error:', productsError);
+          throw new Error(`Products fetch failed: ${productsError.message}`);
+        }
+        
+        console.log('Products fetched:', productsData?.length || 0);
         
         setCategories(categoriesData || []);
         setAllProducts(productsData || []);
@@ -97,7 +109,16 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
         }
       } catch (err) {
         console.error('Error fetching data:', err);
-        setCategoriesError('Error al cargar los datos. Por favor intente nuevamente.');
+        
+        let errorMessage = 'Error al cargar los datos. Por favor intente nuevamente.';
+        if (err instanceof Error) {
+          if (err.message.includes('Failed to fetch')) {
+            errorMessage = 'Error de conexión. Verifique su conexión a internet y que Supabase esté accesible.';
+          } else {
+            errorMessage = `Error: ${err.message}`;
+          }
+        }
+        setCategoriesError(errorMessage);
       } finally {
         setCategoriesLoading(false);
       }

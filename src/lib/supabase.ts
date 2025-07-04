@@ -1,9 +1,47 @@
 import { createClient } from '@supabase/supabase-js';
 
+// Debug environment variables
+console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+console.log('Supabase Anon Key exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+console.log('Supabase Anon Key length:', import.meta.env.VITE_SUPABASE_ANON_KEY?.length);
+
+// Validate environment variables
+if (!import.meta.env.VITE_SUPABASE_URL) {
+  throw new Error('Missing VITE_SUPABASE_URL environment variable');
+}
+
+if (!import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  throw new Error('Missing VITE_SUPABASE_ANON_KEY environment variable');
+}
+
 export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-); 
+  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'supabase-js-web',
+      },
+    },
+  }
+);
+
+// Test connection on initialization
+supabase.from('wc_categories').select('count', { count: 'exact', head: true })
+  .then(({ error }) => {
+    if (error) {
+      console.error('Supabase connection test failed:', error);
+    } else {
+      console.log('Supabase connection test successful');
+    }
+  })
+  .catch((err) => {
+    console.error('Supabase connection test error:', err);
+  });
 
 export interface Product {
   id: number;
