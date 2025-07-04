@@ -126,6 +126,17 @@ export const CheckoutForm: React.FC = () => {
     
     if (!validateForm()) {
       return;
+    }
+
+    try {
+      let checkoutItems;
+      
+      if (directProduct) {
+        checkoutItems = [{
+          priceId: directProduct.priceId,
+          quantity: 1
+        }];
+      } else {
         checkoutItems = items.map(item => {
           // Get price based on selected currency
           let unitAmount = 0;
