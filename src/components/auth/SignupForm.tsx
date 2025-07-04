@@ -70,10 +70,10 @@ export const SignupForm: React.FC = () => {
               </svg>
             </div>
             <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-              ¡Cuenta creada exitosamente!
+              {t('auth.account_created')}
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Redirigiendo al inicio de sesión...
+              {t('auth.redirecting')}
             </p>
           </div>
         </motion.div>
@@ -98,15 +98,15 @@ export const SignupForm: React.FC = () => {
             />
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-            Crea tu cuenta
+            {t('auth.signup_title')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            ¿Ya tienes una cuenta?{' '}
+            {t('auth.have_account')}{' '}
             <Link
               to="/login"
               className="font-medium text-primary hover:text-primary/90"
             >
-              Inicia sesión aquí
+              {t('auth.login_here')}
             </Link>
           </p>
         </div>
@@ -114,7 +114,7 @@ export const SignupForm: React.FC = () => {
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Correo electrónico
+                {t('auth.email')}
               </label>
               <input
                 id="email"
@@ -125,12 +125,12 @@ export const SignupForm: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                placeholder="tu@email.com"
+                placeholder={t('auth.email_placeholder')}
               />
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Contraseña
+                {t('auth.password')}
               </label>
               <input
                 id="password"
@@ -141,12 +141,12 @@ export const SignupForm: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                placeholder="Mínimo 6 caracteres"
+                placeholder={t('auth.password_min')}
               />
             </div>
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirmar contraseña
+                {t('auth.confirm_password')}
               </label>
               <input
                 id="confirmPassword"
@@ -157,7 +157,7 @@ export const SignupForm: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                placeholder="Repite tu contraseña"
+                placeholder={t('auth.confirm_password_placeholder')}
               />
             </div>
           </div>
@@ -174,7 +174,7 @@ export const SignupForm: React.FC = () => {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
             >
-              {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+             {loading ? t('auth.creating_account') : t('auth.signup_button')}
             </Button>
           </div>
         </form>

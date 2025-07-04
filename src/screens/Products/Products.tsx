@@ -15,10 +15,10 @@ export const Products: React.FC = () => {
         >
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Nuestros Productos
+              {t('products.title')}
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Elige el plan perfecto para tus necesidades de conectividad móvil.
+              {t('products.subtitle')}
             </p>
           </div>
 

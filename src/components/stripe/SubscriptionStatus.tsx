@@ -57,15 +57,15 @@ export const SubscriptionStatus: React.FC = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active':
-        return 'Activo';
+        return t('products.status_active');
       case 'trialing':
-        return 'En prueba';
+        return t('products.status_trialing');
       case 'past_due':
-        return 'Pago pendiente';
+        return t('products.status_past_due');
       case 'canceled':
-        return 'Cancelado';
+        return t('products.status_canceled');
       case 'unpaid':
-        return 'Sin pagar';
+        return t('products.status_unpaid');
       default:
         return status;
     }
@@ -88,16 +88,16 @@ export const SubscriptionStatus: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6 mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Estado de suscripción</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('products.subscription_status')}</h3>
       
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <span className="text-gray-600">Plan actual:</span>
+          <span className="text-gray-600">{t('products.current_plan')}</span>
           <span className="font-medium text-gray-900">{productName}</span>
         </div>
         
         <div className="flex justify-between items-center">
-          <span className="text-gray-600">Estado:</span>
+          <span className="text-gray-600">{t('products.status')}</span>
           <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(subscription.subscription_status)}`}>
             {getStatusText(subscription.subscription_status)}
           </span>
@@ -106,7 +106,7 @@ export const SubscriptionStatus: React.FC = () => {
         {subscription.current_period_end && (
           <div className="flex justify-between items-center">
             <span className="text-gray-600">
-              {subscription.cancel_at_period_end ? 'Termina el:' : 'Renueva el:'}
+              {subscription.cancel_at_period_end ? t('products.ends_on') : t('products.renews_on')}
             </span>
             <span className="font-medium text-gray-900">
               {new Date(subscription.current_period_end * 1000).toLocaleDateString('es-ES')}
@@ -117,7 +117,7 @@ export const SubscriptionStatus: React.FC = () => {
         {subscription.cancel_at_period_end && (
           <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
-              Tu suscripción se cancelará al final del período actual.
+              {t('products.will_cancel')}
             </p>
           </div>
         )}

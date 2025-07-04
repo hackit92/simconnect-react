@@ -2,7 +2,9 @@
   "nav": {
     "home": "Home",
     "plans": "Plans",
-    "cart": "Cart"
+    "cart": "Cart",
+    "account": "Account",
+    "login": "Login"
   },
   "home": {
     "title": "we connect you in",
@@ -12,7 +14,11 @@
     "description_tourism": "tourism",
     "description_or": "or",
     "description_business": "business",
-    "cta": "EXPLORE OUR PLANS"
+    "cta": "EXPLORE OUR PLANS",
+    "hero_subtitle_desktop": "WITH OUR INTERNATIONAL MOBILE DATA SERVICES",
+    "hero_description_desktop_1": "WHETHER FOR TOURISM OR BUSINESS, CONNECT WITH THE",
+    "hero_description_desktop_2": "HIGHEST SPEED AND AVAILABILITY IN THE MARKET.",
+    "hero_description_desktop_3": "LIKE AT HOME, AT LOCAL PRICES WORLDWIDE."
   },
   "plans": {
     "title": "Where do you need to connect?",
@@ -46,7 +52,15 @@
     "country": "country",
     "countries": "countries",
     "regional_plan": "regional plan",
-    "regional_plans": "regional plans"
+    "regional_plans": "regional plans",
+    "filters": {
+      "duration": "Duration (Days)",
+      "data": "Data (GB)",
+      "plan_type": "Plan Type",
+      "local": "LOCAL",
+      "regional": "REGIONAL",
+      "clear": "Clear"
+    }
   },
   "plan": {
     "data": "Data",
@@ -55,9 +69,12 @@
     "plan": "Plan",
     "add_to_cart": "ADD TO CART",
     "added_to_cart": "ADDED TO CART",
+    "buy": "BUY",
+    "added": "ADDED",
     "regional_plan": "Regional Plan",
     "international_plan": "International Plan",
-    "regional_coverage": "Regional Coverage:"
+    "regional_coverage": "Regional Coverage:",
+    "network": "Network"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -76,7 +93,10 @@
     "total": "Total",
     "checkout": "Proceed to Checkout",
     "checkout_development": "Payment functionality in development. Coming soon!",
-    "footer_text": "Instant activation • 24/7 Support • Satisfaction guarantee"
+    "footer_text": "Instant activation • 24/7 Support • Satisfaction guarantee",
+    "clear_cart": "Clear cart",
+    "quantity_label": "Quantity:",
+    "prices_in": "Prices shown in:"
   },
   "welcome": {
     "title": "Find your perfect plan",
@@ -85,7 +105,8 @@
     "feature2": "Regional and country-specific plans",
     "feature3": "Instant activation",
     "no_data_title": "No data available",
-    "no_data_message": "It seems there are no countries or plans loaded. Try syncing the data."
+    "no_data_message": "It seems there are no countries or plans loaded. Try syncing the data.",
+    "sync_data": "Sync Data"
   },
   "region": {
     "latinoamerica": "Latin America",
@@ -97,7 +118,8 @@
     "asia-central": "Central Asia and Caucasus",
     "asia": "Asia",
     "africa": "Africa",
-    "oceania": "Oceania"
+    "oceania": "Oceania",
+    "balcanes": "Balkans"
   },
   "common": {
     "error": "Error:",
@@ -112,6 +134,97 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "sync": "Sync",
+    "syncing": "Syncing...",
+    "change_country": "Change country",
+    "change_region": "Change region",
+    "clear_filters": "Clear filters",
+    "filtered_plans": "Filtered plans"
+  },
+  "auth": {
+    "login_title": "Sign in to your account",
+    "signup_title": "Create your account",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "signup_here": "Sign up here",
+    "login_here": "Sign in here",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "email_placeholder": "your@email.com",
+    "password_placeholder": "Your password",
+    "confirm_password_placeholder": "Repeat your password",
+    "password_min": "Minimum 6 characters",
+    "login_button": "Sign in",
+    "signup_button": "Create account",
+    "logging_in": "Signing in...",
+    "creating_account": "Creating account...",
+    "account_created": "Account created successfully!",
+    "redirecting": "Redirecting to login...",
+    "logout": "Sign out"
+  },
+  "checkout": {
+    "title": "Complete Purchase",
+    "back": "Back",
+    "billing_info": "Billing Information",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email",
+    "country": "Country",
+    "phone": "Phone",
+    "first_name_placeholder": "Your first name",
+    "last_name_placeholder": "Your last name",
+    "email_placeholder": "your@email.com",
+    "phone_placeholder": "1234567890",
+    "order_summary": "Order Summary",
+    "subtotal": "Subtotal",
+    "activation": "Activation",
+    "free": "Free",
+    "total": "Total",
+    "pay_button": "Pay",
+    "processing": "Processing...",
+    "payment_error": "Payment error",
+    "secure_payment": "Secure payment",
+    "secure_payment_desc": "Your information is protected with 256-bit SSL encryption."
+  },
+  "success": {
+    "title": "Payment successful!",
+    "message": "Your purchase has been processed successfully. You will receive a confirmation email shortly.",
+    "back_home": "Back to home",
+    "view_plans": "View more plans"
+  },
+  "products": {
+    "title": "Our Products",
+    "subtitle": "Choose the perfect plan for your mobile connectivity needs.",
+    "buy_now": "Buy now",
+    "processing": "Processing...",
+    "subscription_status": "Subscription Status",
+    "current_plan": "Current plan:",
+    "status": "Status:",
+    "renews_on": "Renews on:",
+    "ends_on": "Ends on:",
+    "will_cancel": "Your subscription will be cancelled at the end of the current period.",
+    "status_active": "Active",
+    "status_trialing": "Trial",
+    "status_past_due": "Payment pending",
+    "status_unpaid": "Unpaid",
+    "status_canceled": "Cancelled"
+  },
+  "why_choose": {
+    "title": "Why choose",
+    "title_brand": "SimConnect",
+    "no_physical_sim": "NO PHYSICAL SIM NEEDED",
+    "no_physical_sim_desc": "Keep your physical SIM card maintaining voice and SMS services and add an eSIM from anywhere easily and quickly",
+    "global_coverage": "GLOBAL COVERAGE",
+    "global_coverage_desc": "Data plans in more than 200 countries connecting you with the most important local operators.",
+    "instant_delivery": "INSTANT DELIVERY",
+    "instant_delivery_desc": "You will receive your eSIM immediately upon completing the purchase of your chosen plan",
+    "save_roaming": "SAVE ON ROAMING COSTS",
+    "save_roaming_desc": "Pay local prices for mobile internet services",
+    "easy_setup": "EASY TO SET UP",
+    "easy_setup_desc": "Quick and simple installation in just a few clicks using a QR code",
+    "total_satisfaction": "TOTAL SATISFACTION",
+    "total_satisfaction_desc": "For us, the most important thing is that you love our service, from contracting to during your trip, which is why we provide you with boutique customer service and support"
   }
 }

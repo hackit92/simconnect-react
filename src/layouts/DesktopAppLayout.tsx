@@ -173,13 +173,13 @@ export const DesktopAppLayout: React.FC = () => {
                         to="/products"
                         className="block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                       >
-                        Productos
+                        {t('products.title')}
                       </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
-                        Cerrar sesión
+                        {t('auth.logout')}
                       </button>
                     </div>
                   </PopoverContent>
@@ -189,7 +189,7 @@ export const DesktopAppLayout: React.FC = () => {
                   to="/login"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm font-medium"
                 >
-                  Iniciar sesión
+                 {t('nav.login')}
                 </Link>
               )}
 

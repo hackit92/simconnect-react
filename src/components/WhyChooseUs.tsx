@@ -11,33 +11,33 @@ export const WhyChooseUs: React.FC = () => {
   const features = [
     {
       icon: <Smartphone className="w-8 h-8 text-[#299ae4]" />,
-      title: "SIN NECESIDAD DE SIM FÍSICA",
-      description: "Mantienes tu tarjeta SIM física conservando los servicios de voz y SMS y agregas una eSIM desde cualquier lugar fácil y rápido"
+      title: t('why_choose.no_physical_sim'),
+      description: t('why_choose.no_physical_sim_desc')
     },
     {
       icon: <Globe className="w-8 h-8 text-[#299ae4]" />,
-      title: "COBERTURA GLOBAL",
-      description: "Planes de datos en más de 200 países conectándote con los operadores locales más importantes."
+      title: t('why_choose.global_coverage'),
+      description: t('why_choose.global_coverage_desc')
     },
     {
       icon: <Truck className="w-8 h-8 text-[#299ae4]" />,
-      title: "ENTREGA INMEDIATA",
-      description: "Recibirás tu eSIM inmediatamente al terminar la compra del plan de tu elección"
+      title: t('why_choose.instant_delivery'),
+      description: t('why_choose.instant_delivery_desc')
     },
     {
       icon: <DollarSign className="w-8 h-8 text-[#299ae4]" />,
-      title: "AHORRA EN COSTOS DE ROAMING",
-      description: "Paga precios locales para los servicios de internet móvil"
+      title: t('why_choose.save_roaming'),
+      description: t('why_choose.save_roaming_desc')
     },
     {
       icon: <Hand className="w-8 h-8 text-[#299ae4]" />,
-      title: "FÁCIL DE CONFIGURAR",
-      description: "Instalación rápida y sencilla en solo unos clics utilizando un código QR"
+      title: t('why_choose.easy_setup'),
+      description: t('why_choose.easy_setup_desc')
     },
     {
       icon: <Heart className="w-8 h-8 text-[#299ae4]" />,
-      title: "TOTAL SATISFACCIÓN",
-      description: "Para nosotros lo más importante es que nuestro servicio te encante, desde la contratación y durante tu viaje por lo que te proporcionamos un servicio boutique de atención a clientes y soporte"
+      title: t('why_choose.total_satisfaction'),
+      description: t('why_choose.total_satisfaction_desc')
     }
   ];
 
@@ -52,7 +52,7 @@ export const WhyChooseUs: React.FC = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className={`font-normal text-gray-800 ${isDesktop ? 'text-4xl' : 'text-2xl'}`}>
-            ¿Por qué elegir <span className="text-[#299ae4] font-semibold">SimConnect</span>?
+            {t('why_choose.title')} <span className="text-[#299ae4] font-semibold">{t('why_choose.title_brand')}</span>?
           </h2>
         </motion.div>
 

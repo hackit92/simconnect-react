@@ -18,11 +18,11 @@ export const SyncButton: React.FC<SyncButtonProps> = ({ onSync, syncing }) => {
       {syncing ? (
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <span>Sincronizando...</span>
+          <span>{t('common.syncing')}</span>
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <span>Sincronizar</span>
+          <span>{t('common.sync')}</span>
         </div>
       )}
     </Button>

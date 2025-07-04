@@ -176,10 +176,10 @@ export const CheckoutForm: React.FC = () => {
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 mb-4"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            Volver
+            {t('checkout.back')}
           </button>
           <h1 className={`font-bold text-gray-900 ${isDesktop ? 'text-4xl' : 'text-2xl'}`}>
-            Finalizar Compra
+            {t('checkout.title')}
           </h1>
         </div>
 
@@ -193,7 +193,7 @@ export const CheckoutForm: React.FC = () => {
           >
             <div className="flex items-center mb-6">
               <User className="w-6 h-6 text-primary mr-3" />
-              <h2 className="text-xl font-semibold text-gray-900">Información de Facturación</h2>
+              <h2 className="text-xl font-semibold text-gray-900">{t('checkout.billing_info')}</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -201,7 +201,7 @@ export const CheckoutForm: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Nombre *
+                    {t('checkout.first_name')} *
                   </label>
                   <input
                     type="text"
@@ -211,7 +211,7 @@ export const CheckoutForm: React.FC = () => {
                     className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
                       errors.firstName ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    placeholder="Tu nombre"
+                    placeholder={t('checkout.first_name_placeholder')}
                   />
                   {errors.firstName && (
                     <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
@@ -220,7 +220,7 @@ export const CheckoutForm: React.FC = () => {
 
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Apellido *
+                    {t('checkout.last_name')} *
                   </label>
                   <input
                     type="text"
@@ -230,7 +230,7 @@ export const CheckoutForm: React.FC = () => {
                     className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
                       errors.lastName ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    placeholder="Tu apellido"
+                    placeholder={t('checkout.last_name_placeholder')}
                   />
                   {errors.lastName && (
                     <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
@@ -242,7 +242,7 @@ export const CheckoutForm: React.FC = () => {
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   <Mail className="w-4 h-4 inline mr-1" />
-                  Correo Electrónico *
+                  {t('checkout.email')} *
                 </label>
                 <input
                   type="email"
@@ -252,7 +252,7 @@ export const CheckoutForm: React.FC = () => {
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
                     errors.email ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="tu@email.com"
+                  placeholder={t('checkout.email_placeholder')}
                 />
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -263,7 +263,7 @@ export const CheckoutForm: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Globe className="w-4 h-4 inline mr-1" />
-                  País *
+                  {t('checkout.country')} *
                 </label>
                 <Popover>
                   <PopoverTrigger className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-left flex items-center justify-between">
@@ -298,7 +298,7 @@ export const CheckoutForm: React.FC = () => {
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                   <Phone className="w-4 h-4 inline mr-1" />
-                  Teléfono *
+                  {t('checkout.phone')} *
                 </label>
                 <div className="flex">
                   <div className="flex items-center px-3 py-3 border border-r-0 border-gray-300 rounded-l-xl bg-gray-50">
@@ -312,7 +312,7 @@ export const CheckoutForm: React.FC = () => {
                     className={`flex-1 px-4 py-3 border rounded-r-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
                       errors.phone ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    placeholder="1234567890"
+                    placeholder={t('checkout.phone_placeholder')}
                   />
                 </div>
                 {errors.phone && (
@@ -328,7 +328,7 @@ export const CheckoutForm: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div className="text-sm text-red-800">
-                      <p className="font-medium mb-1">Error de pago</p>
+                      <p className="font-medium mb-1">{t('checkout.payment_error')}</p>
                       <p>{checkoutError}</p>
                       {checkoutError.includes('configuración de Stripe') && (
                         <p className="mt-2 text-xs">
@@ -346,7 +346,7 @@ export const CheckoutForm: React.FC = () => {
                 className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
               >
                 <CreditCard className="w-5 h-5 mr-3" />
-                {loading ? 'Procesando...' : `Pagar ${formatPrice(getTotalAmount(), selectedCurrency)}`}
+                {loading ? t('checkout.processing') : `${t('checkout.pay_button')} ${formatPrice(getTotalAmount(), selectedCurrency)}`}
               </Button>
             </form>
           </motion.div>
@@ -358,7 +358,7 @@ export const CheckoutForm: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-fit"
           >
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Resumen del Pedido</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.order_summary')}</h2>
 
             <div className="space-y-4 mb-6">
               {getItemsToDisplay().map((item, index) => (
@@ -380,15 +380,15 @@ export const CheckoutForm: React.FC = () => {
 
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between text-gray-600">
-                <span>Subtotal</span>
+                <span>{t('checkout.subtotal')}</span>
                 <span>{formatPrice(getTotalAmount(), selectedCurrency)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Activación</span>
-                <span className="text-green-600 font-medium">Gratis</span>
+                <span>{t('checkout.activation')}</span>
+                <span className="text-green-600 font-medium">{t('checkout.free')}</span>
               </div>
               <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t border-gray-200">
-                <span>Total</span>
+                <span>{t('checkout.total')}</span>
                 <span>{formatPrice(getTotalAmount(), selectedCurrency)}</span>
               </div>
             </div>
@@ -399,8 +399,8 @@ export const CheckoutForm: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Pago seguro</p>
-                  <p>Tu información está protegida con encriptación SSL de 256 bits.</p>
+                  <p className="font-medium mb-1">{t('checkout.secure_payment')}</p>
+                  <p>{t('checkout.secure_payment_desc')}</p>
                 </div>
               </div>
             </div>

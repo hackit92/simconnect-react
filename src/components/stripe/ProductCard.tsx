@@ -52,7 +52,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           disabled={loading}
           className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
         >
-          {loading ? 'Procesando...' : 'Comprar ahora'}
+          {loading ? t('products.processing') : t('products.buy_now')}
         </Button>
       </div>
     </motion.div>

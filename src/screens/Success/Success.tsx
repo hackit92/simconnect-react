@@ -19,10 +19,10 @@ export const Success: React.FC = () => {
             </svg>
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            ¡Pago exitoso!
+            {t('success.title')}
           </h2>
           <p className="mt-2 text-gray-600">
-            Tu compra se ha procesado correctamente. Recibirás un correo de confirmación en breve.
+            {t('success.message')}
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export const Success: React.FC = () => {
             asChild
             className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold text-lg"
           >
-            <Link to="/">Volver al inicio</Link>
+            <Link to="/">{t('success.back_home')}</Link>
           </Button>
           
           <Button
@@ -39,7 +39,7 @@ export const Success: React.FC = () => {
             variant="outline"
             className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-xl font-semibold text-lg"
           >
-            <Link to="/plans">Ver más planes</Link>
+            <Link to="/plans">{t('success.view_plans')}</Link>
           </Button>
         </div>
       </motion.div>

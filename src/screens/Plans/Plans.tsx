@@ -379,13 +379,13 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                           />
                         </div>
                         <h3 className="text-lg font-semibold text-primary">
-                          Planes para {countryUtils.getCountryName(selectedCategoryData?.slug || '')}
+                          {t('plans.plans_for')} {countryUtils.getCountryName(selectedCategoryData?.slug || '')}
                         </h3>
                         <button
                           onClick={() => setSelectedCategory(undefined)}
                           className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
                         >
-                          Cambiar país
+                          {t('common.change_country')}
                         </button>
                       </div>
                     )}
@@ -393,13 +393,13 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       <div className="flex items-center space-x-3 p-4 bg-primary/10 rounded-xl border border-primary/20">
                         <Globe className="w-6 h-6 text-primary" />
                         <h3 className="text-lg font-semibold text-primary">
-                          Planes para {getRegionDisplayName(selectedRegion)}
+                          {t('plans.plans_for')} {getRegionDisplayName(selectedRegion)}
                         </h3>
                         <button
                           onClick={() => setSelectedRegion(undefined)}
                           className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
                         >
-                          Cambiar región
+                          {t('common.change_region')}
                         </button>
                       </div>
                     )}
@@ -416,13 +416,13 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                         </svg>
                       </div>
                       <h3 className="text-lg font-semibold text-primary">
-                        Planes filtrados
+                        {t('common.filtered_plans')}
                       </h3>
                       <button
                         onClick={handleClearFilters}
                         className="ml-auto text-primary hover:text-primary/90 text-sm font-medium"
                       >
-                        Limpiar filtros
+                        {t('common.clear_filters')}
                       </button>
                     </div>
                   </div>
@@ -454,7 +454,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {shouldShowSearchResults && (
                   <div className="mb-8">
                     <h2 className="text-xl font-bold text-gray-900 mb-6">
-                      Países encontrados para "{debouncedSearchTerm}"
+                      {t('plans.countries_found')} "{debouncedSearchTerm}"
                     </h2>
                     <CountryGrid
                       categories={paginatedCategories}
@@ -473,15 +473,15 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                     <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                       <Globe className="w-8 h-8 text-gray-400" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron resultados</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">{t('plans.no_results')}</h3>
                     <p className="text-gray-500 max-w-sm mb-4">
-                      No encontramos países o regiones que coincidan con "{debouncedSearchTerm}".
+                      {t('plans.no_results_message')} "{debouncedSearchTerm}".
                     </p>
                     <button
                       onClick={clearSearch}
                       className="text-blue-600 hover:text-blue-700 font-medium"
                     >
-                      Limpiar búsqueda
+                      {t('plans.clear_search')}
                     </button>
                   </div>
                 )}
@@ -494,24 +494,24 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                         <Globe className="w-10 h-10 text-[#299ae4]" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                        Encuentra tu plan perfecto
+                        {t('welcome.title')}
                       </h3>
                       <p className="text-gray-600 mb-6">
-                        Usa el buscador arriba o las pestañas de "Países" y "Regiones" para explorar nuestros planes de datos móviles
+                        {t('welcome.message')}
                       </p>
                       
                       <div className="space-y-3 text-sm text-gray-500">
                         <div className="flex items-center justify-center space-x-2">
                           <span className="w-2 h-2 bg-primary rounded-full"></span>
-                          <span>Más de 200 países disponibles</span>
+                          <span>{t('welcome.feature1')}</span>
                         </div>
                         <div className="flex items-center justify-center space-x-2">
                           <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                          <span>Planes regionales y por país</span>
+                          <span>{t('welcome.feature2')}</span>
                         </div>
                         <div className="flex items-center justify-center space-x-2">
                           <span className="w-2 h-2 bg-primary rounded-full"></span>
-                          <span>Activación instantánea</span>
+                          <span>{t('welcome.feature3')}</span>
                         </div>
                       </div>
                     </div>
@@ -526,10 +526,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                         <Globe className="w-10 h-10 text-gray-400" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                        No hay datos disponibles
+                        {t('welcome.no_data_title')}
                       </h3>
                       <p className="text-gray-600 mb-6">
-                        Parece que no hay países o planes cargados. Intenta sincronizar los datos.
+                        {t('welcome.no_data_message')}
                       </p>
                       <SyncButton onSync={handleSyncData} syncing={syncing} />
                     </div>
@@ -557,7 +557,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                 {/* Currency indicator */}
                 {shouldShowPlans && (
                   <div className="mb-4 text-sm text-gray-600">
-                    Precios mostrados en: <span className="font-semibold">{selectedCurrency}</span>
+                    {t('cart.prices_in')} <span className="font-semibold">{selectedCurrency}</span>
                   </div>
                 )}
                 

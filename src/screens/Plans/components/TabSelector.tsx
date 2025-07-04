@@ -16,7 +16,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({ selectedTab, onTabChan
             : 'text-gray-500 hover:text-gray-700'
         }`}
       >
-        Países
+        {t('plans.tab_countries')}
       </button>
       <button
         onClick={() => onTabChange('regions')}
@@ -26,7 +26,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({ selectedTab, onTabChan
             : 'text-gray-500 hover:text-gray-700'
         }`}
       >
-        Regiones
+        {t('plans.tab_regions')}
       </button>
     </div>
   );

@@ -37,8 +37,8 @@ export const Home = () => {
             }`}>
               {isDesktop ? (
                 <>
-                  <span className="font-light">TE CONECTAMOS EN</span><br />
-                  <span className="font-black text-gray-900 text-8xl">+ 200 PAÍSES</span>
+                  <span className="font-light">{t('home.title').toUpperCase()}</span><br />
+                  <span className="font-black text-gray-900 text-8xl">{t('home.title_bold').toUpperCase()}</span>
                 </>
               ) : (
                 <>
@@ -50,7 +50,7 @@ export const Home = () => {
             <p className={`font-normal text-gray-700 uppercase tracking-[0.15em] ${
               isDesktop ? 'text-2xl mb-10 max-w-3xl' : 'text-base mb-8 max-w-[361px]'
             }`}>
-              {isDesktop ? 'CON NUESTROS SERVICIOS DE DATOS MÓVILES INTERNACIONALES' : t('home.subtitle')}
+              {isDesktop ? t('home.hero_subtitle_desktop') : t('home.subtitle')}
             </p>
 
             <div className={`text-gray-700 leading-relaxed space-y-2 ${
@@ -59,13 +59,13 @@ export const Home = () => {
               {isDesktop ? (
                 <>
                   <p className="mb-3">
-                    YA SEA POR <span className="font-bold text-gray-900">TURISMO</span> O <span className="font-bold text-gray-900">NEGOCIOS</span>, CONÉCTATE CON LA
+                    {t('home.hero_description_desktop_1')}
                   </p>
                   <p className="mb-3">
-                    MAYOR VELOCIDAD Y DISPONIBILIDAD DEL MERCADO.
+                    {t('home.hero_description_desktop_2')}
                   </p>
                   <p>
-                    COMO EN CASA, A <span className="italic font-medium text-primary">PRECIOS LOCALES</span> EN <span className="font-bold text-gray-900">TODO EL MUNDO</span>.
+                    {t('home.hero_description_desktop_3')}
                   </p>
                 </>
               ) : (
@@ -101,7 +101,7 @@ export const Home = () => {
                 }
               }}
             >
-              {isDesktop ? 'EXPLORA NUESTROS PLANES' : t('home.cta')}
+              {t('home.cta')}
               </Button>
             </motion.div>
           </motion.div>

@@ -213,7 +213,7 @@ export const MobileAppLayout: React.FC = () => {
           >
             <UserIcon className="h-5 w-5" />
             <span className="text-[10px] font-medium">
-              {user ? 'Cuenta' : 'Acceder'}
+             {user ? t('nav.account') : t('nav.login')}
             </span>
           </Link>
         </div>

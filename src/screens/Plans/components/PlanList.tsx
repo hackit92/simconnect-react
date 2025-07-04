@@ -435,7 +435,7 @@ export const PlanList: React.FC<PlanListProps> = ({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <span className="ml-3 text-gray-600">Cargando planes...</span>
+       <span className="ml-3 text-gray-600">{t('plans.loading_plans')}</span>
       </div>
     );
   }
@@ -447,10 +447,11 @@ export const PlanList: React.FC<PlanListProps> = ({
           <Globe className="w-8 h-8 text-gray-400" />
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron planes</h3>
+       <h3 className="text-lg font-medium text-gray-900 mb-2">{t('plans.no_plans_found')}</h3>
         <p className="text-gray-500 max-w-sm">
           {selectedCategory 
-            ? 'No hay planes disponibles para el país seleccionado.' 
-            : 'Selecciona un país o región para ver los planes disponibles.'
+           ? t('plans.no_plans_country_message')
+           : t('plans.no_plans_select_message')
           }
         </p>
       </div>
@@ -464,7 +465,7 @@ export const PlanList: React.FC<PlanListProps> = ({
         <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
           <div className="flex items-center space-x-3 bg-white px-6 py-3 rounded-full shadow-lg border border-gray-100">
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
-            <span className="text-sm font-medium text-gray-700">Actualizando planes...</span>
+            <span className="text-sm font-medium text-gray-700">{t('plans.loading_plans')}</span>
           </div>
         </div>
       )}
@@ -612,7 +613,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                         : 'bg-[#299ae4] hover:bg-[#299ae4]/90 text-white'
                     }`}
                   >
-                    {isInCart(plan.id) ? 'AÑADIDO' : 'COMPRAR'}
+                    {isInCart(plan.id) ? t('plan.added') : t('plan.buy')}
                   </Button>
                 </div>
               </div>
@@ -658,7 +659,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                       onClick={() => toggleRegionalCoverage(plan.id)}
                       className="absolute -top-2 -right-2 flex items-center space-x-1 px-3 py-1 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary/90 transition-colors duration-200 shadow-lg z-10"
                     >
-                      <span>Plan Regional</span>
+                      <span>{t('plan.regional_plan')}</span>
                       {isExpanded ? (
                         <ChevronUp className="w-4 h-4" />
                       ) : (
@@ -671,7 +672,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                 {/* Regional Coverage Dropdown */}
                 {isRegional && isExpanded && coverageCountries.length > 0 && (
                   <div className="mb-6 p-4 bg-gray-50 rounded-xl">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Cobertura Regional:</h4>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">{t('plan.regional_coverage')}</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {coverageCountries.map((country, index) => (
                         <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
@@ -692,15 +693,15 @@ export const PlanList: React.FC<PlanListProps> = ({
                         <div className="text-base font-medium text-gray-900">
                           {gbAmount < 1 ? `${Math.round(gbAmount * 1024)} MB` : `${gbAmount} GB`}
                         </div>
-                        <div className="text-xs text-gray-500">Datos</div>
+                        <div className="text-xs text-gray-500">{t('plan.data')}</div>
                       </div>
                     )}
                     
                     {/* Validity */}
                     {validityDays !== null && validityDays !== undefined && (
                       <div>
-                        <div className="text-base font-medium text-gray-900">{validityDays} días</div>
-                        <div className="text-xs text-gray-500">Vigencia</div>
+                        <div className="text-base font-medium text-gray-900">{validityDays} {t('plan.days')}</div>
+                        <div className="text-xs text-gray-500">{t('plan.validity')}</div>
                       </div>
                     )}
                     
@@ -708,7 +709,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                     {(gbAmount === null || gbAmount === undefined) && (validityDays === null || validityDays === undefined) && (
                       <div>
                         <div className="text-sm font-medium text-gray-900 max-w-48 truncate">{plan.name}</div>
-                        <div className="text-xs text-gray-500">Plan</div>
+                        <div className="text-xs text-gray-500">{t('plan.plan')}</div>
                       </div>
                     )}
                   </div>
@@ -724,7 +725,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                         : 'bg-primary hover:bg-primary/90 text-white'
                     }`}
                   >
-                    {isInCart(plan.id) ? 'AÑADIDO' : 'COMPRAR'}
+                    {isInCart(plan.id) ? t('plan.added') : t('plan.buy')}
                   </Button>
                 </div>
               </>

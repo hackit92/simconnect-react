@@ -137,17 +137,17 @@ export const Cart = () => {
           </div>
           <h1 className={`font-bold text-gray-900 mb-4 ${
             isDesktop ? 'text-3xl' : 'text-2xl'
-          }`}>Tu carrito está vacío</h1>
+          }`}>{t('cart.empty_title')}</h1>
           <p className={`text-gray-600 mb-8 ${
             isDesktop ? 'text-lg' : 'text-base'
           }`}>
-            Explora nuestros planes de datos móviles y encuentra el perfecto para tu próximo viaje.
+            {t('cart.empty_message')}
           </p>
           <Button
             onClick={handleExplorePlans}
             className="bg-[#299ae4] hover:bg-[#299ae4]/90 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            Explorar Planes
+            {t('cart.explore_plans')}
           </Button>
         </div>
       </div>
@@ -165,11 +165,11 @@ export const Cart = () => {
             <div>
               <h1 className={`font-bold text-gray-900 mb-2 ${
                 isDesktop ? 'text-4xl' : 'text-2xl'
-              }`}>Carrito de Compras</h1>
+              }`}>{t('cart.title')}</h1>
               <p className={`text-gray-600 ${
                 isDesktop ? 'text-lg' : 'text-base'
               }`}>
-                {items.length} {items.length === 1 ? 'producto' : 'productos'} en tu carrito
+                {t('cart.products_count', { count: items.length })}
               </p>
             </div>
             <Button
@@ -180,7 +180,7 @@ export const Cart = () => {
               }`}
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Vaciar carrito
+              {t('cart.clear_cart')}
             </Button>
           </div>
         </div>
@@ -244,7 +244,7 @@ export const Cart = () => {
                         <div className="flex items-center justify-between">
                           {/* Quantity Controls */}
                           <div className="flex items-center space-x-4">
-                            <span className="text-sm font-medium text-gray-700">Cantidad:</span>
+                            <span className="text-sm font-medium text-gray-700">{t('cart.quantity_label')}</span>
                             <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200">
                               <button
                                 onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
@@ -271,7 +271,7 @@ export const Cart = () => {
                             </div>
                             {item.quantity > 1 && (
                               <div className="text-sm text-gray-500">
-                                {formatPrice(price)} cada uno
+                                {formatPrice(price)} {t('cart.each')}
                               </div>
                             )}
                           </div>
@@ -301,26 +301,26 @@ export const Cart = () => {
             }`}>
               <h3 className={`font-bold text-gray-900 mb-6 ${
                 isDesktop ? 'text-2xl' : 'text-xl'
-              }`}>Resumen del Pedido</h3>
+              }`}>{t('cart.order_summary')}</h3>
               
               <div className="space-y-4 mb-8">
                 <div className={`flex justify-between text-gray-600 ${
                   isDesktop ? 'text-lg' : 'text-base'
                 }`}>
-                  <span>Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} productos)</span>
+                  <span>{t('cart.subtotal', { count: items.reduce((sum, item) => sum + item.quantity, 0) })}</span>
                   <span className="font-medium">{formatPrice(getTotalPrice(selectedCurrency))}</span>
                 </div>
                 <div className={`flex justify-between text-gray-600 ${
                   isDesktop ? 'text-lg' : 'text-base'
                 }`}>
-                  <span>Activación</span>
-                  <span className="text-[#299ae4] font-semibold">Gratis</span>
+                  <span>{t('cart.activation')}</span>
+                  <span className="text-[#299ae4] font-semibold">{t('cart.free')}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-4">
                   <div className={`flex justify-between font-bold text-gray-900 ${
                     isDesktop ? 'text-2xl' : 'text-xl'
                   }`}>
-                    <span>Total</span>
+                    <span>{t('cart.total')}</span>
                     <span>{formatPrice(getTotalPrice(selectedCurrency))}</span>
                   </div>
                 </div>
@@ -332,11 +332,11 @@ export const Cart = () => {
                 size="lg"
               >
                 <CreditCard className="w-5 h-5 mr-3" />
-                Proceder al Pago
+                {t('cart.checkout')}
               </Button>
 
               <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
-                Activación instantánea • Soporte 24/7 • Garantía de satisfacción
+                {t('cart.footer_text')}
               </p>
             </div>
           </div>
