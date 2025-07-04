@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/button';
 import { motion } from 'framer-motion';
 import type { StripeProduct } from '../../stripe-config';
@@ -9,6 +10,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { t } = useTranslation();
   const { createCheckoutSession, loading } = useStripeCheckout();
   const [error, setError] = useState<string | null>(null);
 

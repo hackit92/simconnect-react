@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
 import { stripeProducts } from '../../stripe-config';
 
@@ -10,6 +11,7 @@ interface SubscriptionData {
 }
 
 export const SubscriptionStatus: React.FC = () => {
+  const { t } = useTranslation();
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [loading, setLoading] = useState(true);
 

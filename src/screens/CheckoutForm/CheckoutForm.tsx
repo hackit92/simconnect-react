@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CreditCard, User, Mail, Phone, Globe } from 'lucide-react';
 import { Button } from '../../components/ui/button';
@@ -21,6 +22,7 @@ interface BillingDetails {
 }
 
 export const CheckoutForm: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { items, getTotalPrice, clearCart } = useCart();

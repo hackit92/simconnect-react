@@ -1,6 +1,7 @@
 import React from 'react';
 import { Globe, ChevronDown, ChevronUp, Wifi } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Button } from "../../../components/ui/button";
 import type { Product } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
@@ -410,6 +411,7 @@ export const PlanList: React.FC<PlanListProps> = ({
   const { selectedCurrency, formatPrice } = useCurrency();
   const { addToCart, isInCart } = useCart();
   const isDesktop = useIsDesktop();
+  const { t } = useTranslation();
   const [expandedRegionalPlans, setExpandedRegionalPlans] = React.useState<Set<number>>(new Set());
 
   const handlePurchase = (productId: number) => {
