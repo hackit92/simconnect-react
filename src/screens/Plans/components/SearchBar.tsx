@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin, X } from 'lucide-react';
 import type { SearchSuggestion } from '../../../lib/search/searchUtils';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
@@ -20,6 +21,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onClear,
   placeholder = "Buscar país o región..."
 }) => {
+  const { t } = useTranslation();
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -116,7 +118,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <button
             onClick={clearSearch}
             className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
-            title="Limpiar búsqueda"
+            title={t('plans.clear_search')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -141,7 +143,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                   <div className="flex-1">
                     <span className="font-medium">{suggestion.text}</span>
                     <span className="ml-2 text-xs text-gray-500 capitalize">
-                      {suggestion.type === 'country' ? 'País' : 'Región'}
+                      {suggestion.type === 'country' ? t('common.country') : t('common.region')}
                     </span>
                   </div>
                 </div>

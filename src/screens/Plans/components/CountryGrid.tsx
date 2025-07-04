@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
@@ -16,12 +17,13 @@ interface CountryGridProps {
 
 export const CountryGrid: React.FC<CountryGridProps> = ({
   categories,
-  selectedCategory,
+  selectedCategory, 
   onSelectCategory,
   currentPage,
   totalPages,
   onPageChange
 }) => {
+  const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
   // Adjust grid columns based on screen size
@@ -36,9 +38,9 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
         <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
           <Search className="w-8 h-8 text-gray-400" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron países</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('plans.no_countries_found')}</h3>
         <p className="text-gray-500 max-w-sm">
-          Intenta ajustar tu búsqueda o verifica que los datos estén sincronizados correctamente.
+          {t('plans.no_countries_message')}
         </p>
       </div>
     );
@@ -156,11 +158,11 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
             disabled={currentPage === 1}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            Anterior
+            {t('plans.previous')}
           </button>
           
           <span className="px-4 py-2 text-sm text-gray-600">
-            Página {currentPage} de {totalPages}
+            {t('plans.page_of', { current: currentPage, total: totalPages })}
           </span>
           
           <button
@@ -168,7 +170,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
             disabled={currentPage === totalPages}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            Siguiente
+            {t('plans.next')}
           </button>
         </div>
       )}

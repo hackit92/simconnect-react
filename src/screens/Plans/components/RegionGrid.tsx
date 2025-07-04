@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
@@ -89,8 +90,9 @@ const regionIcons: Record<string, React.ComponentType<any>> = {
 
 export const RegionGrid: React.FC<RegionGridProps> = ({
   categories,
-  onSelectRegion,
+  onSelectRegion
 }) => {
+  const { t } = useTranslation();
   const [regionCounts, setRegionCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
@@ -136,7 +138,7 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <span className="ml-3 text-gray-600">Cargando regiones...</span>
+        <span className="ml-3 text-gray-600">{t('plans.loading_regions')}</span>
       </div>
     );
   }
@@ -188,9 +190,9 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
                   <div>{regionCategories.length} {regionCategories.length === 1 ? 'país' : 'países'}</div>
                 )}
                 {regionalPlansCount > 0 && (
-                  <div>{regionalPlansCount} {regionalPlansCount === 1 ? 'plan regional' : 'planes regionales'}</div>
+                  <div>{regionalPlansCount} {regionalPlansCount === 1 ? t('plans.regional_plan') : t('plans.regional_plans')}</div>
                 )}
-                {!hasContent && <div>Sin contenido</div>}
+                {!hasContent && <div>{t('plans.no_content')}</div>}
               </div>
             </motion.button>
           );
