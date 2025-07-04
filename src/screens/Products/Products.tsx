@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ProductCard } from '../../components/stripe/ProductCard';
 import { SubscriptionStatus } from '../../components/stripe/SubscriptionStatus';
 import { stripeProducts } from '../../stripe-config';
 
 export const Products: React.FC = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

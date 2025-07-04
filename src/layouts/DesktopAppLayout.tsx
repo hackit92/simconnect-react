@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShoppingCartIcon } from "lucide-react";
 import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next"; 
 import { useCart } from "../contexts/CartContext";
 import { useCurrency } from "../contexts/CurrencyContext";
 import { supabase } from "../lib/supabase";

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Trash2, Plus, Minus, ShoppingBag, CreditCard } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +11,7 @@ import { countryUtils } from "../../lib/countries/countryUtils";
 import { supabase, type Category } from "../../lib/supabase";
 
 export const Cart = () => {
+  const { t } = useTranslation();
   const { items, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
   const { selectedCurrency, formatPrice } = useCurrency();
   const navigate = useNavigate();

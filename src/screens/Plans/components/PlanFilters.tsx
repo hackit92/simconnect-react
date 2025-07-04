@@ -19,7 +19,7 @@ interface PlanFiltersProps {
 export const PlanFilters: React.FC<PlanFiltersProps> = ({
   filters,
   onFiltersChange,
-  onClearFilters
+  onClearFilters 
 }) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
