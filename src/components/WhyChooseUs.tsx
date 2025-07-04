@@ -111,7 +111,7 @@ export const WhyChooseUs: React.FC = () => {
                     }`}>
                       {feature.title}
                     </h3>
-                    <p className={`text-gray-600 leading-relaxed ${
+                    <p className={`text-gray-600 ${
                       isDesktop ? 'text-base' : 'text-sm'
                     }`}>
                       {feature.description}

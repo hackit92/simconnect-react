@@ -33,7 +33,7 @@ export const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className={`leading-[0.9] font-light text-gray-800 ${
+            <h1 className={`font-light text-gray-800 ${
               isDesktop ? 'text-7xl mb-8 max-w-5xl' : 'text-[40px] mb-6'
             }`}>
               {isDesktop ? (
@@ -54,7 +54,7 @@ export const Home = () => {
               {isDesktop ? t('home.hero_subtitle_desktop') : t('home.subtitle')}
             </p>
 
-            <div className={`text-gray-700 leading-relaxed space-y-2 ${
+            <div className={`text-gray-700 space-y-2 ${
               isDesktop ? 'text-2xl mb-16 max-w-4xl' : 'text-xl mb-12 max-w-[361px]'
             }`}>
               {isDesktop ? (
