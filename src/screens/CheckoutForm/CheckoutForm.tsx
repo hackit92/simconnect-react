@@ -133,36 +133,10 @@ export const CheckoutForm: React.FC = () => {
 
       // For direct product purchase
       if (directProduct) {
-        // Get price based on selected currency
-        let unitAmount = 30; // Default fallback price
-        
-        // Try to get the actual price from the product
-        if (directProduct.wcProductId) {
-          const { data: productData } = await supabase
-            .from('wc_products')
-            .select('regular_price_usd, regular_price_eur, regular_price_mxn')
-            .eq('id', directProduct.wcProductId)
-            .single();
-            
-          if (productData) {
-            switch (selectedCurrency) {
-              case 'USD':
-                unitAmount = productData.regular_price_usd || 30;
-                break;
-              case 'EUR':
-                unitAmount = productData.regular_price_eur || 30;
-                break;
-              case 'MXN':
-                unitAmount = productData.regular_price_mxn || 30;
-                break;
-            }
-          }
-        }
-        
         checkoutItems = [{
           priceId: directProduct.priceId,
           quantity: 1,
-          unitAmount,
+          unitAmount: 30,
           currency: selectedCurrency,
           wcProductId: directProduct.wcProductId || 4658,
           sku: directProduct.sku || 'MY-SPN-1GB-07D'
@@ -170,29 +144,12 @@ export const CheckoutForm: React.FC = () => {
       } else {
         // For cart items - map each cart item to checkout item
         checkoutItems = items.map(item => ({
-          // Get price based on selected currency
-          let unitAmount = 0;
-          
-          switch (selectedCurrency) {
-            case 'USD':
-              unitAmount = item.regular_price_usd || parseFloat(item.regular_price || '0') || 30;
-              break;
-            case 'EUR':
-              unitAmount = item.regular_price_eur || 30;
-              break;
-            case 'MXN':
-              unitAmount = item.regular_price_mxn || 30;
-              break;
-            default:
-              unitAmount = item.regular_price_usd || parseFloat(item.regular_price || '0') || 30;
-          }
-            priceId: '', // We don't need this when using dynamic pricing
-            quantity: item.quantity || 1,
-            unitAmount,
-            currency: selectedCurrency,
+          priceId: '', // We don't need this when using dynamic pricing
+          quantity: item.quantity || 1,
+          unitAmount: item.regular_price_usd || parseFloat(item.regular_price || '0') || 30,
+          currency: selectedCurrency,
           quantity: 1,
-          wcProductId: item.id, // Use the actual product ID from cart
-          };
+          wcProductId: item.id // Use the actual product ID from cart
         }));
       }
 
