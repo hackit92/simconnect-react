@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { CreditCard, QrCode, Wifi, ThumbsUp } from 'lucide-react';
 import { useIsDesktop } from '../hooks/useIsDesktop';
 
 export const BenefitsSection: React.FC = () => {
@@ -12,25 +13,25 @@ export const BenefitsSection: React.FC = () => {
       number: '1',
       title: t('benefits.choose_plan.title'),
       description: t('benefits.choose_plan.description'),
-      icon: '/icons/choose-plan.svg',
+      icon: <CreditCard className="w-12 h-12 text-primary" />
     },
     {
       number: '2',
       title: t('benefits.install.title'),
       description: t('benefits.install.description'),
-      icon: '/icons/install.svg',
+      icon: <QrCode className="w-12 h-12 text-primary" />
     },
     {
       number: '3',
       title: t('benefits.connect.title'),
       description: t('benefits.connect.description'),
-      icon: '/icons/connect.svg',
+      icon: <Wifi className="w-12 h-12 text-primary" />
     },
     {
       number: '4',
       title: t('benefits.enjoy.title'),
       description: t('benefits.enjoy.description'),
-      icon: '/icons/enjoy.svg',
+      icon: <ThumbsUp className="w-12 h-12 text-primary" />
     },
   ];
 
@@ -60,22 +61,8 @@ export const BenefitsSection: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
             >
-              <div className="flex items-center justify-center mb-4">
-                <img 
-                  src={benefit.icon} 
-                  alt={benefit.title}
-                  className="w-16 h-16 object-contain"
-                  onError={(e) => {
-                    // Fallback to number if image fails to load
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.parentElement!.innerHTML += `
-                      <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white text-2xl font-bold">
-                        ${benefit.number}
-                      </div>
-                    `;
-                  }}
-                />
+              <div className="flex items-center justify-center mb-4 w-16 h-16 rounded-full bg-primary/10">
+                {benefit.icon}
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">{benefit.title}</h3>
               <p className="text-gray-600">{benefit.description}</p>
