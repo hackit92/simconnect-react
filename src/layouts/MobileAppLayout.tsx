@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { HomeIcon, ShoppingCartIcon, GlobeIcon, UserIcon } from "lucide-react";
+import { HomeIcon, ShoppingCartIcon, GlobeIcon, UserIcon, LogIn } from "lucide-react";
 import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"; 
 import { useCurrency } from "../contexts/CurrencyContext";
@@ -203,19 +203,33 @@ export const MobileAppLayout: React.FC = () => {
             <span className="text-[10px] font-medium">{t('nav.cart')}</span>
           </Link>
 
-          <Link 
-            to={user ? "/products" : "/login"}
-            className={`flex flex-col items-center gap-1 transition-colors duration-200 ${
-              location.pathname === '/products' || location.pathname === '/login'
-                ? 'text-primary' 
-                : 'text-gray-600 hover:text-primary'
-            }`}
-          >
-            <UserIcon className="h-5 w-5" />
-            <span className="text-[10px] font-medium">
-             {user ? t('nav.account') : t('nav.login')}
-            </span>
-          </Link>
+          {user ? (
+            <Link 
+              to="/products"
+              className={`flex flex-col items-center gap-1 transition-colors duration-200 ${
+                location.pathname === '/products'
+                  ? 'text-primary' 
+                  : 'text-gray-600 hover:text-primary'
+              }`}
+            >
+              <UserIcon className="h-5 w-5" />
+              <span className="text-[10px] font-medium">
+                {t('nav.account')}
+              </span>
+            </Link>
+          ) : (
+            <a 
+              href="https://my.simconnect.travel/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-1 text-gray-600 hover:text-primary transition-colors duration-200"
+            >
+              <LogIn className="h-5 w-5" />
+              <span className="text-[10px] font-medium">
+                {t('nav.login')}
+              </span>
+            </a>
+          )}
         </div>
       </div>
     </div>

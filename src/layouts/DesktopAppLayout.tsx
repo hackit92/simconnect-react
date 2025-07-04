@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCartIcon } from "lucide-react";
+import { ShoppingCartIcon, LogIn } from "lucide-react";
 import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"; 
 import { useCart } from "../contexts/CartContext";
@@ -185,12 +185,14 @@ export const DesktopAppLayout: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <Link
-                  to="/login"
+                <a
+                  href="https://my.simconnect.travel/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm font-medium"
                 >
-                 {t('nav.login')}
-                </Link>
+                  <LogIn className="h-6 w-6" />
+                </a>
               )}
 
               {/* Menu Icon */}
