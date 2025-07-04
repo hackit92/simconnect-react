@@ -64,15 +64,15 @@ export const PlanFilters: React.FC<PlanFiltersProps> = ({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-gray-50 rounded-2xl p-6 mb-6 ${
-        isDesktop ? '' : ''
+      className={`${
+        isDesktop ? 'mb-6' : 'bg-gray-50 rounded-2xl p-6 mb-6'
       }`}
     >
       <div className={`${
-        isDesktop ? 'grid grid-cols-4 gap-8 items-start' : 'space-y-6'
+        isDesktop ? 'flex justify-center items-start' : 'space-y-6'
       }`}>
         {/* Validity Filter */}
-        <div>
+        <div className={`${isDesktop ? 'mx-8' : ''}`}>
           <h3 className="text-sm font-semibold text-gray-700 mb-4 tracking-wide uppercase">
             {t('plans.filters.duration')}
           </h3>
@@ -94,7 +94,7 @@ export const PlanFilters: React.FC<PlanFiltersProps> = ({
         </div>
 
         {/* Data Amount Filter */}
-        <div>
+        <div className={`${isDesktop ? 'mx-8' : ''}`}>
           <h3 className="text-sm font-semibold text-gray-700 mb-4 tracking-wide uppercase">
             {t('plans.filters.data')}
           </h3>
@@ -116,7 +116,7 @@ export const PlanFilters: React.FC<PlanFiltersProps> = ({
         </div>
 
         {/* Plan Type Filter */}
-        <div>
+        <div className={`${isDesktop ? 'mx-8' : ''}`}>
           <h3 className="text-sm font-semibold text-gray-700 mb-4 tracking-wide uppercase">
             {t('plans.filters.plan_type')}
           </h3>
@@ -138,7 +138,7 @@ export const PlanFilters: React.FC<PlanFiltersProps> = ({
         </div>
 
         {/* Clear Filters Button */}
-        <div className={`${isDesktop ? 'flex justify-end items-start' : 'flex justify-center'}`}>
+        <div className={`${isDesktop ? 'flex items-start mx-8' : 'flex justify-center'}`}>
           {hasActiveFilters && (
             <button
               onClick={onClearFilters}
