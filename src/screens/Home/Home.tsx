@@ -48,7 +48,7 @@ export const Home = () => {
               )}
             </h1>
 
-            <p className={`font-normal text-gray-700 uppercase tracking-[0.15em] ${
+            <p className={`font-normal leading-tight text-gray-700 uppercase tracking-[0.15em] ${
               isDesktop ? 'text-xl mb-10 max-w-3xl' : 'text-base mb-9 max-w-[361px]'
             }`}>
               {isDesktop ? t('home.hero_subtitle_desktop') : t('home.subtitle')}
