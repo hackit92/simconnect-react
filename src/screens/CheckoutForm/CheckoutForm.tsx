@@ -218,7 +218,7 @@ export const CheckoutForm: React.FC = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+            className="bg-white rounded-2xl p-6"
           >
             <div className="flex items-center mb-6">
               <User className="w-6 h-6 text-primary mr-3" />
@@ -238,7 +238,7 @@ export const CheckoutForm: React.FC = () => {
                     value={billingDetails.firstName}
                     onChange={(e) => setBillingDetails(prev => ({ ...prev, firstName: e.target.value }))}
                     className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
-                      errors.firstName ? 'border-red-300' : 'border-gray-300'
+                      errors.firstName ? 'border-red-300' : 'border-gray-200'
                     }`}
                     placeholder={t('checkout.first_name_placeholder')}
                   />
@@ -257,7 +257,7 @@ export const CheckoutForm: React.FC = () => {
                     value={billingDetails.lastName}
                     onChange={(e) => setBillingDetails(prev => ({ ...prev, lastName: e.target.value }))}
                     className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
-                      errors.lastName ? 'border-red-300' : 'border-gray-300'
+                      errors.lastName ? 'border-red-300' : 'border-gray-200'
                     }`}
                     placeholder={t('checkout.last_name_placeholder')}
                   />
@@ -270,7 +270,7 @@ export const CheckoutForm: React.FC = () => {
               {/* Coupon Code */}
               <details className="group mb-2" open={isCouponExpanded}>
                 <summary 
-                  className="flex items-center justify-between cursor-pointer text-sm text-gray-600 hover:text-gray-800 py-2 transition-colors duration-200"
+                  className="flex items-center justify-between cursor-pointer text-sm text-primary hover:text-primary/80 py-2 transition-colors duration-200"
                   onClick={(e) => {
                     e.preventDefault();
                     setIsCouponExpanded(!isCouponExpanded);
@@ -294,7 +294,7 @@ export const CheckoutForm: React.FC = () => {
                       onChange={handleCouponChange}
                       disabled={isCouponApplied}
                       className={`flex-1 px-4 py-3 border rounded-l-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
-                        couponError ? 'border-red-300' : isCouponApplied ? 'border-green-300 bg-green-50' : 'border-gray-300'
+                        couponError ? 'border-red-300' : isCouponApplied ? 'border-green-300 bg-green-50' : 'border-gray-200'
                       }`}
                       placeholder={t('checkout.coupon_placeholder')}
                     />
@@ -305,7 +305,7 @@ export const CheckoutForm: React.FC = () => {
                       className={`px-4 py-3 font-medium text-sm transition-all duration-200 ${
                         isCouponApplied 
                           ? 'bg-green-500 text-white rounded-r-xl'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-r-xl border border-l-0 border-gray-300'
+                          : 'bg-primary/10 text-primary hover:bg-primary/20 rounded-r-xl border border-l-0 border-primary/30'
                       }`}
                     >
                       {isCouponApplied ? (
@@ -339,7 +339,7 @@ export const CheckoutForm: React.FC = () => {
                   value={billingDetails.email}
                   onChange={(e) => setBillingDetails(prev => ({ ...prev, email: e.target.value }))}
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
-                    errors.email ? 'border-red-300' : 'border-gray-300'
+                    errors.email ? 'border-red-300' : 'border-gray-200'
                   }`}
                   placeholder={t('checkout.email_placeholder')}
                 />
@@ -355,7 +355,7 @@ export const CheckoutForm: React.FC = () => {
                   {t('checkout.country')} *
                 </label>
                 <Popover>
-                  <PopoverTrigger className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-left flex items-center justify-between">
+                  <PopoverTrigger className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-left flex items-center justify-between">
                     <div className="flex items-center">
                       <span className="mr-3 text-lg">{selectedCountry.flag}</span>
                       <span>{selectedCountry.name}</span>
@@ -390,7 +390,7 @@ export const CheckoutForm: React.FC = () => {
                   {t('checkout.phone')} *
                 </label>
                 <div className="flex">
-                  <div className="flex items-center px-3 py-3 border border-r-0 border-gray-300 rounded-l-xl bg-gray-50">
+                  <div className="flex items-center px-3 py-3 border border-r-0 border-gray-200 rounded-l-xl bg-white">
                     <span className="text-sm font-medium text-gray-700">{selectedCountry.dialCode}</span>
                   </div>
                   <input
@@ -399,7 +399,7 @@ export const CheckoutForm: React.FC = () => {
                     value={billingDetails.phone}
                     onChange={(e) => setBillingDetails(prev => ({ ...prev, phone: e.target.value }))}
                     className={`flex-1 px-4 py-3 border rounded-r-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 ${
-                      errors.phone ? 'border-red-300' : 'border-gray-300'
+                      errors.phone ? 'border-red-300' : 'border-gray-200'
                     }`}
                     placeholder={t('checkout.phone_placeholder')}
                   />
@@ -445,7 +445,7 @@ export const CheckoutForm: React.FC = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-fit"
+            className="bg-white rounded-2xl p-6 h-fit"
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.order_summary')}</h2>
 
@@ -488,12 +488,12 @@ export const CheckoutForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-xl">
+            <div className="mt-6 p-4 bg-primary/5 rounded-xl">
               <div className="flex items-start">
-                <svg className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <div className="text-sm text-blue-800">
+                <div className="text-sm text-primary">
                   <p className="font-medium mb-1">{t('checkout.secure_payment')}</p>
                   <p>{t('checkout.secure_payment_desc')}</p>
                 </div>
