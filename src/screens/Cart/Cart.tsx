@@ -7,7 +7,7 @@ import { Button } from "../../components/ui/button";
 import { useCart } from "../../contexts/CartContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
-import { countryUtils } from "../../lib/countries/countryUtils";
+import { useCountryName } from "../../hooks/useCountryName";
 import { supabase, type Category } from "../../lib/supabase";
 
 export const Cart = () => {
@@ -16,6 +16,7 @@ export const Cart = () => {
   const { selectedCurrency, formatPrice } = useCurrency();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+  const { getCountryName } = useCountryName();
   const [categories, setCategories] = React.useState<Category[]>([]);
 
   // Load categories for proper country name display
@@ -99,7 +100,7 @@ export const Cart = () => {
     if (item.plan_type === 'country') {
       // Try to use country_code if available
       if (item.country_code) {
-        const countryName = countryUtils.getCountryName(item.country_code);
+        const countryName = getCountryName(item.country_code);
         // Only return if it's a valid country name (not just the code)
         if (countryName !== item.country_code) {
           return countryName;
@@ -111,7 +112,7 @@ export const Cart = () => {
         for (const categoryId of item.category_ids) {
           const category = categories.find(cat => cat.id === categoryId);
           if (category) {
-            const countryName = countryUtils.getCountryName(category.slug);
+            const countryName = getCountryName(category.slug);
             // Only return if it's a valid country name (not just the slug)
             if (countryName !== category.slug) {
               return countryName;
