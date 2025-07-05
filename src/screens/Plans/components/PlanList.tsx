@@ -500,7 +500,6 @@ export const PlanList: React.FC<PlanListProps> = ({
           displayPrice = formatPrice(parseFloat(fallback.amount), selectedCurrency);
         }
         
-        const displayName = getDisplayName(plan, selectedCategoryData, categories);
         const displayName = getDisplayName(plan, t, selectedCategoryData, categories);
         const isRegional = plan.plan_type === 'regional';
         const gbAmount = plan.data_gb;
