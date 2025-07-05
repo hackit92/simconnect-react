@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { HomeIcon, ShoppingCartIcon, GlobeIcon, UserIcon, LogIn } from "lucide-react";
+import { HomeIcon, ShoppingCartIcon, GlobeIcon, UserIcon, User } from "lucide-react";
 import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"; 
 import { useCurrency } from "../contexts/CurrencyContext";
@@ -224,7 +224,7 @@ export const MobileAppLayout: React.FC = () => {
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-1 text-gray-600 hover:text-primary transition-colors duration-200"
             >
-              <LogIn className="h-5 w-5" />
+              <User className="h-5 w-5" />
               <span className="text-[10px] font-medium">
                 {t('nav.login')}
               </span>
