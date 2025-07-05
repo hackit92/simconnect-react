@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
 import { useCountryName } from '../../../hooks/useCountryName';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
+import { countryUtils } from '../../../lib/countries/countryUtils';
 
 interface CountryGridProps {
   categories: Category[];
