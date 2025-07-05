@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Home, Globe, ShoppingCart, User, LogIn, Phone, Mail, HelpCircle, MessageCircle } from 'lucide-react';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useCart } from '../../contexts/CartContext';
+import { useIsDesktop } from '../../hooks/useIsDesktop';
 
 interface FullscreenMenuProps {
   isOpen: boolean;
@@ -21,11 +22,26 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
 }) => {
   const { t } = useTranslation();
   const location = useLocation();
+  const isDesktop = useIsDesktop();
 
   const handleNavigation = () => {
     onClose();
   };
 
+  const handlePlansClick = () => {
+    if (isDesktop) {
+      // On desktop, scroll to plans section
+      const plansSection = document.getElementById('plans-section');
+      if (plansSection) {
+        plansSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      onClose();
+    } else {
+      // On mobile, navigate to plans page (though menu won't show on mobile)
+      window.location.href = '/plans';
+      onClose();
+    }
+  };
   const menuVariants = {
     closed: {
       opacity: 0,
@@ -95,7 +111,7 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
 
   const menuItems = [
     { path: '/', label: 'Inicio', icon: <Home className="w-6 h-6" /> },
-    { path: '/plans', label: 'Planes', icon: <Globe className="w-6 h-6" /> },
+    { path: '/plans', label: 'Planes', icon: <Globe className="w-6 h-6" />, isPlans: true },
     { path: '/cart', label: 'Carrito', icon: <ShoppingCart className="w-6 h-6" /> },
     { path: '/products', label: 'Mi Cuenta', icon: <User className="w-6 h-6" />, requiresAuth: true },
     { externalLink: 'https://my.simconnect.travel/', label: 'Iniciar Sesión', icon: <LogIn className="w-6 h-6" />, requiresNoAuth: true },
@@ -180,6 +196,23 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
                         );
                       }
 
+                      // Handle Plans section specially
+                      if (item.isPlans) {
+                        return (
+                          <button
+                            key={item.label}
+                            onClick={handlePlansClick}
+                            className={`w-full flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 ${
+                              location.pathname === item.path
+                                ? 'bg-primary/10 text-primary'
+                                : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            {item.icon}
+                            <span className="text-xl font-medium">{item.label}</span>
+                          </button>
+                        );
+                      }
                       return (
                         <Link
                           key={item.path}

@@ -98,7 +98,7 @@ export const MobileAppLayout: React.FC = () => {
           />
         </div>
         <NavigationMenu>
-          <NavigationMenuList className="flex items-center gap-2">
+          <NavigationMenuList className="flex items-center gap-3">
             <NavigationMenuItem>
               <Popover>
                 <PopoverTrigger className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all">
@@ -150,14 +150,6 @@ export const MobileAppLayout: React.FC = () => {
                   </div>
                 </PopoverContent>
               </Popover>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <button 
-                onClick={handleMenuToggle}
-                className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all"
-              >
-                <Menu className="w-4 h-4 text-gray-600" />
-              </button>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -252,14 +244,6 @@ export const MobileAppLayout: React.FC = () => {
           )}
         </div>
       </div>
-      
-      {/* Fullscreen Menu */}
-      <FullscreenMenu
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        user={user}
-        onLogout={handleLogout}
-      />
     </div>
   );
 };
