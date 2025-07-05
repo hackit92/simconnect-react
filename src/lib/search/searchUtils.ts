@@ -1,8 +1,6 @@
 import { countryUtils } from '../countries/countryUtils';
 import type { Category } from '../supabase';
 
-import { useTranslation } from 'react-i18next';
-
 // Función para calcular la distancia de Levenshtein (similitud entre strings)
 function levenshteinDistance(str1: string, str2: string): number {
   const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
@@ -292,7 +290,7 @@ export class IntelligentSearch {
   }
 
   // Función mejorada para obtener sugerencias más precisas
-  getSuggestions(query: string): SearchSuggestion[] {
+  getSuggestions(query: string, language: string = 'es'): SearchSuggestion[] {
     const normalizedQuery = normalizeText(query);
     const suggestions: SearchSuggestion[] = [];
 
@@ -311,18 +309,19 @@ export class IntelligentSearch {
 
     // Sugerencias de países - más estrictas
     for (const category of this.categories) {
-      const countryNameEs = countryUtils.getCountryName(category.slug, 'es');
-      const countryNameEn = countryUtils.getCountryName(category.slug, 'en');
+      const lang = language === 'en' ? 'en' : 'es';
+      const countryNameInLang = countryUtils.getCountryName(category.slug, lang);
+      const countryNameAltLang = countryUtils.getCountryName(category.slug, lang === 'en' ? 'es' : 'en');
       
       // Coincidencias exactas o que empiecen con el término de búsqueda
-      const esStartsWith = normalizeText(countryNameEs).startsWith(normalizedQuery);
-      const enStartsWith = normalizeText(countryNameEn).startsWith(normalizedQuery);
+      const langStartsWith = normalizeText(countryNameInLang).startsWith(normalizedQuery);
+      const altLangStartsWith = normalizeText(countryNameAltLang).startsWith(normalizedQuery);
       const slugStartsWith = normalizeText(category.slug).startsWith(normalizedQuery);
       
-      if (esStartsWith || enStartsWith || slugStartsWith) {
-        const score = esStartsWith || enStartsWith ? 1.0 : 0.9;
-        const displayName = esStartsWith ? countryNameEs : 
-                           enStartsWith ? countryNameEn : countryNameEs;
+      if (langStartsWith || altLangStartsWith || slugStartsWith) {
+        const score = langStartsWith || altLangStartsWith ? 1.0 : 0.9;
+        const displayName = langStartsWith ? countryNameInLang : 
+                           altLangStartsWith ? countryNameAltLang : countryNameInLang;
         
         suggestions.push({
           text: displayName,
@@ -332,12 +331,12 @@ export class IntelligentSearch {
         });
       } else {
         // Similitud alta para nombres
-        const esSimilarity = calculateSimilarity(normalizedQuery, normalizeText(countryNameEs));
-        const enSimilarity = calculateSimilarity(normalizedQuery, normalizeText(countryNameEn));
-        const maxSimilarity = Math.max(esSimilarity, enSimilarity);
+        const langSimilarity = calculateSimilarity(normalizedQuery, normalizeText(countryNameInLang));
+        const altLangSimilarity = calculateSimilarity(normalizedQuery, normalizeText(countryNameAltLang));
+        const maxSimilarity = Math.max(langSimilarity, altLangSimilarity);
         
         if (maxSimilarity >= 0.7) {
-          const displayName = esSimilarity >= enSimilarity ? countryNameEs : countryNameEn;
+          const displayName = langSimilarity >= altLangSimilarity ? countryNameInLang : countryNameAltLang;
           suggestions.push({
             text: displayName,
             type: 'country',

@@ -46,7 +46,7 @@ const regionSvgIcons: Record<string, React.ComponentType<any>> = {
 // Helper function to convert ISO3 country codes to country names
 function getCountryNameFromISO3(iso3Code: string): string {
   // Convert ISO3 to ISO2 first, then get the country name
-  const { i18n } = { i18n: { language: 'en' } }; // Default to English
+  const { i18n } = useTranslation();
   const iso2Code = iso3ToIso2(iso3Code);
   if (iso2Code) {
     const lang = i18n.language === 'en' ? 'en' : 'es';
@@ -301,7 +301,7 @@ function getFallbackPrice(product: Product): { amount: string; currency: string 
 // Helper function to get display name - now using database fields
 function getDisplayName(
   product: Product, 
-  t: (key: string) => string,
+  t: (key: string, options?: any) => string,
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null },
   categories?: { id: number; name: string; slug: string; parent: number | null }[]
 ): string {

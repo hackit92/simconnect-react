@@ -4,6 +4,7 @@ import { Search, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
 import { useCountryName } from '../../../hooks/useCountryName';
+import { useCountryName } from '../../../hooks/useCountryName';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
 import { countryUtils } from '../../../lib/countries/countryUtils';
 
@@ -26,6 +27,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
 }) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
+  const { getCountryName } = useCountryName();
   const { getCountryName } = useCountryName();
 
   // Adjust grid columns based on screen size
@@ -57,8 +59,8 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
           : 'space-y-3'
       }`}>
         {categories.map((category) => {
-          const countryCode = countryUtils.getFlagClass(category.slug);
-          const countryName = countryUtils.getCountryName(category.slug);
+          const flagClass = countryUtils.getFlagClass(category.slug);
+          const countryName = getCountryName(category.slug);
           const isSelected = selectedCategory === category.id;
           
           if (isDesktop) {
@@ -82,7 +84,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                   {/* Flag Container */}
                   <div className="relative w-8 h-5 rounded overflow-hidden flex items-center justify-center bg-white shadow-sm flex-shrink-0">
                     <span 
-                      className={countryUtils.getFlagClass(category.slug)}
+                      className={flagClass} 
                       style={{ transform: 'scale(1.5)' }} 
                     />
                   </div>
@@ -125,7 +127,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                   {/* Flag Container */}
                   <div className="relative w-12 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-white shadow-sm">
                     <span 
-                      className={countryUtils.getFlagClass(category.slug)}
+                      className={flagClass} 
                       style={{ transform: 'scale(1.8)' }} 
                     />
                   </div>

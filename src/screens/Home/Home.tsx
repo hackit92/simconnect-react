@@ -133,7 +133,7 @@ export const Home = () => {
                 {t('plans.title')}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Te ayudamos a conectarte desde cualquier parte del mundo.
+                {t('plans.subtitle')}
               </p>
             </div>
             

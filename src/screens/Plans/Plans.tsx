@@ -244,7 +244,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
 
   // Generate intelligent suggestions
   const suggestions = searchEngine && searchTerm.length >= 2 
-    ? searchEngine.getSuggestions(searchTerm)
+    ? searchEngine.getSuggestions(searchTerm, i18n.language)
     : [];
 
   const clearSearch = () => {
@@ -302,10 +302,10 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
             <div className="mb-6">
               <div className="text-center w-full mb-8">
                 <h1 className="text-4xl font-normal text-gray-800 mb-3">
-                  ¿Dónde necesitas <span className="text-primary font-semibold">Conectarte</span>?
+                  {t('plans.title')}
                 </h1>
                 <p className="text-lg text-gray-600 mb-8">
-                  Te ayudamos a conectarte desde cualquier parte del mundo.
+                  {t('plans.subtitle')}
                 </p>
               </div>
             </div>
