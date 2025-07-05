@@ -19,6 +19,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { supabase, type Category, type Product } from '../../lib/supabase';
 import { IntelligentSearch, type SearchSuggestion } from '../../lib/search/searchUtils';
 import { useCountryName } from '../../hooks/useCountryName';
+import { countryUtils } from '../../lib/countries/countryUtils';
 
 interface PlansProps {
   isEmbedded?: boolean;
