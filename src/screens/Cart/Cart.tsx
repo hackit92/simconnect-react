@@ -222,7 +222,7 @@ export const Cart = () => {
                           {item.data_gb && (
                             <div className="flex items-center space-x-1">
                               <span className="font-medium">Datos:</span>
-                              <span>
+                              <span className="whitespace-nowrap">
                                 {item.data_gb < 1 ? `${Math.round(item.data_gb * 1024)} MB` : `${item.data_gb} GB`}
                               </span>
                             </div>
@@ -230,7 +230,7 @@ export const Cart = () => {
                           {item.validity_days && (
                             <div className="flex items-center space-x-1">
                               <span className="font-medium">Vigencia:</span>
-                              <span>{item.validity_days} días</span>
+                              <span className="whitespace-nowrap">{item.validity_days} {t('plan.days')}</span>
                             </div>
                           )}
                           {item.technology && (

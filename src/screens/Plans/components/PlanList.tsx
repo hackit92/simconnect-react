@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Button } from "../../../components/ui/button";
 import type { Product } from "../../../lib/supabase";
 import { countryUtils } from '../../../lib/countries/countryUtils';
+import { useCountryName } from '../../../hooks/useCountryName';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useCart } from '../../../contexts/CartContext';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
-import { useCountryName } from '../../../hooks/useCountryName';
 
 // Import technology SVG assets
 import FiveGIcon from '../../../assets/technology/5G.svg?react';
@@ -44,13 +44,11 @@ const regionSvgIcons: Record<string, React.ComponentType<any>> = {
 };
 
 // Helper function to convert ISO3 country codes to country names
-function getCountryNameFromISO3(iso3Code: string): string {
+function getCountryNameFromISO3(iso3Code: string, getCountryName: (code: string) => string): string {
   // Convert ISO3 to ISO2 first, then get the country name
-  const { i18n } = useTranslation();
   const iso2Code = iso3ToIso2(iso3Code);
   if (iso2Code) {
-    const lang = i18n.language === 'en' ? 'en' : 'es';
-    return countryUtils.getCountryName(iso2Code, lang);
+    return getCountryName(iso2Code);
   }
   
   // Fallback: return the ISO3 code if conversion fails
@@ -301,6 +299,7 @@ function getFallbackPrice(product: Product): { amount: string; currency: string 
 // Helper function to get display name - now using database fields
 function getDisplayName(
   product: Product, 
+  getCountryName: (code: string) => string,
   t: (key: string, options?: any) => string,
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null },
   categories?: { id: number; name: string; slug: string; parent: number | null }[]
@@ -319,7 +318,7 @@ function getDisplayName(
       'africa': t('region.africa'),
       'oceania': t('region.oceania')
     };
-    return regionNames[product.region_code || ''] || 'Plan Regional';
+    return regionNames[product.region_code || ''] || t('plan.regional_plan');
   }
   
   // For country-specific plans, try to get the country name from various sources
@@ -334,7 +333,7 @@ function getDisplayName(
       for (const categoryId of product.category_ids) {
         const category = categories.find(cat => cat.id === categoryId);
         if (category) {
-          const countryName = countryUtils.getCountryName(category.slug);
+          const countryName = getCountryName(category.slug);
           // Only return if it's a valid country name (not just the slug)
           if (countryName !== category.slug) {
             return countryName;
@@ -345,14 +344,14 @@ function getDisplayName(
     
     // Try to use country_code if available
     if (product.country_code) {
-      const countryName = countryUtils.getCountryName(product.country_code);
+      const countryName = getCountryName(product.country_code);
       if (countryName !== product.country_code) {
         return countryName;
       }
     }
   }
   
-  return 'Plan Internacional';
+  return t('plan.international_plan');
 }
 
 // Helper function to get the correct flag for a product
@@ -500,7 +499,7 @@ export const PlanList: React.FC<PlanListProps> = ({
           displayPrice = formatPrice(parseFloat(fallback.amount), selectedCurrency);
         }
         
-        const displayName = getDisplayName(plan, t, selectedCategoryData, categories);
+        const displayName = getDisplayName(plan, getCountryName, t, selectedCategoryData, categories);
         const isRegional = plan.plan_type === 'regional';
         const gbAmount = plan.data_gb;
         const validityDays = plan.validity_days;
@@ -515,7 +514,7 @@ export const PlanList: React.FC<PlanListProps> = ({
             // Convert ISO3 codes to country names
             coverageCountries = plan.metadata.countries_iso3
               .filter((iso3Code: string) => iso3Code && typeof iso3Code === 'string' && iso3Code.trim().length > 0)
-              .map((iso3Code: string) => getCountryNameFromISO3(iso3Code))
+              .map((iso3Code: string) => getCountryNameFromISO3(iso3Code, getCountryName))
               .filter((countryName: string) => countryName && countryName !== iso3Code); // Filter out failed conversions
           } catch (error) {
             console.warn('Error processing countries for plan', plan.id, ':', error);
@@ -696,7 +695,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                     {/* Data Amount */}
                     {gbAmount !== null && gbAmount !== undefined && (
                       <div>
-                        <div className="text-base font-medium text-gray-900">
+                        <div className="text-base font-medium text-gray-900 whitespace-nowrap">
                           {gbAmount < 1 ? `${Math.round(gbAmount * 1024)} MB` : `${gbAmount} GB`}
                         </div>
                         <div className="text-xs text-gray-500">{t('plan.data')}</div>
@@ -706,7 +705,7 @@ export const PlanList: React.FC<PlanListProps> = ({
                     {/* Validity */}
                     {validityDays !== null && validityDays !== undefined && (
                       <div>
-                        <div className="text-base font-medium text-gray-900">{validityDays} {t('plan.days')}</div>
+                        <div className="text-base font-medium text-gray-900 whitespace-nowrap">{validityDays} {t('plan.days')}</div>
                         <div className="text-xs text-gray-500">{t('plan.validity')}</div>
                       </div>
                     )}
