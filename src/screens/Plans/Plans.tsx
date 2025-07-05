@@ -18,7 +18,7 @@ import { useSync } from './hooks/useSync';
 import { useDebounce } from '../../hooks/useDebounce';
 import { supabase, type Category, type Product } from '../../lib/supabase';
 import { IntelligentSearch, type SearchSuggestion } from '../../lib/search/searchUtils';
-import { countryUtils } from '../../lib/countries/countryUtils';
+import { useCountryName } from '../../hooks/useCountryName';
 
 interface PlansProps {
   isEmbedded?: boolean;
@@ -41,6 +41,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [searchEngine, setSearchEngine] = useState<IntelligentSearch | null>(null);
   const isDesktop = useIsDesktop();
+  const { getCountryName } = useCountryName();
   
   const categoriesPerPage = isDesktop ? 30 : 6;
   
@@ -396,12 +397,12 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
                       <div className="flex items-center space-x-3 p-4 bg-primary/10 rounded-xl border border-primary/20">
                         <div className="w-8 h-5 rounded overflow-hidden flex items-center justify-center bg-white shadow-sm">
                           <span 
-                            className={countryUtils.getFlagClass(selectedCategoryData?.slug || '')} 
+                            className={countryUtils.getFlagClass(selectedCategoryData?.slug || '')}
                             style={{ transform: 'scale(1.3)' }} 
                           />
                         </div>
                         <h3 className="text-lg font-semibold text-primary">
-                          {t('plans.plans_for')} {countryUtils.getCountryName(selectedCategoryData?.slug || '')}
+                          {t('plans.plans_for')} {getCountryName(selectedCategoryData?.slug || '')}
                         </h3>
                         <button
                           onClick={() => setSelectedCategory(undefined)}

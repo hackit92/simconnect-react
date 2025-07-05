@@ -8,6 +8,7 @@ import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useCart } from '../../../contexts/CartContext';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
+import { useCountryName } from '../../../hooks/useCountryName';
 
 // Import technology SVG assets
 import FiveGIcon from '../../../assets/technology/5G.svg?react';
@@ -45,9 +46,11 @@ const regionSvgIcons: Record<string, React.ComponentType<any>> = {
 // Helper function to convert ISO3 country codes to country names
 function getCountryNameFromISO3(iso3Code: string): string {
   // Convert ISO3 to ISO2 first, then get the country name
+  const { i18n } = { i18n: { language: 'en' } }; // Default to English
   const iso2Code = iso3ToIso2(iso3Code);
   if (iso2Code) {
-    return countryUtils.getCountryName(iso2Code);
+    const lang = i18n.language === 'en' ? 'en' : 'es';
+    return countryUtils.getCountryName(iso2Code, lang);
   }
   
   // Fallback: return the ISO3 code if conversion fails
@@ -411,7 +414,7 @@ export const PlanList: React.FC<PlanListProps> = ({
   const { selectedCurrency, formatPrice } = useCurrency();
   const { addToCart, isInCart } = useCart();
   const isDesktop = useIsDesktop();
-  const { t } = useTranslation();
+  const { getCountryName } = useCountryName();
   const [expandedRegionalPlans, setExpandedRegionalPlans] = React.useState<Set<number>>(new Set());
 
   const handlePurchase = (productId: number) => {

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
-import { countryUtils } from '../../../lib/countries/countryUtils';
+import { useCountryName } from '../../../hooks/useCountryName';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
 
 interface CountryGridProps {
@@ -25,6 +25,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
 }) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
+  const { getCountryName } = useCountryName();
 
   // Adjust grid columns based on screen size
   const getGridCols = () => {
@@ -80,7 +81,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                   {/* Flag Container */}
                   <div className="relative w-8 h-5 rounded overflow-hidden flex items-center justify-center bg-white shadow-sm flex-shrink-0">
                     <span 
-                      className={countryCode} 
+                      className={countryUtils.getFlagClass(category.slug)}
                       style={{ transform: 'scale(1.5)' }} 
                     />
                   </div>
@@ -90,7 +91,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                     <h3 className={`text-xs font-medium transition-colors duration-200 truncate ${
                       isSelected ? 'text-primary' : 'text-gray-900'
                     }`}>
-                      {countryName}
+                      {getCountryName(category.slug)}
                     </h3>
                   </div>
                   
@@ -123,7 +124,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                   {/* Flag Container */}
                   <div className="relative w-12 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-white shadow-sm">
                     <span 
-                      className={countryCode} 
+                      className={countryUtils.getFlagClass(category.slug)}
                       style={{ transform: 'scale(1.8)' }} 
                     />
                   </div>
@@ -133,7 +134,7 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
                     <h3 className={`text-base font-semibold transition-colors duration-200 ${
                       isSelected ? 'text-primary' : 'text-gray-900'
                     }`}>
-                      {countryName}
+                      {getCountryName(category.slug)}
                     </h3>
                   </div>
                   
