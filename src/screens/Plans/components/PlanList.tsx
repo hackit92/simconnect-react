@@ -8,7 +8,6 @@ import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useCart } from '../../../contexts/CartContext';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
-import { useTranslation } from 'react-i18next';
 
 // Import technology SVG assets
 import FiveGIcon from '../../../assets/technology/5G.svg?react';
