@@ -108,7 +108,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onKeyDown={handleKeyDown}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          className={`w-full pl-12 pr-12 text-base bg-gray-50 border-0 rounded-2xl focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200 placeholder-gray-500 ${
+          className={`w-full pl-12 pr-12 text-base bg-gray-50 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all duration-200 placeholder-gray-500 ${
             isDesktop ? 'py-5 text-lg' : 'py-4'
           }`}
           autoComplete="off"

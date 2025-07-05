@@ -1,6 +1,8 @@
 import { countryUtils } from '../countries/countryUtils';
 import type { Category } from '../supabase';
 
+import { useTranslation } from 'react-i18next';
+
 // Función para calcular la distancia de Levenshtein (similitud entre strings)
 function levenshteinDistance(str1: string, str2: string): number {
   const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
@@ -49,21 +51,31 @@ function normalizeText(text: string): string {
 
 // Mapeo de regiones a países
 export const regionMapping: Record<string, string[]> = {
+  // Spanish region names
   'europa': ['spain', 'france', 'germany', 'italy', 'netherlands', 'portugal', 'greece', 'switzerland', 'austria', 'belgium', 'denmark', 'finland', 'ireland', 'norway', 'sweden', 'united-kingdom', 'poland', 'czechia', 'hungary', 'romania', 'bulgaria', 'croatia', 'slovenia', 'slovakia', 'lithuania', 'latvia', 'estonia'],
-  'europe': ['spain', 'france', 'germany', 'italy', 'netherlands', 'portugal', 'greece', 'switzerland', 'austria', 'belgium', 'denmark', 'finland', 'ireland', 'norway', 'sweden', 'united-kingdom', 'poland', 'czechia', 'hungary', 'romania', 'bulgaria', 'croatia', 'slovenia', 'slovakia', 'lithuania', 'latvia', 'estonia'],
   'latinoamerica': ['mexico', 'brazil', 'argentina', 'chile', 'colombia', 'peru', 'venezuela', 'ecuador', 'bolivia', 'paraguay', 'uruguay', 'costa-rica', 'panama', 'guatemala', 'honduras', 'el-salvador', 'nicaragua', 'cuba', 'dominican-republic'],
-  'latin america': ['mexico', 'brazil', 'argentina', 'chile', 'colombia', 'peru', 'venezuela', 'ecuador', 'bolivia', 'paraguay', 'uruguay', 'costa-rica', 'panama', 'guatemala', 'honduras', 'el-salvador', 'nicaragua', 'cuba', 'dominican-republic'],
-  'america latina': ['mexico', 'brazil', 'argentina', 'chile', 'colombia', 'peru', 'venezuela', 'ecuador', 'bolivia', 'paraguay', 'uruguay', 'costa-rica', 'panama', 'guatemala', 'honduras', 'el-salvador', 'nicaragua', 'cuba', 'dominican-republic'],
   'norteamerica': ['united-states', 'canada'],
-  'north america': ['united-states', 'canada'],
-  'america del norte': ['united-states', 'canada'],
   'asia': ['china', 'japan', 'south-korea', 'india', 'thailand', 'singapore', 'malaysia', 'indonesia', 'philippines', 'vietnam', 'cambodia', 'laos', 'myanmar', 'bangladesh', 'pakistan', 'sri-lanka'],
   'africa': ['south-africa', 'egypt', 'morocco', 'nigeria', 'kenya', 'ghana', 'ethiopia', 'tanzania', 'uganda', 'zimbabwe', 'zambia', 'botswana', 'namibia'],
   'caribe': ['cuba', 'dominican-republic', 'jamaica', 'bahamas', 'barbados', 'trinidad-and-tobago', 'antigua-and-barbuda', 'saint-lucia', 'grenada', 'saint-vincent-grenadines'],
+  'oriente-medio': ['israel', 'turkey', 'united-arab-emirates', 'saudi-arabia', 'qatar', 'kuwait', 'bahrain', 'oman', 'jordan', 'lebanon'],
+  'oceania': ['australia', 'new-zealand', 'fiji', 'papua-new-guinea', 'samoa', 'tonga', 'vanuatu', 'solomon-islands'],
+  'balcanes': ['serbia', 'croatia', 'bosnia-and-herzegovina', 'montenegro', 'north-macedonia', 'albania', 'kosovo', 'slovenia'],
+  'asia-central': ['kazakhstan', 'uzbekistan', 'kyrgyzstan', 'tajikistan', 'turkmenistan', 'georgia', 'armenia', 'azerbaijan'],
+  
+  // English region names
+  'europe': ['spain', 'france', 'germany', 'italy', 'netherlands', 'portugal', 'greece', 'switzerland', 'austria', 'belgium', 'denmark', 'finland', 'ireland', 'norway', 'sweden', 'united-kingdom', 'poland', 'czechia', 'hungary', 'romania', 'bulgaria', 'croatia', 'slovenia', 'slovakia', 'lithuania', 'latvia', 'estonia'],
+  'latin america': ['mexico', 'brazil', 'argentina', 'chile', 'colombia', 'peru', 'venezuela', 'ecuador', 'bolivia', 'paraguay', 'uruguay', 'costa-rica', 'panama', 'guatemala', 'honduras', 'el-salvador', 'nicaragua', 'cuba', 'dominican-republic'],
+  'america latina': ['mexico', 'brazil', 'argentina', 'chile', 'colombia', 'peru', 'venezuela', 'ecuador', 'bolivia', 'paraguay', 'uruguay', 'costa-rica', 'panama', 'guatemala', 'honduras', 'el-salvador', 'nicaragua', 'cuba', 'dominican-republic'],
+  'north america': ['united-states', 'canada'],
+  'america del norte': ['united-states', 'canada'],
   'caribbean': ['cuba', 'dominican-republic', 'jamaica', 'bahamas', 'barbados', 'trinidad-and-tobago', 'antigua-and-barbuda', 'saint-lucia', 'grenada', 'saint-vincent-grenadines'],
-  'oriente medio': ['israel', 'turkey', 'united-arab-emirates', 'saudi-arabia', 'qatar', 'kuwait', 'bahrain', 'oman', 'jordan', 'lebanon'],
   'middle east': ['israel', 'turkey', 'united-arab-emirates', 'saudi-arabia', 'qatar', 'kuwait', 'bahrain', 'oman', 'jordan', 'lebanon'],
-  'oceania': ['australia', 'new-zealand', 'fiji', 'papua-new-guinea', 'samoa', 'tonga', 'vanuatu', 'solomon-islands']
+  'oriente medio': ['israel', 'turkey', 'united-arab-emirates', 'saudi-arabia', 'qatar', 'kuwait', 'bahrain', 'oman', 'jordan', 'lebanon'],
+  'balkans': ['serbia', 'croatia', 'bosnia-and-herzegovina', 'montenegro', 'north-macedonia', 'albania', 'kosovo', 'slovenia'],
+  'central asia': ['kazakhstan', 'uzbekistan', 'kyrgyzstan', 'tajikistan', 'turkmenistan', 'georgia', 'armenia', 'azerbaijan'],
+  'asia central': ['kazakhstan', 'uzbekistan', 'kyrgyzstan', 'tajikistan', 'turkmenistan', 'georgia', 'armenia', 'azerbaijan'],
+  'caucasus': ['georgia', 'armenia', 'azerbaijan']
 };
 
 // Sinónimos y variaciones de nombres de países

@@ -260,15 +260,15 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
   // Get region name for display
   const getRegionDisplayName = (regionValue: string): string => {
     const regionNames: Record<string, string> = {
-      'latinoamerica': 'Latinoamérica',
-      'europa': 'Europa',
-      'norteamerica': 'Norteamérica',
-      'balcanes': 'Balcanes',
-      'oriente-medio': 'Oriente Medio',
-      'caribe': 'Caribe',
-      'asia-central': 'Asia Central y Cáucaso',
-      'africa': 'África',
-      'oceania': 'Oceanía'
+      'latinoamerica': t('region.latinoamerica'),
+      'europa': t('region.europa'),
+      'norteamerica': t('region.norteamerica'),
+      'balcanes': t('region.balcanes'),
+      'oriente-medio': t('region.oriente-medio'),
+      'caribe': t('region.caribe'),
+      'asia-central': t('region.asia-central'),
+      'africa': t('region.africa'),
+      'oceania': t('region.oceania')
     };
     return regionNames[regionValue] || regionValue;
   };

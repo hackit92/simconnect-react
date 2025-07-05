@@ -184,7 +184,7 @@ export const RegionGrid: React.FC<RegionGridProps> = ({
                 )}
               </div>
               
-              <div className="text-lg font-medium mb-1">{region.label}</div>
+              <div className="text-lg font-medium mb-1">{t(`region.${region.value}`)}</div>
               <div className="text-sm text-gray-500">
                 {regionCategories.length > 0 && (
                   <div>{regionCategories.length} {regionCategories.length === 1 ? 'país' : 'países'}</div>

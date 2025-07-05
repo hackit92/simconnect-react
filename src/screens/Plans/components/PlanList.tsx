@@ -8,6 +8,7 @@ import { countryUtils } from '../../../lib/countries/countryUtils';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useCart } from '../../../contexts/CartContext';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
+import { useTranslation } from 'react-i18next';
 
 // Import technology SVG assets
 import FiveGIcon from '../../../assets/technology/5G.svg?react';
@@ -304,16 +305,16 @@ function getDisplayName(
   // For regional plans, use formatted region names
   if (product.plan_type === 'regional') {
     const regionNames: Record<string, string> = {
-      'latinoamerica': 'Latinoamérica',
-      'europa': 'Europa',
-      'norteamerica': 'Norteamérica',
-      'balcanes': 'Balcanes',
-      'oriente-medio': 'Oriente Medio',
-      'caribe': 'Caribe',
-      'asia-central': 'Asia Central y Cáucaso',
-      'asia': 'Asia',
-      'africa': 'África',
-      'oceania': 'Oceanía'
+      'latinoamerica': t('region.latinoamerica'),
+      'europa': t('region.europa'),
+      'norteamerica': t('region.norteamerica'),
+      'balcanes': t('region.balcanes'),
+      'oriente-medio': t('region.oriente-medio'),
+      'caribe': t('region.caribe'),
+      'asia-central': t('region.asia-central'),
+      'asia': t('region.asia'),
+      'africa': t('region.africa'),
+      'oceania': t('region.oceania')
     };
     return regionNames[product.region_code || ''] || 'Plan Regional';
   }
@@ -411,6 +412,7 @@ export const PlanList: React.FC<PlanListProps> = ({
   const { selectedCurrency, formatPrice } = useCurrency();
   const { addToCart, isInCart } = useCart();
   const isDesktop = useIsDesktop();
+  const { t } = useTranslation();
   const { t } = useTranslation();
   const [expandedRegionalPlans, setExpandedRegionalPlans] = React.useState<Set<number>>(new Set());
 
