@@ -412,7 +412,6 @@ export const PlanList: React.FC<PlanListProps> = ({
   const { addToCart, isInCart } = useCart();
   const isDesktop = useIsDesktop();
   const { t } = useTranslation();
-  const { t } = useTranslation();
   const [expandedRegionalPlans, setExpandedRegionalPlans] = React.useState<Set<number>>(new Set());
 
   const handlePurchase = (productId: number) => {
