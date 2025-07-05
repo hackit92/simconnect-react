@@ -375,7 +375,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
               {/* Left Column - Filters and Selection */}
               <div className={`${
                 isDesktop && !isEmbedded
-                  ? shouldShowPlans ? 'w-1/3' : 'w-full' 
+                  ? 'w-1/3' 
                   : 'w-full'
               }`}>
                 
@@ -562,7 +562,7 @@ export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
               {/* Right Column - Plans List */}
               <div className={`${
                 isDesktop && !isEmbedded
-                  ? shouldShowPlans ? 'w-2/3 pl-8 border-l border-gray-100' : 'hidden'
+                  ? 'w-2/3 pl-8 border-l border-gray-100' 
                   : 'w-full mt-6'
               }`}>
                 {/* Plan Filters - Show when plans are displayed */}

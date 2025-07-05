@@ -7,7 +7,6 @@ import { useCurrency } from "../contexts/CurrencyContext";
 import { supabase } from "../lib/supabase";
 import { Home } from "../screens/Home";
 import { Cart } from "../screens/Cart";
-import { Plans } from "../screens/Plans";
 import { Products } from "../screens/Products";
 import { Success } from "../screens/Success";
 import { CheckoutForm } from "../screens/CheckoutForm";
@@ -160,7 +159,6 @@ export const DesktopAppLayout: React.FC = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/plans" element={<Plans />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/products" element={
             <ProtectedRoute>
