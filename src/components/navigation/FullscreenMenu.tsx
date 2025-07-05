@@ -2,33 +2,9 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Home, Globe, ShoppingCart, User, LogIn } from 'lucide-react';
+import { X, Home, Globe, ShoppingCart, User, LogIn, Phone, Mail, HelpCircle, MessageCircle } from 'lucide-react';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useCart } from '../../contexts/CartContext';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-
-interface CurrencyOption {
-  value: string;
-  label: string;
-  symbol: string;
-}
-
-interface LanguageOption {
-  value: string;
-  label: string;
-  flag: string;
-}
-
-const currencies: CurrencyOption[] = [
-  { value: "USD", label: "US Dollar", symbol: "$" },
-  { value: "EUR", label: "Euro", symbol: "€" },
-  { value: "MXN", label: "Peso Mexicano", symbol: "$" },
-];
-
-const languages: LanguageOption[] = [
-  { value: "es", label: "Español", flag: "🇪🇸" },
-  { value: "en", label: "English", flag: "🇺🇸" },
-];
 
 interface FullscreenMenuProps {
   isOpen: boolean;
@@ -43,18 +19,8 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
   user,
   onLogout
 }) => {
-  const { t, i18n } = useTranslation();
-  const { selectedCurrency, setSelectedCurrency } = useCurrency();
-  const { getTotalItems } = useCart();
+  const { t } = useTranslation();
   const location = useLocation();
-
-  const handleCurrencyChange = (value: string) => {
-    setSelectedCurrency(value);
-  };
-
-  const handleLanguageChange = (language: string) => {
-    i18n.changeLanguage(language);
-  };
 
   const handleNavigation = () => {
     onClose();
@@ -63,17 +29,17 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
   const menuVariants = {
     closed: {
       opacity: 0,
-      scale: 0.95,
+      x: '-100%',
       transition: {
-        duration: 0.2,
+        duration: 0.3,
         ease: "easeInOut"
       }
     },
     open: {
       opacity: 1,
-      scale: 1,
+      x: 0,
       transition: {
-        duration: 0.3,
+        duration: 0.4,
         ease: "easeOut"
       }
     }
@@ -83,13 +49,13 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
     closed: {
       opacity: 0,
       transition: {
-        duration: 0.2
+        duration: 0.3
       }
     },
     open: {
       opacity: 1,
       transition: {
-        duration: 0.3
+        duration: 0.4
       }
     }
   };
@@ -97,16 +63,16 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
   const itemVariants = {
     closed: {
       opacity: 0,
-      y: 20,
+      x: -20,
       transition: {
         duration: 0.2
       }
     },
     open: {
       opacity: 1,
-      y: 0,
+      x: 0,
       transition: {
-        duration: 0.3,
+        duration: 0.4,
         ease: "easeOut"
       }
     }
@@ -116,7 +82,7 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
     open: {
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.1
+        delayChildren: 0.2
       }
     },
     closed: {
@@ -126,6 +92,20 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
       }
     }
   };
+
+  const menuItems = [
+    { path: '/', label: 'Inicio', icon: <Home className="w-6 h-6" /> },
+    { path: '/plans', label: 'Planes', icon: <Globe className="w-6 h-6" /> },
+    { path: '/cart', label: 'Carrito', icon: <ShoppingCart className="w-6 h-6" /> },
+    { path: '/products', label: 'Mi Cuenta', icon: <User className="w-6 h-6" />, requiresAuth: true },
+    { externalLink: 'https://my.simconnect.travel/', label: 'Iniciar Sesión', icon: <LogIn className="w-6 h-6" />, requiresNoAuth: true },
+  ];
+
+  const supportItems = [
+    { label: 'Preguntas Frecuentes', icon: <HelpCircle className="w-6 h-6" /> },
+    { label: 'Ayuda', icon: <MessageCircle className="w-6 h-6" /> },
+    { label: 'Contacto', icon: <Phone className="w-6 h-6" /> },
+  ];
 
   return (
     <AnimatePresence>
@@ -143,40 +123,33 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
 
           {/* Menu */}
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-8"
-            variants={overlayVariants}
+            className="fixed inset-y-0 left-0 z-50 w-full md:w-[400px] bg-white shadow-2xl flex flex-col"
+            variants={menuVariants}
             initial="closed"
             animate="open"
             exit="closed"
           >
-            <motion.div
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-              variants={menuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-8 border-b border-gray-100">
-                <div className="flex items-center space-x-4">
-                  <img
-                    className="h-8 w-auto"
-                    alt="SimConnect Travel Logo"
-                    src="/image-1.png"
-                  />
-                  <span className="text-xl font-semibold text-gray-900">Menu</span>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
-                >
-                  <X className="w-6 h-6 text-gray-600" />
-                </button>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div className="flex items-center space-x-4">
+                <img
+                  className="h-8 w-auto"
+                  alt="SimConnect Travel Logo"
+                  src="/image-1.png"
+                />
               </div>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
 
-              {/* Content */}
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto">
               <motion.div
-                className="p-8 space-y-8"
+                className="p-6 space-y-8"
                 variants={staggerContainer}
                 initial="closed"
                 animate="open"
@@ -184,125 +157,82 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
               >
                 {/* Navigation Links */}
                 <motion.div variants={itemVariants} className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Navegación</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Link
-                      to="/"
-                      onClick={handleNavigation}
-                      className={`flex items-center space-x-3 p-4 rounded-xl transition-all duration-200 ${
-                        location.pathname === '/'
-                          ? 'bg-primary/10 text-primary border-2 border-primary/20'
-                          : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <Home className="w-6 h-6" />
-                      <span className="font-medium">{t('nav.home')}</span>
-                    </Link>
+                  <div className="space-y-3">
+                    {menuItems.map((item) => {
+                      // Skip items that require authentication if user is not logged in
+                      if (item.requiresAuth && !user) return null;
+                      // Skip items that require no authentication if user is logged in
+                      if (item.requiresNoAuth && user) return null;
 
-                    <Link
-                      to="/plans"
-                      onClick={handleNavigation}
-                      className={`flex items-center space-x-3 p-4 rounded-xl transition-all duration-200 ${
-                        location.pathname === '/plans'
-                          ? 'bg-primary/10 text-primary border-2 border-primary/20'
-                          : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <Globe className="w-6 h-6" />
-                      <span className="font-medium">{t('nav.plans')}</span>
-                    </Link>
+                      if (item.externalLink) {
+                        return (
+                          <a
+                            key={item.label}
+                            href={item.externalLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={handleNavigation}
+                            className="flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
+                          >
+                            {item.icon}
+                            <span className="text-xl font-medium">{item.label}</span>
+                          </a>
+                        );
+                      }
 
-                    <Link
-                      to="/cart"
-                      onClick={handleNavigation}
-                      className={`flex items-center space-x-3 p-4 rounded-xl transition-all duration-200 ${
-                        location.pathname === '/cart'
-                          ? 'bg-primary/10 text-primary border-2 border-primary/20'
-                          : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <div className="relative">
-                        <ShoppingCart className="w-6 h-6" />
-                        {getTotalItems() > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                            {getTotalItems()}
-                          </span>
-                        )}
-                      </div>
-                      <span className="font-medium">{t('nav.cart')}</span>
-                    </Link>
-
-                    {user ? (
-                      <Link
-                        to="/products"
-                        onClick={handleNavigation}
-                        className={`flex items-center space-x-3 p-4 rounded-xl transition-all duration-200 ${
-                          location.pathname === '/products'
-                            ? 'bg-primary/10 text-primary border-2 border-primary/20'
-                            : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        <User className="w-6 h-6" />
-                        <span className="font-medium">{t('nav.account')}</span>
-                      </Link>
-                    ) : (
-                      <a
-                        href="https://my.simconnect.travel/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={handleNavigation}
-                        className="flex items-center space-x-3 p-4 rounded-xl transition-all duration-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
-                      >
-                        <LogIn className="w-6 h-6" />
-                        <span className="font-medium">{t('nav.login')}</span>
-                      </a>
-                    )}
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={handleNavigation}
+                          className={`flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 ${
+                            location.pathname === item.path
+                              ? 'bg-primary/10 text-primary'
+                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          {item.icon}
+                          <span className="text-xl font-medium">{item.label}</span>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </motion.div>
 
-                {/* Language & Currency */}
-                <motion.div variants={itemVariants} className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Configuración</h3>
-                  
-                  {/* Language Selector */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Idioma</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {languages.map((language) => (
-                        <button
-                          key={language.value}
-                          onClick={() => handleLanguageChange(language.value)}
-                          className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                            i18n.language === language.value
-                              ? 'bg-primary/10 text-primary border-2 border-primary/20'
-                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          <span className="text-xl">{language.flag}</span>
-                          <span className="font-medium">{language.label}</span>
-                        </button>
-                      ))}
-                    </div>
+                {/* Support Links */}
+                <motion.div variants={itemVariants} className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 px-4">Soporte</h3>
+                  <div className="space-y-3">
+                    {supportItems.map((item) => (
+                      <a
+                        key={item.label}
+                        href="#"
+                        className="flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
+                      >
+                        {item.icon}
+                        <span className="text-xl font-medium">{item.label}</span>
+                      </a>
+                    ))}
                   </div>
+                </motion.div>
 
-                  {/* Currency Selector */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Moneda</label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {currencies.map((currency) => (
-                        <button
-                          key={currency.value}
-                          onClick={() => handleCurrencyChange(currency.value)}
-                          className={`flex flex-col items-center space-y-1 p-3 rounded-xl transition-all duration-200 ${
-                            selectedCurrency === currency.value
-                              ? 'bg-primary/10 text-primary border-2 border-primary/20'
-                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          <span className="text-xl font-bold">{currency.symbol}</span>
-                          <span className="text-xs font-medium">{currency.value}</span>
-                        </button>
-                      ))}
+                {/* Contact Info */}
+                <motion.div variants={itemVariants} className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 px-4">Contáctanos</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-4 p-4 rounded-xl bg-gray-50 text-gray-700">
+                      <Phone className="w-6 h-6 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium">+1 (888) 286-0080</p>
+                        <p className="text-xs text-gray-500">Soporte 24/7</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4 p-4 rounded-xl bg-gray-50 text-gray-700">
+                      <Mail className="w-6 h-6 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium">support@simconnect.travel</p>
+                        <p className="text-xs text-gray-500">Respuesta en 24h</p>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -323,7 +253,7 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
                   </motion.div>
                 )}
               </motion.div>
-            </motion.div>
+            </div>
           </motion.div>
         </>
       )}

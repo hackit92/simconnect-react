@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { HomeIcon, ShoppingCartIcon, GlobeIcon, UserIcon, User } from "lucide-react";
+import { HomeIcon, ShoppingCartIcon, GlobeIcon, UserIcon, User, Menu } from "lucide-react";
 import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"; 
 import { useCurrency } from "../contexts/CurrencyContext";
@@ -12,6 +12,7 @@ import { Products } from "../screens/Products";
 import { Success } from "../screens/Success";
 import { CheckoutForm } from "../screens/CheckoutForm";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
+import { FullscreenMenu } from "../components/navigation/FullscreenMenu";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -48,6 +49,7 @@ export const MobileAppLayout: React.FC = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -74,6 +76,16 @@ export const MobileAppLayout: React.FC = () => {
     i18n.changeLanguage(language);
   }, [i18n]);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+    setIsMenuOpen(false);
+  };
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className="flex flex-col h-full w-full">
       {/* Header */}
@@ -86,7 +98,7 @@ export const MobileAppLayout: React.FC = () => {
           />
         </div>
         <NavigationMenu>
-          <NavigationMenuList className="flex items-center gap-3">
+          <NavigationMenuList className="flex items-center gap-2">
             <NavigationMenuItem>
               <Popover>
                 <PopoverTrigger className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all">
@@ -138,6 +150,14 @@ export const MobileAppLayout: React.FC = () => {
                   </div>
                 </PopoverContent>
               </Popover>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <button 
+                onClick={handleMenuToggle}
+                className="flex items-center gap-1.5 h-8 px-3 text-sm bg-white hover:bg-gray-50 rounded-full border border-gray-200 transition-all"
+              >
+                <Menu className="w-4 h-4 text-gray-600" />
+              </button>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -232,6 +252,14 @@ export const MobileAppLayout: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {/* Fullscreen Menu */}
+      <FullscreenMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        user={user}
+        onLogout={handleLogout}
+      />
     </div>
   );
 };

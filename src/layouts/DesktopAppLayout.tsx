@@ -1,8 +1,9 @@
 import React from 'react';
-import { ShoppingCartIcon, User, Menu } from "lucide-react";
+import { ShoppingCartIcon, User, Menu, Globe } from "lucide-react";
 import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"; 
 import { useCart } from "../contexts/CartContext";
+import { useCurrency } from "../contexts/CurrencyContext";
 import { supabase } from "../lib/supabase";
 import { Home } from "../screens/Home";
 import { Cart } from "../screens/Cart";
@@ -14,6 +15,7 @@ import { FullscreenMenu } from "../components/navigation/FullscreenMenu";
 
 export const DesktopAppLayout: React.FC = () => {
   const { getTotalItems } = useCart();
+  const { selectedCurrency, setSelectedCurrency } = useCurrency();
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,6 +48,14 @@ export const DesktopAppLayout: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleCurrencyChange = (value: string) => {
+    setSelectedCurrency(value);
+  };
+
+  const handleLanguageChange = (language: string) => {
+    i18n.changeLanguage(language);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Top Navigation */}
@@ -63,6 +73,45 @@ export const DesktopAppLayout: React.FC = () => {
 
             {/* Right side controls */}
             <div className="flex items-center space-x-6">
+              {/* Language Selector */}
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <button
+                  onClick={() => handleLanguageChange('en')}
+                  className={`px-2 py-1 transition-colors duration-200 ${
+                    i18n.language === 'en' 
+                      ? 'text-gray-900 font-medium' 
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  EN
+                </button>
+                <span className="text-gray-300">|</span>
+                <button
+                  onClick={() => handleLanguageChange('es')}
+                  className={`px-2 py-1 transition-colors duration-200 ${
+                    i18n.language === 'es' 
+                      ? 'text-gray-900 font-medium' 
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  ES
+                </button>
+              </div>
+
+              {/* Currency Selector */}
+              <div className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                <Globe className="w-4 h-4" />
+                <select 
+                  value={selectedCurrency}
+                  onChange={(e) => handleCurrencyChange(e.target.value)}
+                  className="bg-transparent border-none focus:outline-none focus:ring-0 cursor-pointer"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="MXN">MXN</option>
+                </select>
+              </div>
+
               {/* Cart */}
               <Link 
                 to="/cart" 
