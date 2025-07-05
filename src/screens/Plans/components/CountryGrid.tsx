@@ -4,7 +4,6 @@ import { Search, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Category } from "../../../lib/supabase";
 import { useCountryName } from '../../../hooks/useCountryName';
-import { useCountryName } from '../../../hooks/useCountryName';
 import { useIsDesktop } from '../../../hooks/useIsDesktop';
 import { countryUtils } from '../../../lib/countries/countryUtils';
 
@@ -27,7 +26,6 @@ export const CountryGrid: React.FC<CountryGridProps> = ({
 }) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
-  const { getCountryName } = useCountryName();
   const { getCountryName } = useCountryName();
 
   // Adjust grid columns based on screen size
