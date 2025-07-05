@@ -301,6 +301,7 @@ function getFallbackPrice(product: Product): { amount: string; currency: string 
 // Helper function to get display name - now using database fields
 function getDisplayName(
   product: Product, 
+  t: (key: string) => string,
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null },
   categories?: { id: number; name: string; slug: string; parent: number | null }[]
 ): string {
@@ -411,6 +412,7 @@ export const PlanList: React.FC<PlanListProps> = ({
   selectedCategoryData,
   categories
 }) => {
+  const { t } = useTranslation();
   const { selectedCurrency, formatPrice } = useCurrency();
   const { addToCart, isInCart } = useCart();
   const isDesktop = useIsDesktop();
@@ -499,6 +501,7 @@ export const PlanList: React.FC<PlanListProps> = ({
         }
         
         const displayName = getDisplayName(plan, selectedCategoryData, categories);
+        const displayName = getDisplayName(plan, t, selectedCategoryData, categories);
         const isRegional = plan.plan_type === 'regional';
         const gbAmount = plan.data_gb;
         const validityDays = plan.validity_days;
