@@ -26,7 +26,7 @@ interface PlansProps {
 }
 
 export const Plans: React.FC<PlansProps> = ({ isEmbedded = false }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<'countries' | 'regions'>('countries');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
