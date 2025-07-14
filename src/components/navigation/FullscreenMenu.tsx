@@ -112,6 +112,7 @@ export const FullscreenMenu: React.FC<FullscreenMenuProps> = ({
   const menuItems = [
     { path: '/', label: 'Inicio', icon: <Home className="w-6 h-6" /> },
     { path: '/plans', label: 'Planes', icon: <Globe className="w-6 h-6" />, isPlans: true },
+    { path: '/compatibility', label: 'Compatibilidad', icon: <Phone className="w-6 h-6" /> },
     { path: '/cart', label: 'Carrito', icon: <ShoppingCart className="w-6 h-6" /> },
     { path: '/products', label: 'Mi Cuenta', icon: <User className="w-6 h-6" />, requiresAuth: true },
     { externalLink: 'https://my.simconnect.travel/', label: 'Iniciar Sesión', icon: <LogIn className="w-6 h-6" />, requiresNoAuth: true },

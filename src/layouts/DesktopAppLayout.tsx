@@ -10,6 +10,7 @@ import { Cart } from "../screens/Cart";
 import { Products } from "../screens/Products";
 import { Success } from "../screens/Success";
 import { CheckoutForm } from "../screens/CheckoutForm";
+import { CompatibilityChecker } from "../screens/CompatibilityChecker";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { FullscreenMenu } from "../components/navigation/FullscreenMenu";
 
@@ -159,6 +160,7 @@ export const DesktopAppLayout: React.FC = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/compatibility" element={<CompatibilityChecker />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/products" element={
             <ProtectedRoute>
