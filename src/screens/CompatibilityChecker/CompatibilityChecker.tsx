@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Smartphone, 
@@ -13,7 +14,6 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
-import { useNavigate } from 'react-router-dom';
 
 interface CompatibilityResult {
   isCompatible: boolean;
@@ -113,13 +113,32 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [deviceInput, setDeviceInput] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<CompatibilityResult | null>(null);
   const [showResult, setShowResult] = useState(false);
 
-  const checkCompatibility = async () => {
-    if (!deviceInput.trim()) return;
+  // Check for device parameter on load (for standalone page)
+  React.useEffect(() => {
+    if (!isEmbedded) {
+      const deviceParam = searchParams.get('device');
+      if (deviceParam) {
+        setDeviceInput(deviceParam);
+        checkCompatibility(deviceParam);
+      }
+    }
+  }, [searchParams, isEmbedded]);
+
+  const checkCompatibility = async (deviceToCheck?: string) => {
+    const device = deviceToCheck || deviceInput.trim();
+    if (!device) return;
+
+    // If embedded, navigate to standalone page with device parameter
+    if (isEmbedded) {
+      navigate(`/compatibility?device=${encodeURIComponent(device)}`);
+      return;
+    }
 
     setIsChecking(true);
     setShowResult(false);
@@ -127,7 +146,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    const normalizedInput = deviceInput.toLowerCase().trim();
+    const normalizedInput = device.toLowerCase().trim();
     
     // Find matching device
     const matchedDevice = compatibleDevices.find(device =>
@@ -173,6 +192,73 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
     }
   };
 
+  // Embedded layout for home page
+  if (isEmbedded) {
+    return (
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`${
+            isDesktop 
+              ? 'grid grid-cols-2 gap-16 items-center' 
+              : 'space-y-8'
+          }`}>
+            {/* Left Column - Title and Description */}
+            <div className={`${isDesktop ? 'text-left' : 'text-center'}`}>
+              <h2 className={`font-light text-gray-800 mb-4 ${
+                isDesktop ? 'text-5xl' : 'text-3xl'
+              }`}>
+                {t('compatibility.home_title_part1')} <span className="text-[#299ae4] font-normal">{t('compatibility.home_title_part2')}</span><br />
+                <span className="text-[#299ae4] font-normal">{t('compatibility.home_title_part3')}</span>
+              </h2>
+              <p className={`text-gray-600 ${
+                isDesktop ? 'text-lg max-w-lg' : 'text-base'
+              }`}>
+                {t('compatibility.home_subtitle')}
+              </p>
+            </div>
+
+            {/* Right Column - Compatibility Checker */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+              <h3 className="text-2xl font-semibold text-[#299ae4] text-center mb-8">
+                {t('compatibility.title')}
+              </h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <label htmlFor="device-input-embedded" className="block text-base font-medium text-gray-700 mb-3">
+                    {t('compatibility.device_input_label')}
+                  </label>
+                  <input
+                    id="device-input-embedded"
+                    type="text"
+                    value={deviceInput}
+                    onChange={handleInputChange}
+                    onKeyPress={handleKeyPress}
+                    placeholder={t('compatibility.device_input_placeholder')}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#299ae4]/30 focus:border-[#299ae4] transition-all duration-200 text-base"
+                  />
+                </div>
+
+                <button
+                  onClick={() => checkCompatibility()}
+                  disabled={!deviceInput.trim()}
+                  className="w-full bg-[#299ae4] hover:bg-[#299ae4]/90 text-white py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t('compatibility.check_button')}
+                </button>
+
+                <p className="text-sm text-gray-500 text-center italic">
+                  {t('compatibility.disclaimer')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Standalone page layout (existing functionality)
   return (
     <div className={`${isEmbedded ? 'bg-gray-50' : 'min-h-screen bg-gray-50'}`}>
       <div className={`${
@@ -270,7 +356,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
           </motion.div>
 
           {/* Results and Information Section */}
-          <div className={`${isEmbedded ? 'space-y-8' : ''}`}>
+          <div className="space-y-8">
             {/* Results Section */}
             <AnimatePresence>
               {showResult && result && (
@@ -279,9 +365,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.95 }}
                   transition={{ duration: 0.5 }}
-                  className={`bg-white rounded-2xl p-8 shadow-lg border-2 ${
-                    isEmbedded ? 'mb-0' : 'mb-8'
-                  } ${
+                  className={`bg-white rounded-2xl p-8 shadow-lg border-2 mb-8 ${
                     result.isCompatible 
                       ? 'border-green-200 bg-green-50/50' 
                       : 'border-red-200 bg-red-50/50'
