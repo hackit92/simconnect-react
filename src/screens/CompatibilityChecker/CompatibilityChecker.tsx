@@ -207,26 +207,25 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
               <h2 className={`font-light text-gray-800 mb-4 ${
                 isDesktop ? 'text-5xl' : 'text-3xl'
               }`}>
-                Compatibilidad de <span className="text-[#299ae4] font-normal">mi</span><br />
-                <span className="text-[#299ae4] font-normal">Dispositivo</span>
+                {t('compatibility.home_title_part1')} <span className="text-[#299ae4] font-normal">{t('compatibility.home_title_part2')}</span>
               </h2>
               <p className={`text-gray-600 ${
                 isDesktop ? 'text-lg max-w-lg' : 'text-base'
               }`}>
-                Verifica si tu dispositivo es compatible antes de comprar el servicio
+                {t('compatibility.home_subtitle')}
               </p>
             </div>
 
             {/* Right Column - Compatibility Checker */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
+            <div className="bg-white rounded-2xl p-8 relative">
               <h3 className="text-2xl font-semibold text-[#299ae4] text-center mb-6">
-                Verificador de Compatibilidad eSIM
+                {t('compatibility.title')}
               </h3>
               
               <div className="space-y-6">
                 <div>
                   <label htmlFor="device-input-embedded" className="block text-base font-medium text-gray-900 mb-3">
-                    Ingresa tu dispositivo:
+                    {t('compatibility.device_input_label')}
                   </label>
                   <input
                     id="device-input-embedded"
@@ -234,7 +233,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
                     value={deviceInput}
                     onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ej: iPhone 13, Samsung Galaxy S22..."
+                    placeholder={t('compatibility.device_input_placeholder')}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#299ae4]/30 focus:border-[#299ae4] transition-all duration-200 text-base"
                   />
                 </div>
@@ -244,12 +243,12 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
                   disabled={!deviceInput.trim()}
                   className="w-full bg-[#4A90E2] hover:bg-[#357ABD] text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  VERIFICAR COMPATIBILIDAD
+                  {t('compatibility.check_button')}
                 </button>
 
                 <div className="bg-gray-100 rounded-xl p-3 mt-4">
                   <p className="text-sm text-gray-600 text-center italic">
-                    * Verifica si tu dispositivo es compatible con tecnología eSIM.
+                    {t('compatibility.disclaimer')}
                   </p>
                 </div>
               </div>
