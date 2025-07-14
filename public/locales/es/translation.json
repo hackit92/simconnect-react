@@ -232,6 +232,7 @@
     "disclaimer": "* Verifica si tu dispositivo es compatible con tecnología eSIM.",
     "compatible_title": "¡Compatible!",
     "not_compatible_title": "No Compatible",
+    "device_not_found_title": "Dispositivo No Encontrado",
     "compatible_message": "Tu dispositivo es compatible con eSIM. Puedes proceder con la compra.",
     "not_compatible_message": "Este dispositivo no es compatible con tecnología eSIM.",
     "device_not_found": "No pudimos encontrar información sobre este dispositivo. Contacta a soporte para más ayuda.",

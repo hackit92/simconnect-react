@@ -17,6 +17,7 @@ import { useIsDesktop } from '../../hooks/useIsDesktop';
 
 interface CompatibilityResult {
   isCompatible: boolean;
+  status: 'compatible' | 'incompatible_found' | 'device_not_found';
   deviceInfo?: {
     brand: string;
     model: string;
@@ -160,6 +161,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
     if (matchedDevice) {
       compatibilityResult = {
         isCompatible: matchedDevice.esimSupport,
+        status: matchedDevice.esimSupport ? 'compatible' : 'incompatible_found',
         deviceInfo: matchedDevice,
         message: matchedDevice.esimSupport 
           ? t('compatibility.compatible_message')
@@ -169,6 +171,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
       // Device not found in database
       compatibilityResult = {
         isCompatible: false,
+        status: 'device_not_found',
         message: t('compatibility.device_not_found')
       };
     }
@@ -374,19 +377,27 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
                 >
                   <div className="text-center">
                     <div className="flex justify-center mb-4">
-                      {result.isCompatible ? (
+                      {result.status === 'compatible' ? (
                         <CheckCircle className="w-12 h-12 text-green-600" />
-                      ) : (
+                      ) : result.status === 'incompatible_found' ? (
                         <XCircle className="w-12 h-12 text-red-600" />
+                      ) : (
+                        <AlertTriangle className="w-12 h-12 text-yellow-600" />
                       )}
                     </div>
                     
                     <h3 className={`text-2xl font-bold mb-3 ${
-                      result.isCompatible ? 'text-green-800' : 'text-red-800'
+                      result.status === 'compatible' 
+                        ? 'text-green-800' 
+                        : result.status === 'incompatible_found'
+                        ? 'text-red-800'
+                        : 'text-yellow-800'
                     }`}>
-                      {result.isCompatible 
+                      {result.status === 'compatible'
                         ? t('compatibility.compatible_title') 
-                        : t('compatibility.not_compatible_title')
+                        : result.status === 'incompatible_found'
+                        ? t('compatibility.not_compatible_title')
+                        : t('compatibility.device_not_found_title')
                       }
                     </h3>
 
@@ -409,7 +420,11 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
                     )}
 
                     <p className={`text-lg ${
-                      result.isCompatible ? 'text-green-700' : 'text-red-700'
+                      result.status === 'compatible' 
+                        ? 'text-green-700' 
+                        : result.status === 'incompatible_found'
+                        ? 'text-red-700'
+                        : 'text-yellow-700'
                     }`}>
                       {result.message}
                     </p>
@@ -476,7 +491,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
             </motion.div>
 
             {/* CTA Section */}
-            {showResult && result?.isCompatible && (
+            {showResult && result?.status === 'compatible' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
