@@ -8,6 +8,7 @@ import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { WhyChooseUs } from "../../components/WhyChooseUs";
 import { BenefitsSection } from "../../components/BenefitsSection";
 import { Plans } from "../Plans";
+import { CompatibilityChecker } from "../CompatibilityChecker";
 
 export const Home = () => {
   const { t } = useTranslation();
@@ -124,6 +125,9 @@ export const Home = () => {
       {/* Benefits Section - Mobile Only */}
       {!isDesktop && <BenefitsSection />}
 
+      {/* Compatibility Checker Section */}
+      <CompatibilityChecker />
+
       {/* Embedded Plans Section - Desktop Only */}
       {isDesktop && (
         <div id="plans-section" className="bg-white">
@@ -147,6 +151,8 @@ export const Home = () => {
       
       {/* Benefits Section - Desktop Only */}
       {isDesktop && <BenefitsSection />}
+      
+      {/* Note: Compatibility Checker is already included above for both mobile and desktop */}
     </>
   );
 };
