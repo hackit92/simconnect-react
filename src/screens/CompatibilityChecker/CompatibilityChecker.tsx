@@ -195,7 +195,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
   // Embedded layout for home page
   if (isEmbedded) {
     return (
-      <section className="bg-gray-50 py-16">
+      <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`${
             isDesktop 
@@ -207,26 +207,26 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
               <h2 className={`font-light text-gray-800 mb-4 ${
                 isDesktop ? 'text-5xl' : 'text-3xl'
               }`}>
-                {t('compatibility.home_title_part1')} <span className="text-[#299ae4] font-normal">{t('compatibility.home_title_part2')}</span><br />
-                <span className="text-[#299ae4] font-normal">{t('compatibility.home_title_part3')}</span>
+                Compatibilidad de <span className="text-[#299ae4] font-normal">mi</span><br />
+                <span className="text-[#299ae4] font-normal">Dispositivo</span>
               </h2>
               <p className={`text-gray-600 ${
                 isDesktop ? 'text-lg max-w-lg' : 'text-base'
               }`}>
-                {t('compatibility.home_subtitle')}
+                Verifica si tu dispositivo es compatible antes de comprar el servicio
               </p>
             </div>
 
             {/* Right Column - Compatibility Checker */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-              <h3 className="text-2xl font-semibold text-[#299ae4] text-center mb-8">
-                {t('compatibility.title')}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
+              <h3 className="text-2xl font-semibold text-[#299ae4] text-center mb-6">
+                Verificador de Compatibilidad eSIM
               </h3>
               
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="device-input-embedded" className="block text-base font-medium text-gray-700 mb-3">
-                    {t('compatibility.device_input_label')}
+                  <label htmlFor="device-input-embedded" className="block text-base font-medium text-gray-900 mb-3">
+                    Ingresa tu dispositivo:
                   </label>
                   <input
                     id="device-input-embedded"
@@ -234,22 +234,24 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
                     value={deviceInput}
                     onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
-                    placeholder={t('compatibility.device_input_placeholder')}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#299ae4]/30 focus:border-[#299ae4] transition-all duration-200 text-base"
+                    placeholder="Ej: iPhone 13, Samsung Galaxy S22..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#299ae4]/30 focus:border-[#299ae4] transition-all duration-200 text-base"
                   />
                 </div>
 
                 <button
                   onClick={() => checkCompatibility()}
                   disabled={!deviceInput.trim()}
-                  className="w-full bg-[#299ae4] hover:bg-[#299ae4]/90 text-white py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#4A90E2] hover:bg-[#357ABD] text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {t('compatibility.check_button')}
+                  VERIFICAR COMPATIBILIDAD
                 </button>
 
-                <p className="text-sm text-gray-500 text-center italic">
-                  {t('compatibility.disclaimer')}
-                </p>
+                <div className="bg-gray-100 rounded-xl p-3 mt-4">
+                  <p className="text-sm text-gray-600 text-center italic">
+                    * Verifica si tu dispositivo es compatible con tecnología eSIM.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

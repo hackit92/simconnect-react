@@ -125,9 +125,6 @@ export const Home = () => {
       {/* Benefits Section - Mobile Only */}
       {!isDesktop && <BenefitsSection />}
 
-      {/* Compatibility Checker Section */}
-      <CompatibilityChecker isEmbedded={true} />
-
       {/* Embedded Plans Section - Desktop Only */}
       {isDesktop && (
         <div id="plans-section" className="bg-white">
@@ -152,7 +149,8 @@ export const Home = () => {
       {/* Benefits Section - Desktop Only */}
       {isDesktop && <BenefitsSection />}
       
-      {/* Note: Compatibility Checker is already included above for both mobile and desktop */}
+      {/* Compatibility Checker Section - After Benefits Section */}
+      <CompatibilityChecker isEmbedded={true} />
     </>
   );
 };
