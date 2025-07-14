@@ -1,0 +1,1 @@
+export { CompatibilityChecker } from './CompatibilityChecker';

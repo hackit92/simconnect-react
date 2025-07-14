@@ -10,6 +10,7 @@ import { LoginForm } from "./components/auth/LoginForm";
 import { SignupForm } from "./components/auth/SignupForm";
 import { CheckoutForm } from "./screens/CheckoutForm";
 import { Success } from "./screens/Success";
+import { CompatibilityChecker } from "./screens/CompatibilityChecker";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -21,6 +22,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
               <Route path="/login" element={<LoginForm />} />
               <Route path="/signup" element={<SignupForm />} />
               <Route path="/checkout" element={<CheckoutForm />} />
+              <Route path="/compatibility" element={<CompatibilityChecker />} />
               <Route path="/success" element={<Success />} />
               <Route path="/*" element={<Frame />} />
             </Routes>
