@@ -146,7 +146,7 @@ export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEm
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    const normalizedInput = device.toLowerCase().trim();
+    const normalizedInput = String(device).toLowerCase().trim();
     
     // Find matching device
     const matchedDevice = compatibleDevices.find(device =>
