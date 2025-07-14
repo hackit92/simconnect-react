@@ -126,7 +126,7 @@ export const Home = () => {
       {!isDesktop && <BenefitsSection />}
 
       {/* Compatibility Checker Section */}
-      <CompatibilityChecker />
+      <CompatibilityChecker isEmbedded={true} />
 
       {/* Embedded Plans Section - Desktop Only */}
       {isDesktop && (

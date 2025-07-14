@@ -105,7 +105,11 @@ const compatibleDevices = [
   { brand: 'Huawei', model: 'Mate 40 Pro', keywords: ['huawei mate 40 pro', 'mate 40 pro'], esimSupport: true, releaseYear: 2020 },
 ];
 
-export const CompatibilityChecker: React.FC = () => {
+interface CompatibilityCheckerProps {
+  isEmbedded?: boolean;
+}
+
+export const CompatibilityChecker: React.FC<CompatibilityCheckerProps> = ({ isEmbedded = false }) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
@@ -170,11 +174,15 @@ export const CompatibilityChecker: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className={`max-w-4xl mx-auto ${isDesktop ? 'px-8 py-12' : 'px-4 py-8'}`}>
+    <div className={`${isEmbedded ? 'bg-gray-50' : 'min-h-screen bg-gray-50'}`}>
+      <div className={`${
+        isEmbedded 
+          ? 'max-w-7xl mx-auto px-8 py-16' 
+          : `max-w-4xl mx-auto ${isDesktop ? 'px-8 py-12' : 'px-4 py-8'}`
+      }`}>
         {/* Header */}
-        <div className="mb-8">
-          {!isDesktop && (
+        <div className={`${isEmbedded ? 'mb-12' : 'mb-8'}`}>
+          {!isDesktop && !isEmbedded && (
             <button
               onClick={() => navigate(-1)}
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 mb-6"
@@ -188,32 +196,42 @@ export const CompatibilityChecker: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center"
+            className={`${isEmbedded ? 'text-center' : 'text-center'}`}
           >
-            <div className="flex justify-center mb-6">
+            <div className={`flex justify-center ${isEmbedded ? 'mb-8' : 'mb-6'}`}>
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                 <Smartphone className="w-8 h-8 text-primary" />
               </div>
             </div>
-            <h1 className={`font-bold text-gray-900 mb-4 ${isDesktop ? 'text-4xl' : 'text-2xl'}`}>
+            <h1 className={`font-bold text-gray-900 mb-4 ${
+              isEmbedded ? 'text-4xl' : isDesktop ? 'text-4xl' : 'text-2xl'
+            }`}>
               {t('compatibility.title')}
             </h1>
-            <p className={`text-gray-600 max-w-2xl mx-auto ${isDesktop ? 'text-lg' : 'text-base'}`}>
+            <p className={`text-gray-600 max-w-3xl mx-auto ${
+              isEmbedded ? 'text-xl' : isDesktop ? 'text-lg' : 'text-base'
+            }`}>
               {t('compatibility.subtitle')}
             </p>
           </motion.div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-2xl mx-auto">
+        <div className={`${
+          isEmbedded 
+            ? 'grid grid-cols-1 lg:grid-cols-2 gap-12 items-start' 
+            : 'max-w-2xl mx-auto'
+        }`}>
           {/* Device Input Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-8"
+            className={`bg-white rounded-2xl shadow-lg border border-gray-100 ${
+              isEmbedded ? 'p-8' : 'p-8 mb-8'
+            }`}
           >
-            <div className="mb-6">
+            <div className={`${isEmbedded ? 'mb-8' : 'mb-6'}`}>
               <label htmlFor="device-input" className="block text-lg font-semibold text-gray-900 mb-3">
                 {t('compatibility.device_input_label')}
               </label>
@@ -225,7 +243,9 @@ export const CompatibilityChecker: React.FC = () => {
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
                   placeholder={t('compatibility.device_input_placeholder')}
-                  className="w-full px-4 py-4 pl-12 text-lg border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200"
+                  className={`w-full px-4 pl-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 ${
+                    isEmbedded ? 'py-4 text-lg' : 'py-4 text-lg'
+                  }`}
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
@@ -234,7 +254,9 @@ export const CompatibilityChecker: React.FC = () => {
             <Button
               onClick={checkCompatibility}
               disabled={!deviceInput.trim() || isChecking}
-              className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+              className={`w-full bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 ${
+                isEmbedded ? 'py-4 text-lg' : 'py-4 text-lg'
+              }`}
             >
               {isChecking ? (
                 <div className="flex items-center justify-center">
@@ -247,139 +269,144 @@ export const CompatibilityChecker: React.FC = () => {
             </Button>
           </motion.div>
 
-          {/* Results Section */}
-          <AnimatePresence>
-            {showResult && result && (
-              <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                transition={{ duration: 0.5 }}
-                className={`bg-white rounded-2xl p-8 shadow-lg border-2 mb-8 ${
-                  result.isCompatible 
-                    ? 'border-green-200 bg-green-50/50' 
-                    : 'border-red-200 bg-red-50/50'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="flex justify-center mb-4">
-                    {result.isCompatible ? (
-                      <CheckCircle className="w-12 h-12 text-green-600" />
-                    ) : (
-                      <XCircle className="w-12 h-12 text-red-600" />
-                    )}
-                  </div>
-                  
-                  <h3 className={`text-2xl font-bold mb-3 ${
-                    result.isCompatible ? 'text-green-800' : 'text-red-800'
-                  }`}>
-                    {result.isCompatible 
-                      ? t('compatibility.compatible_title') 
-                      : t('compatibility.not_compatible_title')
-                    }
-                  </h3>
-
-                  {result.deviceInfo && (
-                    <div className="mb-4 p-4 bg-white rounded-xl border border-gray-200">
-                      <h4 className="font-semibold text-gray-900 mb-2">{t('compatibility.device_info')}</h4>
-                      <div className="text-left space-y-1">
-                        <p><span className="font-medium">{t('compatibility.brand')}:</span> {result.deviceInfo.brand}</p>
-                        <p><span className="font-medium">{t('compatibility.model')}:</span> {result.deviceInfo.model}</p>
-                        {result.deviceInfo.releaseYear && (
-                          <p><span className="font-medium">{t('compatibility.release_year')}:</span> {result.deviceInfo.releaseYear}</p>
-                        )}
-                        <p><span className="font-medium">{t('compatibility.esim_support')}:</span> 
-                          <span className={`ml-2 ${result.deviceInfo.esimSupport ? 'text-green-600' : 'text-red-600'}`}>
-                            {result.deviceInfo.esimSupport ? t('common.yes') : t('common.no')}
-                          </span>
-                        </p>
-                      </div>
+          {/* Results and Information Section */}
+          <div className={`${isEmbedded ? 'space-y-8' : ''}`}>
+            {/* Results Section */}
+            <AnimatePresence>
+              {showResult && result && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ duration: 0.5 }}
+                  className={`bg-white rounded-2xl p-8 shadow-lg border-2 ${
+                    isEmbedded ? 'mb-0' : 'mb-8'
+                  } ${
+                    result.isCompatible 
+                      ? 'border-green-200 bg-green-50/50' 
+                      : 'border-red-200 bg-red-50/50'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="flex justify-center mb-4">
+                      {result.isCompatible ? (
+                        <CheckCircle className="w-12 h-12 text-green-600" />
+                      ) : (
+                        <XCircle className="w-12 h-12 text-red-600" />
+                      )}
                     </div>
-                  )}
+                    
+                    <h3 className={`text-2xl font-bold mb-3 ${
+                      result.isCompatible ? 'text-green-800' : 'text-red-800'
+                    }`}>
+                      {result.isCompatible 
+                        ? t('compatibility.compatible_title') 
+                        : t('compatibility.not_compatible_title')
+                      }
+                    </h3>
 
-                  <p className={`text-lg ${
-                    result.isCompatible ? 'text-green-700' : 'text-red-700'
-                  }`}>
-                    {result.message}
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                    {result.deviceInfo && (
+                      <div className="mb-4 p-4 bg-white rounded-xl border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-2">{t('compatibility.device_info')}</h4>
+                        <div className="text-left space-y-1">
+                          <p><span className="font-medium">{t('compatibility.brand')}:</span> {result.deviceInfo.brand}</p>
+                          <p><span className="font-medium">{t('compatibility.model')}:</span> {result.deviceInfo.model}</p>
+                          {result.deviceInfo.releaseYear && (
+                            <p><span className="font-medium">{t('compatibility.release_year')}:</span> {result.deviceInfo.releaseYear}</p>
+                          )}
+                          <p><span className="font-medium">{t('compatibility.esim_support')}:</span> 
+                            <span className={`ml-2 ${result.deviceInfo.esimSupport ? 'text-green-600' : 'text-red-600'}`}>
+                              {result.deviceInfo.esimSupport ? t('common.yes') : t('common.no')}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
-          {/* Unlock Reminder */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                  <Unlock className="w-5 h-5 text-amber-600" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <h4 className="text-lg font-semibold text-amber-800 mb-2">
-                  {t('compatibility.unlock_reminder_title')}
-                </h4>
-                <p className="text-amber-700 leading-relaxed">
-                  {t('compatibility.unlock_reminder_message')}
-                </p>
-              </div>
-            </div>
-          </motion.div>
+                    <p className={`text-lg ${
+                      result.isCompatible ? 'text-green-700' : 'text-red-700'
+                    }`}>
+                      {result.message}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          {/* Additional Information */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-8 bg-blue-50 border border-blue-200 rounded-2xl p-6"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <Info className="w-6 h-6 text-blue-600 mt-1" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-lg font-semibold text-blue-800 mb-3">
-                  {t('compatibility.additional_info_title')}
-                </h4>
-                <ul className="space-y-2 text-blue-700">
-                  <li className="flex items-start">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    {t('compatibility.info_1')}
-                  </li>
-                  <li className="flex items-start">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    {t('compatibility.info_2')}
-                  </li>
-                  <li className="flex items-start">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    {t('compatibility.info_3')}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CTA Section */}
-          {showResult && result?.isCompatible && (
+            {/* Unlock Reminder */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="mt-8 text-center"
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6"
             >
-              <Button
-                onClick={() => navigate('/plans')}
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                {t('compatibility.explore_plans')}
-              </Button>
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                    <Unlock className="w-5 h-5 text-amber-600" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-amber-800 mb-2">
+                    {t('compatibility.unlock_reminder_title')}
+                  </h4>
+                  <p className="text-amber-700 leading-relaxed">
+                    {t('compatibility.unlock_reminder_message')}
+                  </p>
+                </div>
+              </div>
             </motion.div>
-          )}
+
+            {/* Additional Information */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="bg-blue-50 border border-blue-200 rounded-2xl p-6"
+            >
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <Info className="w-6 h-6 text-blue-600 mt-1" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-blue-800 mb-3">
+                    {t('compatibility.additional_info_title')}
+                  </h4>
+                  <ul className="space-y-2 text-blue-700">
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      {t('compatibility.info_1')}
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      {t('compatibility.info_2')}
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      {t('compatibility.info_3')}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* CTA Section */}
+            {showResult && result?.isCompatible && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="text-center"
+              >
+                <Button
+                  onClick={() => navigate('/plans')}
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  {t('compatibility.explore_plans')}
+                </Button>
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
     </div>
