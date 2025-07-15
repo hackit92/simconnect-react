@@ -325,4 +325,28 @@
       "position": "International Consultant"
     }
   }
+  },
+  "blog": {
+    "subtitle": "Prepare for Your Next Adventure",
+    "title_part1": "Connect to",
+    "title_part2": "Our",
+    "title_part3": "Blog",
+    "view_all": "View all articles",
+    "post1": {
+      "title": "Personalized Attention for Executive Travelers: The Secret of SIMConnect.travel",
+      "excerpt": "Differentiated Customer Service the connectivity experience goes beyond ..."
+    },
+    "post2": {
+      "title": "Optimize Your Business Trips: The Flexibility of eSIMs for Executives",
+      "excerpt": "Quick Setup and Instant Use flexibility is key for ..."
+    },
+    "post3": {
+      "title": "Save and Connect Without Borders: The True Cost-Benefit of Using eSIMs",
+      "excerpt": "The High Cost of International Roaming For many business travelers, the ..."
+    },
+    "post4": {
+      "title": "How Reliable Connection with eSIMs Facilitates International Business",
+      "excerpt": "Introduction to Reliable Connection Traveling for business is not just ..."
+    }
+  }
 }

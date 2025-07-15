@@ -9,6 +9,7 @@ import { WhyChooseUs } from "../../components/WhyChooseUs";
 import { BenefitsSection } from "../../components/BenefitsSection";
 import { WhatSimConnectIncludes } from "../../components/WhatSimConnectIncludes";
 import { TestimonialsSection } from "../../components/TestimonialsSection";
+import { BlogSection } from "../../components/BlogSection";
 import { Plans } from "../Plans";
 import { CompatibilityChecker } from "../CompatibilityChecker";
 
@@ -159,6 +160,9 @@ export const Home = () => {
       
       {/* Testimonials Section */}
       <TestimonialsSection />
+      
+      {/* Blog Section */}
+      <BlogSection />
     </>
   );
 };
