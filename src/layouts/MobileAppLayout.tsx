@@ -171,8 +171,8 @@ export const MobileAppLayout: React.FC = () => {
           } />
         </Routes>
         
-        {/* Footer */}
-        <Footer />
+        {/* Footer - Only show on home page in mobile */}
+        {location.pathname === '/' && <Footer />}
       </div>
 
       {/* Bottom Navigation */}
