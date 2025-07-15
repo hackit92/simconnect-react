@@ -10,6 +10,7 @@ import { BenefitsSection } from "../../components/BenefitsSection";
 import { WhatSimConnectIncludes } from "../../components/WhatSimConnectIncludes";
 import { TestimonialsSection } from "../../components/TestimonialsSection";
 import { BlogSection } from "../../components/BlogSection";
+import { VideoSection } from "../../components/VideoSection";
 import { Plans } from "../Plans";
 import { CompatibilityChecker } from "../CompatibilityChecker";
 
@@ -163,6 +164,9 @@ export const Home = () => {
       
       {/* Blog Section */}
       <BlogSection />
+      
+      {/* Video Section */}
+      <VideoSection />
     </>
   );
 };
