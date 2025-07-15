@@ -294,5 +294,35 @@
     "feature3": "Immediate Activation",
     "feature4": "WiFi Hotspot to share internet with your companions",
     "feature5": "Automatic or manual renewal"
+  },
+  "testimonials": {
+    "title_part1": "Our",
+    "title_part2": "Clients",
+    "subtitle": "What do our clients think about SimConnect service?",
+    "testimonial1": {
+      "quote": "SimConnect has been very useful on my trips to Argentina and Chile, mobile data has been fast and stable. Highly recommended!",
+      "name": "María González",
+      "position": "Sales Manager"
+    },
+    "testimonial2": {
+      "quote": "Excellent connectivity and data speed in Spain with SimConnect. Great decision!",
+      "name": "Carlos Becerril",
+      "position": "IT Manager"
+    },
+    "testimonial3": {
+      "quote": "SimConnect keeps us connected in Colombia. Reliable service and efficient support.",
+      "name": "Laura Martínez",
+      "position": "Project Coordinator"
+    },
+    "testimonial4": {
+      "quote": "Perfect for business trips. Instant activation and global coverage are exceptional.",
+      "name": "Roberto Silva",
+      "position": "Commercial Director"
+    },
+    "testimonial5": {
+      "quote": "Impeccable service in Europe. Local prices and ease of use exceeded my expectations.",
+      "name": "Ana Rodríguez",
+      "position": "International Consultant"
+    }
   }
 }

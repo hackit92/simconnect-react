@@ -8,6 +8,7 @@ import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { WhyChooseUs } from "../../components/WhyChooseUs";
 import { BenefitsSection } from "../../components/BenefitsSection";
 import { WhatSimConnectIncludes } from "../../components/WhatSimConnectIncludes";
+import { TestimonialsSection } from "../../components/TestimonialsSection";
 import { Plans } from "../Plans";
 import { CompatibilityChecker } from "../CompatibilityChecker";
 
@@ -155,6 +156,9 @@ export const Home = () => {
       
       {/* Compatibility Checker Section - After Benefits Section */}
       <CompatibilityChecker isEmbedded={true} />
+      
+      {/* Testimonials Section */}
+      <TestimonialsSection />
     </>
   );
 };
