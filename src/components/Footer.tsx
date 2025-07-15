@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
             : 'grid-cols-1'
         }`}>
           {/* Logo and Description */}
-          <div className={`${isDesktop ? 'col-span-1' : 'text-center'}`}>
+          <div className={`${isDesktop ? 'col-span-1' : 'text-justified'}`}>
             <div className="mb-6">
               <img
                 className="h-8 w-auto"
