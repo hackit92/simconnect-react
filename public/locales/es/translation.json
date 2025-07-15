@@ -355,5 +355,26 @@
     "title_part2": "",
     "description": "Asistencia gratuita de personal altamente profesional, competente y amable, siempre que lo necesite: 24 horas al día, 7 días a la semana, 365 días al año.",
     "not_supported": "Tu navegador no soporta el elemento de video."
-}
+  },
+  "footer": {
+    "description": "SimConnect es la solución global para viajeros que requieren conexión a internet en cualquier parte del mundo y no quieren preocuparse por las tarifas altísimas de roaming.",
+    "company": {
+      "title": "Compañía",
+      "support_center": "Centro de Soporte",
+      "terms_of_service": "Términos del servicio",
+      "privacy_policy": "Política de Privacidad"
+    },
+    "quick_guides": {
+      "title": "Guías Rápidas",
+      "install_ios": "¿Cómo instalar en iOS?",
+      "install_android": "¿Cómo instalar en Android?",
+      "prepare_activation": "Preparar para Activación",
+      "verify_compatibility": "Verificar Compatibilidad"
+    },
+    "contact": {
+      "title": "Contacto"
+    },
+    "copyright": "© Copyright {{year}} SimConnect. Todos los derechos reservados.",
+    "disclaimer": "Los logotipos de los operadores y otras marcas comerciales son propiedad de sus respectivos dueños."
+  }
   }

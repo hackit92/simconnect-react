@@ -13,6 +13,7 @@ import { CheckoutForm } from "../screens/CheckoutForm";
 import { CompatibilityChecker } from "../screens/CompatibilityChecker";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { FullscreenMenu } from "../components/navigation/FullscreenMenu";
+import { Footer } from "../components/Footer";
 
 export const DesktopAppLayout: React.FC = () => {
   const { getTotalItems } = useCart();
@@ -169,6 +170,9 @@ export const DesktopAppLayout: React.FC = () => {
           } />
         </Routes>
       </main>
+      
+      {/* Footer */}
+      <Footer />
 
       {/* Fullscreen Menu */}
       <FullscreenMenu

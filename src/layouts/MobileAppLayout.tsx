@@ -14,6 +14,7 @@ import { CheckoutForm } from "../screens/CheckoutForm";
 import { CompatibilityChecker } from "../screens/CompatibilityChecker";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { FullscreenMenu } from "../components/navigation/FullscreenMenu";
+import { Footer } from "../components/Footer";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -169,6 +170,9 @@ export const MobileAppLayout: React.FC = () => {
             </ProtectedRoute>
           } />
         </Routes>
+        
+        {/* Footer */}
+        <Footer />
       </div>
 
       {/* Bottom Navigation */}
