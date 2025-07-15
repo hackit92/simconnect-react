@@ -285,5 +285,14 @@
       "title": "DISFRUTA",
       "description": "La mejor señal y velocidad del país que visitas contando con el mejor servicio a cliente"
     }
+  },
+  "what_includes": {
+    "title_part1": "¿Qué incluye",
+    "title_part2": "SimConnect",
+    "feature1": "Servicio multi operador, incrementando la calidad del servicio",
+    "feature2": "Conexiones a redes 4G/5G",
+    "feature3": "Activación Inmediata",
+    "feature4": "Hotspot de WiFi para compartir internet con tus acompañantes",
+    "feature5": "Renovación automática o manual"
   }
 }

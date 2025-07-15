@@ -285,5 +285,14 @@
       "title": "ENJOY",
       "description": "The best signal and speed of the country you visit, enjoying the best customer service"
     }
+  },
+  "what_includes": {
+    "title_part1": "What does",
+    "title_part2": "SimConnect",
+    "feature1": "Multi-operator service, increasing service quality",
+    "feature2": "4G/5G network connections",
+    "feature3": "Immediate Activation",
+    "feature4": "WiFi Hotspot to share internet with your companions",
+    "feature5": "Automatic or manual renewal"
   }
 }
