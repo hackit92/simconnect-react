@@ -9,6 +9,7 @@ import { Home } from "../screens/Home";
 import { Plans } from "../screens/Plans";
 import { Cart } from "../screens/Cart";
 import { Products } from "../screens/Products";
+import { BlogPost } from "../screens/BlogPost";
 import { Success } from "../screens/Success";
 import { CheckoutForm } from "../screens/CheckoutForm";
 import { CompatibilityChecker } from "../screens/CompatibilityChecker";
@@ -164,6 +165,7 @@ export const MobileAppLayout: React.FC = () => {
           <Route path="/plans" element={<Plans />} />
           <Route path="/compatibility" element={<CompatibilityChecker />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/blog/:postId" element={<BlogPost />} />
           <Route path="/products" element={
             <ProtectedRoute>
               <Products />

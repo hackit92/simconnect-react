@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useIsDesktop } from '../hooks/useIsDesktop';
@@ -84,7 +85,8 @@ export const BlogSection: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               whileHover={{ scale: 1.02 }}
             >
-              <div className="relative overflow-hidden rounded-2xl">
+              <Link to={`/blog/${featuredPost.id}`} className="block">
+                <div className="relative overflow-hidden rounded-2xl">
                 <img
                   src={featuredPost.image}
                   alt={featuredPost.title}
@@ -108,6 +110,7 @@ export const BlogSection: React.FC = () => {
                   </p>
                 </div>
               </div>
+              </Link>
             </motion.article>
           )}
 
@@ -116,13 +119,14 @@ export const BlogSection: React.FC = () => {
             {regularPosts.map((post, index) => (
               <motion.article
                 key={post.id}
-                className="flex items-start space-x-4 group cursor-pointer"
+                className="flex items-start space-x-4 group"
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 + (index * 0.1) }}
                 whileHover={{ scale: 1.02 }}
               >
-                <div className="flex-shrink-0">
+                <Link to={`/blog/${post.id}`} className="flex items-start space-x-4 w-full">
+                  <div className="flex-shrink-0">
                   <img
                     src={post.image}
                     alt={post.title}
@@ -142,7 +146,8 @@ export const BlogSection: React.FC = () => {
                   }`}>
                     {post.excerpt}
                   </p>
-                </div>
+                  </div>
+                </Link>
               </motion.article>
             ))}
           </div>
@@ -155,10 +160,10 @@ export const BlogSection: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <button className="inline-flex items-center space-x-2 text-primary hover:text-primary/80 font-semibold transition-colors duration-200 group">
+          <Link to="/blog" className="inline-flex items-center space-x-2 text-primary hover:text-primary/80 font-semibold transition-colors duration-200 group">
             <span>{t('blog.view_all')}</span>
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-          </button>
+          </Link>
         </motion.div>
       </div>
     </section>
