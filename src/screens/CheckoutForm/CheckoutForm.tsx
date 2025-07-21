@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/pop
 import { useCart } from '../../contexts/CartContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useStripeCheckout } from '../../hooks/useStripeCheckout';
+import { useCouponValidation } from '../../hooks/useCouponValidation';
 import { countries, type CountryData } from '../../lib/phone-prefixes';
 import { stripeProducts } from '../../stripe-config';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
@@ -28,10 +29,12 @@ export const CheckoutForm: React.FC = () => {
   const { items, getTotalPrice, clearCart } = useCart();
   const { selectedCurrency, formatPrice } = useCurrency();
   const { createCheckoutSession, loading } = useStripeCheckout();
+  const { validateCoupon, loading: couponValidationLoading } = useCouponValidation();
   const [couponCode, setCouponCode] = useState<string>('');
   const [isCouponApplied, setIsCouponApplied] = useState<boolean>(false);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isCouponExpanded, setIsCouponExpanded] = useState<boolean>(false);
+  const [couponDetails, setCouponDetails] = useState<any>(null);
   const isDesktop = useIsDesktop();
 
   // Get product from URL params for direct purchase
@@ -87,22 +90,38 @@ export const CheckoutForm: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       setCouponError(t('checkout.coupon_empty'));
       return;
     }
     
-    // In a real implementation, you might want to validate the coupon with Stripe
-    // before proceeding, but for simplicity we'll just mark it as applied
-    setIsCouponApplied(true);
     setCouponError(null);
+    
+    try {
+      const result = await validateCoupon(couponCode.trim());
+      
+      if (result.valid) {
+        setIsCouponApplied(true);
+        setCouponDetails(result.coupon);
+        setCouponError(null);
+      } else {
+        setIsCouponApplied(false);
+        setCouponDetails(null);
+        setCouponError(result.error || t('checkout.coupon_invalid'));
+      }
+    } catch (error) {
+      setIsCouponApplied(false);
+      setCouponDetails(null);
+      setCouponError(t('checkout.coupon_invalid'));
+    }
   };
 
   const handleCouponChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCouponCode(e.target.value);
     if (isCouponApplied) {
       setIsCouponApplied(false);
+      setCouponDetails(null);
     }
     if (couponError) {
       setCouponError(null);
@@ -317,14 +336,21 @@ export const CheckoutForm: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleApplyCoupon}
-                      disabled={isCouponApplied || !couponCode.trim()}
+                      disabled={isCouponApplied || !couponCode.trim() || couponValidationLoading}
                       className={`px-4 py-3 font-medium text-sm transition-all duration-200 ${
                         isCouponApplied 
                           ? 'bg-green-500 text-white rounded-r-xl'
+                          : couponValidationLoading
+                          ? 'bg-gray-100 text-gray-400 rounded-r-xl border border-l-0 border-gray-300'
                           : 'bg-primary/10 text-primary hover:bg-primary/20 rounded-r-xl border border-l-0 border-primary/30'
                       }`}
                     >
-                      {isCouponApplied ? (
+                      {couponValidationLoading ? (
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent mr-1"></div>
+                          {t('checkout.validating')}
+                        </div>
+                      ) : isCouponApplied ? (
                         <div className="flex items-center">
                           <Check className="w-4 h-4 mr-1" />
                           {t('checkout.coupon_applied')}
@@ -339,6 +365,19 @@ export const CheckoutForm: React.FC = () => {
                   )}
                   {isCouponApplied && (
                     <p className="mt-1 text-sm text-green-600">{t('checkout.coupon_success')}</p>
+                  )}
+                  {isCouponApplied && couponDetails && (
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-xs text-green-700">
+                        {couponDetails.percent_off 
+                          ? `${couponDetails.percent_off}% de descuento`
+                          : couponDetails.amount_off 
+                          ? `${couponDetails.currency?.toUpperCase()} ${(couponDetails.amount_off / 100).toFixed(2)} de descuento`
+                          : 'Descuento aplicado'
+                        }
+                        {couponDetails.name && ` - ${couponDetails.name}`}
+                      </p>
+                    </div>
                   )}
                 </div>
               </details>
@@ -488,10 +527,17 @@ export const CheckoutForm: React.FC = () => {
                 <span>{t('checkout.subtotal')}</span>
                 <span>{formatPrice(getTotalAmount(), selectedCurrency)}</span> 
               </div>
-              {isCouponApplied && (
+              {isCouponApplied && couponDetails && (
                 <div className="flex justify-between text-gray-600">
                   <span>{t('checkout.discount')}</span>
-                  <span className="text-green-600">-{formatPrice(0, selectedCurrency)}</span>
+                  <span className="text-green-600">
+                    {couponDetails.percent_off 
+                      ? `-${couponDetails.percent_off}%`
+                      : couponDetails.amount_off 
+                      ? `-${formatPrice(couponDetails.amount_off / 100, couponDetails.currency?.toUpperCase() || selectedCurrency)}`
+                      : t('checkout.discount_applied')
+                    }
+                  </span>
                 </div>
               )}
               <div className="flex justify-between text-gray-600">

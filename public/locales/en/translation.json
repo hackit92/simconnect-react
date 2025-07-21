@@ -192,6 +192,8 @@
     "coupon_empty": "Please enter a coupon code",
     "coupon_invalid": "Invalid coupon code",
     "coupon_expired": "This coupon has expired",
+    "validating": "Validating...",
+    "discount_applied": "Discount applied",
     "discount": "Discount",
     "secure_payment": "Secure payment",
     "secure_payment_desc": "Your information is protected with 256-bit SSL encryption."
