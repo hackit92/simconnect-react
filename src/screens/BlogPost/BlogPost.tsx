@@ -5,86 +5,74 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Clock, Share2, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
-
-interface BlogPostData {
-  id: number;
-  title: string;
-  excerpt: string;
-  fullContent: string;
-  image: string;
-  author: string;
-  date: string;
-  readTime: string;
-  category: string;
-  tags: string[];
-}
+import { getPostById, getPostsByLanguage, type BlogPost } from '../../services/wordpressApi';
 
 export const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+  const [post, setPost] = React.useState<BlogPost | null>(null);
+  const [relatedPosts, setRelatedPosts] = React.useState<BlogPost[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  // Mock blog posts data - in a real app, this would come from an API or CMS
-  const blogPosts: BlogPostData[] = [
-    {
-      id: 1,
-      title: t('blog.post1.title'),
-      excerpt: t('blog.post1.excerpt'),
-      fullContent: t('blog.post1.fullContent'),
-      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
-      author: 'SimConnect Team',
-      date: '2024-01-15',
-      readTime: '5 min',
-      category: 'Viajes de Negocios',
-      tags: ['ejecutivos', 'servicio al cliente', 'viajes']
-    },
-    {
-      id: 2,
-      title: t('blog.post2.title'),
-      excerpt: t('blog.post2.excerpt'),
-      fullContent: t('blog.post2.fullContent'),
-      image: 'https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
-      author: 'SimConnect Team',
-      date: '2024-01-10',
-      readTime: '4 min',
-      category: 'Tecnología',
-      tags: ['esim', 'flexibilidad', 'configuración']
-    },
-    {
-      id: 3,
-      title: t('blog.post3.title'),
-      excerpt: t('blog.post3.excerpt'),
-      fullContent: t('blog.post3.fullContent'),
-      image: 'https://images.pexels.com/photos/936722/pexels-photo-936722.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
-      author: 'SimConnect Team',
-      date: '2024-01-05',
-      readTime: '6 min',
-      category: 'Ahorro',
-      tags: ['roaming', 'costos', 'beneficios']
-    },
-    {
-      id: 4,
-      title: t('blog.post4.title'),
-      excerpt: t('blog.post4.excerpt'),
-      fullContent: t('blog.post4.fullContent'),
-      image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop',
-      author: 'SimConnect Team',
-      date: '2024-01-01',
-      readTime: '7 min',
-      category: 'Negocios',
-      tags: ['conectividad', 'internacional', 'confiabilidad']
-    }
-  ];
+  // Fetch post data when component mounts or postId changes
+  React.useEffect(() => {
+    const fetchPostData = async () => {
+      if (!postId) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const postData = await getPostById(parseInt(postId));
+        
+        if (!postData) {
+          setError('Post no encontrado');
+          return;
+        }
+        
+        setPost(postData);
+        
+        // Fetch related posts (other posts in the same language, excluding current post)
+        const allPosts = await getPostsByLanguage(i18n.language, 6);
+        const related = allPosts.filter(p => p.id !== postData.id).slice(0, 3);
+        setRelatedPosts(related);
+        
+      } catch (err) {
+        console.error('Error fetching post:', err);
+        setError('Error al cargar el artículo');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const post = blogPosts.find(p => p.id === parseInt(postId || '0'));
+    fetchPostData();
+  }, [postId, i18n.language]);
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando artículo...</p>
+        </div>
+      </div>
+    );
+  }
 
-  if (!post) {
+  // Error state
+  if (error || !post) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Post no encontrado</h1>
-          <p className="text-gray-600 mb-6">El artículo que buscas no existe o ha sido eliminado.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {error || 'Post no encontrado'}
+          </h1>
+          <p className="text-gray-600 mb-6">
+            {error || 'El artículo que buscas no existe o ha sido eliminado.'}
+          </p>
           <Button onClick={() => navigate('/')} variant="outline">
             Volver al inicio
           </Button>
@@ -92,7 +80,6 @@ export const BlogPost: React.FC = () => {
       </div>
     );
   }
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -293,39 +280,36 @@ export const BlogPost: React.FC = () => {
             Artículos Relacionados
           </h2>
           <div className={`grid gap-8 ${isDesktop ? 'grid-cols-3' : 'grid-cols-1'}`}>
-            {blogPosts
-              .filter(p => p.id !== post.id)
-              .slice(0, 3)
-              .map((relatedPost) => (
-                <Link
-                  key={relatedPost.id}
-                  to={`/blog/${relatedPost.id}`}
-                  className="group"
-                >
-                  <article className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <img
-                      src={relatedPost.image}
-                      alt={relatedPost.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-200">
-                        {relatedPost.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm line-clamp-3">
-                        {relatedPost.excerpt}
-                      </p>
-                      <div className="mt-4 flex items-center text-xs text-gray-500">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        {formatDate(relatedPost.date)}
-                        <span className="mx-2">•</span>
-                        <Clock className="w-3 h-3 mr-1" />
-                        {relatedPost.readTime}
-                      </div>
+            {relatedPosts.map((relatedPost) => (
+              <Link
+                key={relatedPost.id}
+                to={`/blog/${relatedPost.id}`}
+                className="group"
+              >
+                <article className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                  <img
+                    src={relatedPost.image}
+                    alt={relatedPost.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-200">
+                      {relatedPost.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm line-clamp-3">
+                      {relatedPost.excerpt}
+                    </p>
+                    <div className="mt-4 flex items-center text-xs text-gray-500">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {formatDate(relatedPost.date)}
+                      <span className="mx-2">•</span>
+                      <Clock className="w-3 h-3 mr-1" />
+                      {relatedPost.readTime}
                     </div>
-                  </article>
-                </Link>
-              ))}
+                  </div>
+                </article>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

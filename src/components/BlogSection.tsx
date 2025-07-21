@@ -4,49 +4,74 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useIsDesktop } from '../hooks/useIsDesktop';
-
-interface BlogPost {
-  id: number;
-  title: string;
-  excerpt: string;
-  image: string;
-  featured?: boolean;
-}
+import { getPostsByLanguage, type BlogPost } from '../services/wordpressApi';
 
 export const BlogSection: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isDesktop = useIsDesktop();
+  const [blogPosts, setBlogPosts] = React.useState<BlogPost[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const blogPosts: BlogPost[] = [
-    {
-      id: 1,
-      title: t('blog.post1.title'),
-      excerpt: t('blog.post1.excerpt'),
-      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      featured: true
-    },
-    {
-      id: 2,
-      title: t('blog.post2.title'),
-      excerpt: t('blog.post2.excerpt'),
-      image: 'https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
-    },
-    {
-      id: 3,
-      title: t('blog.post3.title'),
-      excerpt: t('blog.post3.excerpt'),
-      image: 'https://images.pexels.com/photos/936722/pexels-photo-936722.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
-    },
-    {
-      id: 4,
-      title: t('blog.post4.title'),
-      excerpt: t('blog.post4.excerpt'),
-      image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
-    }
-  ];
+  // Fetch posts when component mounts or language changes
+  React.useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const posts = await getPostsByLanguage(i18n.language, 4);
+        setBlogPosts(posts);
+        
+        if (posts.length === 0) {
+          console.warn(`No posts found for language: ${i18n.language}`);
+        }
+      } catch (err) {
+        console.error('Error fetching blog posts:', err);
+        setError('Error al cargar los artículos del blog');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const featuredPost = blogPosts.find(post => post.featured);
-  const regularPosts = blogPosts.filter(post => !post.featured);
+    fetchPosts();
+  }, [i18n.language]);
+
+  // Use first post as featured, rest as regular posts
+  const featuredPost = blogPosts.length > 0 ? blogPosts[0] : null;
+  const regularPosts = blogPosts.slice(1);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Cargando artículos...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-red-600">{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Don't render if no posts
+  if (blogPosts.length === 0) {
+    return null;
+  }
 
   return (
     <section className="bg-white py-16">
