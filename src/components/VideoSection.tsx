@@ -58,6 +58,7 @@ export const VideoSection: React.FC = () => {
           >
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <video
+                key={videoUrl}
                 className="w-full h-auto"
                 controls
                 preload="metadata"
