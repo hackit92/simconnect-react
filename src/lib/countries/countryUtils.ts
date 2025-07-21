@@ -1,8 +1,6 @@
 import { countryCodeMap } from './data';
 import type { Country } from './types';
 
-import { useTranslation } from 'react-i18next';
-
 class CountryUtils {
   private cache: Map<string, Country>;
 

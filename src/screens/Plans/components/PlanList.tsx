@@ -301,6 +301,7 @@ function getDisplayName(
   product: Product, 
   getCountryName: (code: string) => string,
   t: (key: string, options?: any) => string,
+  currentLanguage: string,
   selectedCategoryData?: { id: number; name: string; slug: string; parent: number | null },
   categories?: { id: number; name: string; slug: string; parent: number | null }[]
 ): string {
@@ -325,7 +326,8 @@ function getDisplayName(
   if (product.plan_type === 'country') {
     // First try to use the selected category data
     if (selectedCategoryData) {
-      return countryUtils.getCountryName(selectedCategoryData.slug);
+      const lang = currentLanguage === 'en' ? 'en' : 'es';
+      return countryUtils.getCountryName(selectedCategoryData.slug, lang);
     }
     
     // If no selected category, try to find the country from the product's category_ids
@@ -411,7 +413,7 @@ export const PlanList: React.FC<PlanListProps> = ({
   selectedCategoryData,
   categories
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { selectedCurrency, formatPrice } = useCurrency();
   const { addToCart, isInCart } = useCart();
   const isDesktop = useIsDesktop();
@@ -499,7 +501,7 @@ export const PlanList: React.FC<PlanListProps> = ({
           displayPrice = formatPrice(parseFloat(fallback.amount), selectedCurrency);
         }
         
-        const displayName = getDisplayName(plan, getCountryName, t, selectedCategoryData, categories);
+        const displayName = getDisplayName(plan, getCountryName, t, i18n.language, selectedCategoryData, categories);
         const isRegional = plan.plan_type === 'regional';
         const gbAmount = plan.data_gb;
         const validityDays = plan.validity_days;
