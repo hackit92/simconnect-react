@@ -126,7 +126,11 @@ async function getLanguageTagIds(): Promise<{ es: number | null; en: number | nu
     console.log('Language tags found:', languageTagsCache);
     return languageTagsCache;
   } catch (error) {
-    console.error('Error fetching language tags:', error);
+    console.warn('WordPress API not accessible (likely CORS issue):', error);
+    // Return default values when WordPress API is not accessible
+    languageTagsCache = { es: null, en: null };
+    // Return default values when WordPress API is not accessible
+    languageTagsCache = { es: null, en: null };
     return { es: null, en: null };
   }
 }
@@ -138,7 +142,7 @@ export async function getPostsByLanguage(language: string, limit: number = 10): 
     const tagId = language === 'es' ? languageTags.es : languageTags.en;
     
     if (!tagId) {
-      console.warn(`No tag found for language: ${language}`);
+      console.warn(`WordPress API not available or no tag found for language: ${language}`);
       return [];
     }
 
@@ -156,7 +160,7 @@ export async function getPostsByLanguage(language: string, limit: number = 10): 
     
     return posts.map(transformWordPressPost);
   } catch (error) {
-    console.error('Error fetching posts by language:', error);
+    console.warn('WordPress API not accessible, returning empty posts array:', error);
     return [];
   }
 }
@@ -178,7 +182,7 @@ export async function getPostById(postId: number): Promise<BlogPost | null> {
     const post: WordPressPost = await response.json();
     return transformWordPressPost(post);
   } catch (error) {
-    console.error('Error fetching post by ID:', error);
+    console.warn('WordPress API not accessible, returning null for post:', error);
     return null;
   }
 }
@@ -245,7 +249,7 @@ export async function getAllTags(): Promise<WordPressTag[]> {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error fetching all tags:', error);
+    console.warn('WordPress API not accessible, returning empty tags array:', error);
     return [];
   }
 }
@@ -256,7 +260,7 @@ export async function testWordPressConnection(): Promise<boolean> {
     const response = await fetch(`${WP_API_BASE}/posts?per_page=1`);
     return response.ok;
   } catch (error) {
-    console.error('WordPress API connection test failed:', error);
+    console.warn('WordPress API connection test failed (likely CORS issue):', error);
     return false;
   }
 }
