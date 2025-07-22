@@ -10,15 +10,6 @@ export const countryCodeMap: Record<string, Country> = {
     alpha3: 'AFG',
     numeric: '004'
   },
-  'antillas-neerlandesas':{
-    name: {
-    es: 'Caribe Neerlandés',
-    en: 'Netherlands'
-  },
-  alpha2: 'nl',
-  alpha3: 'ant',
-  numeric: '528'
-  },
   'aland-islands': {
     name: {
       es: 'Islas Åland',

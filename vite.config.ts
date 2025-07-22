@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
-import tailwind from "tailwindcss";
+import tailwindcss from "tailwindcss";
 import { defineConfig, loadEnv } from "vite";
 
 // https://vite.dev/config/
@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
     base: "./",
     css: {
       postcss: {
-        plugins: [tailwind()],
+        plugins: [tailwindcss()],
       },
     },
     define: {

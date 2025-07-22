@@ -46,138 +46,13 @@ const regionSvgIcons: Record<string, React.ComponentType<any>> = {
 // Helper function to convert ISO3 country codes to country names
 function getCountryNameFromISO3(iso3Code: string, getCountryName: (code: string) => string): string {
   // Convert ISO3 to ISO2 first, then get the country name
-  const iso2Code = iso3ToIso2(iso3Code);
+  const iso2Code = countryUtils.iso3ToIso2(iso3Code);
   if (iso2Code) {
     return getCountryName(iso2Code);
   }
   
   // Fallback: return the ISO3 code if conversion fails
   return iso3Code;
-}
-
-// Helper function to convert ISO3 to ISO2 country codes
-function iso3ToIso2(iso3Code: string): string | null {
-  const iso3ToIso2Map: Record<string, string> = {
-    'AUS': 'au', // Australia
-    'CHN': 'cn', // China
-    'HKG': 'hk', // Hong Kong
-    'IDN': 'id', // Indonesia
-    'MAC': 'mo', // Macao
-    'MYS': 'my', // Malaysia
-    'NZL': 'nz', // New Zealand
-    'PHL': 'ph', // Philippines
-    'SGP': 'sg', // Singapore
-    'THA': 'th', // Thailand
-    'TWN': 'tw', // Taiwan
-    'VNM': 'vn', // Vietnam
-    'ARG': 'ar', // Argentina
-    'BOL': 'bo', // Bolivia
-    'BRA': 'br', // Brazil
-    'CHL': 'cl', // Chile
-    'COL': 'co', // Colombia
-    'CRI': 'cr', // Costa Rica
-    'CUB': 'cu', // Cuba
-    'ECU': 'ec', // Ecuador
-    'SLV': 'sv', // El Salvador
-    'GTM': 'gt', // Guatemala
-    'HND': 'hn', // Honduras
-    'MEX': 'mx', // Mexico
-    'NIC': 'ni', // Nicaragua
-    'PAN': 'pa', // Panama
-    'PRY': 'py', // Paraguay
-    'PER': 'pe', // Peru
-    'DOM': 'do', // Dominican Republic
-    'URY': 'uy', // Uruguay
-    'VEN': 've', // Venezuela
-    'DEU': 'de', // Germany
-    'AUT': 'at', // Austria
-    'BEL': 'be', // Belgium
-    'BGR': 'bg', // Bulgaria
-    'HRV': 'hr', // Croatia
-    'DNK': 'dk', // Denmark
-    'SVK': 'sk', // Slovakia
-    'SVN': 'si', // Slovenia
-    'ESP': 'es', // Spain
-    'EST': 'ee', // Estonia
-    'FIN': 'fi', // Finland
-    'FRA': 'fr', // France
-    'GRC': 'gr', // Greece
-    'HUN': 'hu', // Hungary
-    'IRL': 'ie', // Ireland
-    'ITA': 'it', // Italy
-    'LVA': 'lv', // Latvia
-    'LTU': 'lt', // Lithuania
-    'LUX': 'lu', // Luxembourg
-    'NLD': 'nl', // Netherlands
-    'POL': 'pl', // Poland
-    'PRT': 'pt', // Portugal
-    'GBR': 'gb', // United Kingdom
-    'CZE': 'cz', // Czech Republic
-    'ROU': 'ro', // Romania
-    'SWE': 'se', // Sweden
-    'CHE': 'ch', // Switzerland
-    'USA': 'us', // United States
-    'CAN': 'ca', // Canada
-    'SRB': 'rs', // Serbia
-    'BIH': 'ba', // Bosnia and Herzegovina
-    'MNE': 'me', // Montenegro
-    'MKD': 'mk', // North Macedonia
-    'ALB': 'al', // Albania
-    'XKX': 'xk', // Kosovo
-    'ISR': 'il', // Israel
-    'TUR': 'tr', // Turkey
-    'ARE': 'ae', // United Arab Emirates
-    'SAU': 'sa', // Saudi Arabia
-    'QAT': 'qa', // Qatar
-    'KWT': 'kw', // Kuwait
-    'BHR': 'bh', // Bahrain
-    'OMN': 'om', // Oman
-    'JOR': 'jo', // Jordan
-    'LBN': 'lb', // Lebanon
-    'JAM': 'jm', // Jamaica
-    'BHS': 'bs', // Bahamas
-    'BRB': 'bb', // Barbados
-    'TTO': 'tt', // Trinidad and Tobago
-    'ATG': 'ag', // Antigua and Barbuda
-    'LCA': 'lc', // Saint Lucia
-    'GRD': 'gd', // Grenada
-    'GEO': 'ge', // Georgia
-    'ARM': 'am', // Armenia
-    'AZE': 'az', // Azerbaijan
-    'KAZ': 'kz', // Kazakhstan
-    'UZB': 'uz', // Uzbekistan
-    'TKM': 'tm', // Turkmenistan
-    'TJK': 'tj', // Tajikistan
-    'KGZ': 'kg', // Kyrgyzstan
-    'JPN': 'jp', // Japan
-    'KOR': 'kr', // South Korea
-    'IND': 'in', // India
-    'BGD': 'bd', // Bangladesh
-    'PAK': 'pk', // Pakistan
-    'LKA': 'lk', // Sri Lanka
-    'KHM': 'kh', // Cambodia
-    'LAO': 'la', // Laos
-    'MMR': 'mm', // Myanmar
-    'ZAF': 'za', // South Africa
-    'EGY': 'eg', // Egypt
-    'MAR': 'ma', // Morocco
-    'NGA': 'ng', // Nigeria
-    'KEN': 'ke', // Kenya
-    'GHA': 'gh', // Ghana
-    'ETH': 'et', // Ethiopia
-    'TZA': 'tz', // Tanzania
-    'UGA': 'ug', // Uganda
-    'ZWE': 'zw', // Zimbabwe
-    'ZMB': 'zm', // Zambia
-    'BWA': 'bw', // Botswana
-    'NAM': 'na', // Namibia
-    'FJI': 'fj', // Fiji
-    'PNG': 'pg', // Papua New Guinea
-    'WSM': 'ws', // Samoa
-    'TON': 'to'  // Tonga
-  };
-  
-  return iso3ToIso2Map[iso3Code.toUpperCase()] || null;
 }
 
 // Helper function to get technology icon
@@ -224,76 +99,6 @@ function getProductPrice(product: Product, currency: string): number | null {
     default:
       return product.regular_price_usd || parseFloat(product.regular_price || '0') || null;
   }
-}
-
-// Fallback function for old price format
-function getFallbackPrice(product: Product): { amount: string; currency: string } {
-  // Use structured price data first, then fallback to old method
-  if (product.regular_price_usd && product.regular_price_usd > 0) {
-    return {
-      amount: product.regular_price_usd.toString(),
-      currency: 'USD'
-    };
-  }
-  
-  if (product.regular_price_eur && product.regular_price_eur > 0) {
-    return {
-      amount: product.regular_price_eur.toString(),
-      currency: 'EUR'
-    };
-  }
-  
-  if (product.regular_price_mxn && product.regular_price_mxn > 0) {
-    return {
-      amount: product.regular_price_mxn.toString(),
-      currency: 'MXN'
-    };
-  }
-  
-  // Fallback to old method
-  const price = product.sale_price || product.regular_price || '0';
-  
-  // Try to extract currency from metadata
-  if (product.metadata?.prices) {
-    const prices = product.metadata.prices;
-    if (typeof prices === 'object') {
-      const firstPrice = Object.entries(prices)[0];
-      if (firstPrice) {
-        return {
-          amount: firstPrice[1] as string,
-          currency: firstPrice[0]
-        };
-      }
-    }
-  }
-  
-  // Check if price already includes currency symbol
-  if (typeof price === 'string') {
-    if (price.includes('$')) {
-      return {
-        amount: price.replace('$', ''),
-        currency: 'USD'
-      };
-    }
-    if (price.includes('€')) {
-      return {
-        amount: price.replace('€', ''),
-        currency: 'EUR'
-      };
-    }
-    if (price.includes('£')) {
-      return {
-        amount: price.replace('£', ''),
-        currency: 'GBP'
-      };
-    }
-  }
-  
-  // Default to USD if no currency specified
-  return {
-    amount: price,
-    currency: 'USD'
-  };
 }
 
 // Helper function to get display name - now using database fields
@@ -492,13 +297,11 @@ export const PlanList: React.FC<PlanListProps> = ({
         const priceAmount = getProductPrice(plan, selectedCurrency);
         let displayPrice: string;
         
-        if (priceAmount !== null && priceAmount !== undefined && priceAmount > 0) {
+        if (priceAmount !== null && priceAmount !== undefined) {
           displayPrice = formatPrice(priceAmount, selectedCurrency);
         } else {
-          // Fallback to old price format
-          const fallback = getFallbackPrice(plan);
-          // Always use the selected currency symbol, regardless of the fallback currency
-          displayPrice = formatPrice(parseFloat(fallback.amount), selectedCurrency);
+          // Fallback to 0 if no price is available
+          displayPrice = formatPrice(0, selectedCurrency);
         }
         
         const displayName = getDisplayName(plan, getCountryName, t, i18n.language, selectedCategoryData, categories);

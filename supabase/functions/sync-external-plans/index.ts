@@ -366,11 +366,14 @@ function transformExternalPlans(rawPlans: any[]): any[] {
 
     prices.forEach((price: any) => {
       if (price.code === 'USD') {
-        regular_price_usd = parseFloat(price.price) || null;
+        const parsedPrice = parseFloat(price.price);
+        regular_price_usd = !isNaN(parsedPrice) ? parsedPrice : null;
       } else if (price.code === 'EUR') {
-        regular_price_eur = parseFloat(price.price) || null;
+        const parsedPrice = parseFloat(price.price);
+        regular_price_eur = !isNaN(parsedPrice) ? parsedPrice : null;
       } else if (price.code === 'MXN') {
-        regular_price_mxn = parseFloat(price.price) || null;
+        const parsedPrice = parseFloat(price.price);
+        regular_price_mxn = !isNaN(parsedPrice) ? parsedPrice : null;
       }
     });
 
@@ -424,7 +427,7 @@ function transformExternalPlans(rawPlans: any[]): any[] {
     }
 
     // Use the first available price as the main price
-    const mainPrice = regular_price_usd || regular_price_eur || regular_price_mxn || 0;
+    const mainPrice = regular_price_usd ?? regular_price_eur ?? regular_price_mxn ?? 0;
 
     return {
       id: plan.plan_type_id,
