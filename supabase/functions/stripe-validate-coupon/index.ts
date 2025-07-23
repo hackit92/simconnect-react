@@ -56,8 +56,45 @@ Deno.serve(async (req) => {
     }
 
     try {
-      // Retrieve the coupon from Stripe
-      const coupon = await stripe.coupons.retrieve(coupon_code.trim());
+      // Retrieve the promotion code from Stripe
+      const promotionCodes = await stripe.promotionCodes.list({
+        code: coupon_code.trim(),
+        limit: 1
+      });
+      
+      if (promotionCodes.data.length === 0) {
+        return new Response(
+          JSON.stringify({ 
+            valid: false, 
+            error: 'Coupon code not found' 
+          }),
+          {
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
+      
+      const promotionCode = promotionCodes.data[0];
+      const coupon = promotionCode.coupon;
+      
+      // Check if the promotion code is active
+      if (!promotionCode.active) {
+        return new Response(
+          JSON.stringify({ 
+            valid: false, 
+            error: 'This promotion code is no longer active' 
+          }),
+          {
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
       
       // Check if the coupon is valid
       if (!coupon.valid) {
@@ -76,11 +113,11 @@ Deno.serve(async (req) => {
       }
 
       // Check if the coupon has expired
-      if (coupon.redeem_by && coupon.redeem_by < Math.floor(Date.now() / 1000)) {
+      if (promotionCode.expires_at && promotionCode.expires_at < Math.floor(Date.now() / 1000)) {
         return new Response(
           JSON.stringify({ 
             valid: false, 
-            error: 'This coupon has expired' 
+            error: 'This promotion code has expired' 
           }),
           {
             headers: {
@@ -91,12 +128,12 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Check if the coupon has reached its maximum redemptions
-      if (coupon.max_redemptions && coupon.times_redeemed >= coupon.max_redemptions) {
+      // Check if the promotion code has reached its maximum redemptions
+      if (promotionCode.max_redemptions && promotionCode.times_redeemed >= promotionCode.max_redemptions) {
         return new Response(
           JSON.stringify({ 
             valid: false, 
-            error: 'This coupon has reached its usage limit' 
+            error: 'This promotion code has reached its usage limit' 
           }),
           {
             headers: {
@@ -107,12 +144,14 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Coupon is valid
+      // Promotion code is valid
       return new Response(
         JSON.stringify({ 
           valid: true, 
           coupon: {
-            id: coupon.id,
+            id: promotionCode.code,
+            promotion_code_id: promotionCode.id,
+            coupon_id: coupon.id,
             name: coupon.name,
             percent_off: coupon.percent_off,
             amount_off: coupon.amount_off,
@@ -136,7 +175,7 @@ Deno.serve(async (req) => {
         return new Response(
           JSON.stringify({ 
             valid: false, 
-            error: 'Coupon code not found' 
+            error: 'Promotion code not found' 
           }),
           {
             headers: {
