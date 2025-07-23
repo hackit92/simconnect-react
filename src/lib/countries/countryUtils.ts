@@ -297,7 +297,15 @@ class CountryUtils {
       'united-states': { es: 'Estados Unidos', en: 'United States' },
       'estados-unidos': { es: 'Estados Unidos', en: 'United States' },
       'united-kingdom': { es: 'Reino Unido', en: 'United Kingdom' },
-      'reino-unido': { es: 'Reino Unido', en: 'United Kingdom' }
+      'reino-unido': { es: 'Reino Unido', en: 'United Kingdom' },
+      'tw': { es: 'Taiwán', en: 'Taiwan' },
+      'taiwan': { es: 'Taiwán', en: 'Taiwan' },
+      'vi': { es: 'Islas Vírgenes de EE.UU.', en: 'U.S. Virgin Islands' },
+      'vg': { es: 'Islas Vírgenes Británicas', en: 'British Virgin Islands' },
+      'hk': { es: 'Hong Kong', en: 'Hong Kong' },
+      'hong-kong': { es: 'Hong Kong', en: 'Hong Kong' },
+      'mo': { es: 'Macao', en: 'Macao' },
+      'macao': { es: 'Macao', en: 'Macao' }
     };
     
     const normalizedCode = code.toLowerCase().trim();

@@ -1945,6 +1945,42 @@ export const countryCodeMap: Record<string, Country> = {
     alpha3: 'TJK',
     numeric: '762'
   },
+  'virgin-islands-british': {
+    name: {
+      es: 'Islas Vírgenes Británicas',
+      en: 'British Virgin Islands'
+    },
+    alpha2: 'vg',
+    alpha3: 'VGB',
+    numeric: '092'
+  },
+  'virgin-islands-us': {
+    name: {
+      es: 'Islas Vírgenes de EE.UU.',
+      en: 'U.S. Virgin Islands'
+    },
+    alpha2: 'vi',
+    alpha3: 'VIR',
+    numeric: '850'
+  },
+  'hong-kong': {
+    name: {
+      es: 'Hong Kong',
+      en: 'Hong Kong'
+    },
+    alpha2: 'hk',
+    alpha3: 'HKG',
+    numeric: '344'
+  },
+  'macao': {
+    name: {
+      es: 'Macao',
+      en: 'Macao'
+    },
+    alpha2: 'mo',
+    alpha3: 'MAC',
+    numeric: '446'
+  },
   'tanzania': {
     name: {
       es: 'Tanzania',
