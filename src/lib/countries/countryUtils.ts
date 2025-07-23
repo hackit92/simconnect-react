@@ -270,8 +270,10 @@ class CountryUtils {
       'pg': 'PNG', // Papua New Guinea
       'ws': 'WSM', // Samoa
       'to': 'TON', // Tonga
+      'an': 'ANT'  // Netherlands Antilles
       'af': 'AFG', // Afghanistan
       'aw': 'ABW', // Aruba
+      'ANT': 'an'  // Netherlands Antilles
     };
     
     return iso2ToIso3Map[iso2Code.toLowerCase()] || null;
@@ -305,7 +307,11 @@ class CountryUtils {
       'hk': { es: 'Hong Kong', en: 'Hong Kong' },
       'hong-kong': { es: 'Hong Kong', en: 'Hong Kong' },
       'mo': { es: 'Macao', en: 'Macao' },
-      'macao': { es: 'Macao', en: 'Macao' }
+      'macao': { es: 'Macao', en: 'Macao' },
+      'an': { es: 'Antillas Neerlandesas', en: 'Netherlands Antilles' },
+      'ant': { es: 'Antillas Neerlandesas', en: 'Netherlands Antilles' },
+      'netherlands-antilles': { es: 'Antillas Neerlandesas', en: 'Netherlands Antilles' },
+      'antillas-neerlandesas': { es: 'Antillas Neerlandesas', en: 'Netherlands Antilles' }
     };
     
     const normalizedCode = code.toLowerCase().trim();

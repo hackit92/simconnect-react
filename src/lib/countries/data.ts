@@ -1378,6 +1378,15 @@ export const countryCodeMap: Record<string, Country> = {
     alpha3: 'NLD',
     numeric: '528'
   },
+  'netherlands-antilles': {
+    name: {
+      es: 'Antillas Neerlandesas',
+      en: 'Netherlands Antilles'
+    },
+    alpha2: 'an',
+    alpha3: 'ANT',
+    numeric: '530'
+  },
   'new-caledonia': {
     name: {
       es: 'Nueva Caledonia',
