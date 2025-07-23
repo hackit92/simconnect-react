@@ -200,7 +200,7 @@ async function sendOrderToExternalAPI(session: Stripe.Checkout.Session, customer
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${externalApiToken}`,
+       /* 'Authorization': `Bearer ${externalApiToken}`,*/
       },
       body: JSON.stringify(orderData),
     });
