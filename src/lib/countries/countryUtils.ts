@@ -270,7 +270,7 @@ class CountryUtils {
       'pg': 'PNG', // Papua New Guinea
       'ws': 'WSM', // Samoa
       'to': 'TON', // Tonga
-      'an': 'ANT'  // Netherlands Antilles
+      'an': 'ANT', // Netherlands Antilles
       'af': 'AFG', // Afghanistan
       'aw': 'ABW', // Aruba
       'ANT': 'an'  // Netherlands Antilles
