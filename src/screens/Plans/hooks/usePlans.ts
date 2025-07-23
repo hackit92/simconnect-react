@@ -36,6 +36,14 @@ export function usePlans({
 
   // Fetch data only when selection changes (not when filters change)
   const fetchData = useCallback(async () => {
+    // Only fetch data if there's a specific selection or search term
+    if (!searchTerm && !selectedCategory && !selectedRegion) {
+      setAllProducts([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
