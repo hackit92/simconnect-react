@@ -20,6 +20,7 @@
   },
   "plans": {
     "title": "Where do you need to connect?",
+    "subtitle": "Select the country or region where you need mobile connectivity",
     "search_placeholder": "Search by country or region (e.g: Spain, Europe, Latin America)",
     "tab_countries": "Countries",
     "tab_regions": "Regions",
